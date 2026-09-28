@@ -1,0 +1,25 @@
+# Sensitive data
+admin/data/site.json
+admin/data/*.json
+
+# Environment
+.env
+*.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# Admin credentials (local only)
+admin/config.php
