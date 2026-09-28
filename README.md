@@ -1,65 +1,62 @@
-# 炜 · 个人网站
+English · [简体中文](./README.zh-CN.md)
 
-> 中南财经政法大学 · 法学本科在读 | 个人展示网站
+# Wei · Personal Website
 
-## TL;DR (EN)
+Zhongnan University of Economics and Law · undergraduate law student | personal showcase website.
 
-Personal website of an undergraduate law student at Zhongnan University of Economics and Law.
-It serves as a portfolio gateway: legal coursework and moot court case studies, community legal aid volunteering,
-and self-built tech projects — including a self-hosted poetry website with a PHP admin panel and a local LLM (Ollama/Qwen3) deployment.
-Pure static front-end (HTML/CSS/vanilla JS, zero framework dependencies) with an optional PHP admin backend; bilingual (CN/EN), PWA-ready.
+Personal website of an undergraduate law student. It serves as a portfolio gateway: legal coursework and moot court case studies, community legal aid volunteering, and self-built tech projects — including a self-hosted poetry website with a PHP admin panel and a local LLM (Ollama/Qwen3) deployment. Pure static front-end (HTML/CSS/vanilla JS, zero framework dependencies) with an optional PHP admin backend; bilingual (CN/EN), PWA-ready.
 
-## 概述
+## Overview
 
-一个现代、简洁、响应式的个人网站，用于展示学业成果、项目经历和技能特长。面向潜在雇主、实习招聘官和研究生导师。
+A modern, clean, responsive personal website for showcasing academic achievements, projects, and skills, aimed at potential employers, internship recruiters, and graduate advisors.
 
-### 技术栈
+### Tech stack
 
-- **HTML5** + **CSS3** + **原生 JavaScript**（零框架依赖）
-- **Tailwind CSS v3** — 仅用于基础的容器和排版工具类
-- **Font Awesome 6** — 图标库
-- Google Fonts **Inter** — 字体
-- 深色/浅色模式 — 基于 CSS 自定义属性和 `prefers-color-scheme`
+- **HTML5** + **CSS3** + **vanilla JavaScript** (zero framework dependencies)
+- **Tailwind CSS v3** — only for basic container and typography utilities
+- **Font Awesome 6** — icon library
+- Google Fonts **Inter** — typeface
+- Dark/light mode — based on CSS custom properties and `prefers-color-scheme`
 
-## 目录结构
+## Directory structure
 
 ```
 personal-website/
-├── index.html          # 主页面
-├── 404.html            # 404 错误页面
+├── index.html          # Main page
+├── 404.html            # 404 error page
 ├── css/
-│   └── style.css       # 全部自定义样式
+│   └── style.css       # All custom styles
 ├── js/
-│   ├── projects.js     # 项目作品数据
-│   └── app.js          # 主脚本（导航、主题、动画、表单等）
-├── images/             # 存放个人照片和项目截图（WebP 格式）
-└── README.md           # 本文件
+│   ├── projects.js     # Project portfolio data
+│   └── app.js          # Main script (navigation, theme, animations, forms, etc.)
+├── images/             # Personal photos and project screenshots (WebP format)
+└── README.md           # This file
 ```
 
-## 功能特性
+## Features
 
-- ✅ **响应式设计** — 完美适配桌面、平板和手机
-- ✅ **深色/浅色模式** — 手动切换，自动保存偏好
-- ✅ **平滑滚动** — 所有锚点链接平滑过渡
-- ✅ **滚动进入动画** — Intersection Observer 驱动的淡入效果
-- ✅ **项目作品筛选** — 按类别（课程/个人/竞赛/实践）动态筛选
-- ✅ **项目详情模态框** — 点击卡片弹出完整信息
-- ✅ **技能进度条动画** — 滚动到视口时自动填充
-- ✅ **联系表单验证** — 实时 + 提交时双重验证
-- ✅ **Toast 消息提示** — 表单提交成功/错误反馈
-- ✅ **返回顶部按钮** — 滚动超过 400px 时显示
-- ✅ **汉堡菜单** — 移动端全屏导航
-- ✅ **固定导航栏** — 滚动时背景变半透明
-- ✅ **图片懒加载** — 原生 `loading="lazy"`
-- ✅ **语义化 HTML** — header / section / footer / nav 等
-- ✅ **SEO meta 标签** — Open Graph、description、keywords
-- ✅ **无障碍支持** — ARIA 标签、键盘导航（Esc 关闭模态框）
+- ✅ **Responsive design** — fits desktop, tablet, and mobile
+- ✅ **Dark/light mode** — manual toggle with automatically saved preference
+- ✅ **Smooth scrolling** — smooth transitions for all anchor links
+- ✅ **Scroll-in animations** — fade-in effects driven by Intersection Observer
+- ✅ **Project filtering** — dynamic filtering by category (coursework / personal / competitions / practice)
+- ✅ **Project detail modal** — click a card to open the full details
+- ✅ **Skill progress bar animation** — fills automatically when scrolled into view
+- ✅ **Contact form validation** — real-time + on-submit double validation
+- ✅ **Toast messages** — success/error feedback for form submissions
+- ✅ **Back-to-top button** — appears after scrolling past 400px
+- ✅ **Hamburger menu** — full-screen navigation on mobile
+- ✅ **Sticky navbar** — background turns semi-transparent on scroll
+- ✅ **Image lazy loading** — native `loading="lazy"`
+- ✅ **Semantic HTML** — header / section / footer / nav, etc.
+- ✅ **SEO meta tags** — Open Graph, description, keywords
+- ✅ **Accessibility** — ARIA labels, keyboard navigation (Esc closes the modal)
 
-## 如何运行
+## How to run
 
-### 本地直接打开（推荐）
+### Open locally (recommended)
 
-该项目为纯静态网站，无需构建步骤。直接用浏览器打开 `index.html` 即可：
+This is a pure static website with no build step. Just open `index.html` in a browser:
 
 ```bash
 # Windows
@@ -72,72 +69,72 @@ open index.html
 xdg-open index.html
 ```
 
-### 使用本地服务器（可选，推荐以获得最佳效果）
+### With a local server (optional, recommended for best results)
 
 ```bash
-# 使用 Python
+# Using Python
 python -m http.server 8080
 
-# 使用 Node.js (npx)
+# Using Node.js (npx)
 npx serve .
 
-# 使用 VS Code Live Server 插件
-# 右键 index.html → Open with Live Server
+# Using the VS Code Live Server extension
+# Right-click index.html → Open with Live Server
 ```
 
-### 自定义内容
+### Customizing content
 
-1. **个人信息** — 编辑 `index.html` 中的姓名、学校、专业、简介等文字
-2. **项目作品** — 编辑 `js/projects.js` 中的 `projectsData` 数组
-3. **个人照片** — 将照片（WebP 格式）放入 `images/` 目录，更新 HTML 中的占位图
-4. **简历文件** — 将 PDF 简历放入 `images/` 目录，更新下载链接的 `href`
-5. **联系方式** — 更新邮箱地址、社交媒体链接
-6. **颜色主题** — 编辑 `css/style.css` 中 `:root` 下的 CSS 变量
+1. **Personal info** — edit the name, school, major, bio, and other text in `index.html`
+2. **Projects** — edit the `projectsData` array in `js/projects.js`
+3. **Photos** — put photos (WebP format) into `images/` and update the placeholders in the HTML
+4. **Resume file** — put the PDF resume into `images/` and update the download link's `href`
+5. **Contact info** — update the email address and social media links
+6. **Color theme** — edit the CSS variables under `:root` in `css/style.css`
 
-## 管理后台（可选）
+## Admin panel (optional)
 
-`admin/` 为 PHP 管理后台（留言、访客统计、内容在线编辑），**不需要**也不影响静态页面的正常展示。
+`admin/` is a PHP admin backend (guestbook messages, visitor statistics, inline content editing). It is **not required** and does not affect the static pages.
 
-- 管理员凭据从本地 `admin/config.php` 读取，该文件不入库
-- 部署后台时：复制 `admin/config.example.php` 为 `admin/config.php` 并填入自己的用户名与 bcrypt 密码哈希
-- 生成哈希：`php -r "echo password_hash('你的密码', PASSWORD_BCRYPT);"`
+- Admin credentials are read from the local `admin/config.php`, which is not committed
+- To deploy the panel: copy `admin/config.example.php` to `admin/config.php` and fill in your own username and bcrypt password hash
+- Generate a hash: `php -r "echo password_hash('your-password', PASSWORD_BCRYPT);"`
 
-## 部署指南
+## Deployment
 
-### GitHub Pages（免费）
+### GitHub Pages (free)
 
-1. 在 GitHub 创建仓库，将本目录所有文件推送至 `main` 分支
-2. 进入仓库 Settings → Pages
-3. Source 选择 "Deploy from branch"，Branch 选择 `main`，目录 `/ (root)`
-4. 点击 Save，等待几分钟即可通过 `https://<用户名>.github.io/<仓库名>/` 访问
+1. Create a GitHub repository and push all files in this directory to the `main` branch
+2. Go to the repository Settings → Pages
+3. Set Source to "Deploy from branch", Branch to `main`, and the folder to `/ (root)`
+4. Click Save, wait a few minutes, and the site is live at `https://<username>.github.io/<repo>/`
 
-### Vercel（免费）
+### Vercel (free)
 
-1. 安装 Vercel CLI：`npm i -g vercel`
-2. 在项目根目录运行：`vercel`
-3. 或登录 [vercel.com](https://vercel.com)，导入项目，保持默认配置即可
+1. Install the Vercel CLI: `npm i -g vercel`
+2. Run in the project root: `vercel`
+3. Or sign in at [vercel.com](https://vercel.com), import the project, and keep the default settings
 
-### 阿里云 OSS 静态托管
+### Alibaba Cloud OSS static hosting
 
-1. 将 `images/`、`css/`、`js/` 和 HTML 文件上传至 OSS Bucket
-2. 开启静态网站托管，首页设为 `index.html`，404 页设为 `404.html`
-3. （可选）绑定自定义域名并配置 CDN
+1. Upload `images/`, `css/`, `js/`, and the HTML files to an OSS bucket
+2. Enable static website hosting, set the index document to `index.html` and the 404 document to `404.html`
+3. (Optional) bind a custom domain and configure CDN
 
-## 性能优化
+## Performance
 
-- 所有样式压缩合并为单文件 `style.css`（约 8KB gzipped）
-- JavaScript 分为数据层（`projects.js`）和逻辑层（`app.js`），便于维护
-- 使用 CSS 变量实现主题切换，无额外 HTTP 请求
-- Google Fonts 和 Font Awesome 使用 CDN 并配置 `preconnect`
-- 图片推荐使用 WebP 格式以减小体积
+- All styles are minified and merged into a single `style.css` (about 8KB gzipped)
+- JavaScript is split into a data layer (`projects.js`) and a logic layer (`app.js`) for maintainability
+- Theme switching uses CSS variables with no extra HTTP requests
+- Google Fonts and Font Awesome are loaded from a CDN with `preconnect`
+- Images are recommended in WebP format to reduce size
 
-## 兼容性
+## Compatibility
 
 - ✅ Chrome 90+
 - ✅ Firefox 88+
 - ✅ Safari 14+
 - ✅ Edge 90+
-- ✅ 移动端浏览器
+- ✅ Mobile browsers
 
 ## License
 
