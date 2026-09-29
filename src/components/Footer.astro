@@ -1,0 +1,21 @@
+---
+import { SITE } from '../lib/site';
+const socials = [
+  { label: 'GitHub', href: SITE.github },
+  ...(SITE.zhihu ? [{ label: '知乎', href: SITE.zhihu }] : []),
+  ...(SITE.email ? [{ label: 'Email', href: `mailto:${SITE.email}` }] : [])
+];
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>© {year} {SITE.author} · <a href={SITE.poems} target="_blank" rel="noopener">诗集《陌生的你》</a> · <a href="/feed.xml">RSS</a></p>
+    <p class="socials">{socials.map((s) => <a href={s.href} target="_blank" rel="noopener">{s.label}</a>)}</p>
+  </div>
+</footer>
+<style>
+  .site-footer { border-top: 1px solid var(--border); margin-top: 4rem; padding: 2rem 0 3rem; color: var(--text-muted); font-size: 0.9rem; }
+  .footer-inner { display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; justify-content: space-between; }
+  .footer-inner p { margin: 0; }
+  .socials { display: flex; gap: 1rem; }
+</style>

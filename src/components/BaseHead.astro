@@ -1,0 +1,25 @@
+---
+import { SITE } from '../lib/site';
+interface Props { title: string; description?: string; }
+const { title, description = SITE.description } = Astro.props;
+const pageTitle = title.includes(SITE.author) ? title : `${title} · ${SITE.title}`;
+---
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<meta name="generator" content={Astro.generator} />
+<title>{pageTitle}</title>
+<meta name="description" content={description} />
+<meta name="author" content={SITE.author} />
+<link rel="canonical" href={new URL(Astro.url.pathname, SITE.url)} />
+<meta property="og:type" content="website" />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={new URL(Astro.url.pathname, SITE.url)} />
+<meta name="twitter:card" content="summary" />
+<script is:inline>
+  (function () {
+    var t = localStorage.getItem('theme');
+    if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.dataset.theme = 'dark';
+    }
+  })();
+</script>

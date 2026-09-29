@@ -1,0 +1,35 @@
+---
+import { NAV, SITE } from '../lib/site';
+const { pathname } = Astro.url;
+const isActive = (href: string) => pathname === href || pathname.startsWith(href);
+---
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/">{SITE.author}</a>
+    <nav aria-label="主导航">
+      {NAV.map((item) => (
+        <a class:list={['nav-link', { active: isActive(item.href) }]} href={item.href}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+    <button id="theme-toggle" type="button" aria-label="切换明暗主题">◐</button>
+  </div>
+</header>
+<script>
+  const btn = document.getElementById('theme-toggle');
+  btn?.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    localStorage.setItem('theme', next);
+  });
+</script>
+<style>
+  .site-header { border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 10; }
+  .header-inner { display: flex; align-items: center; gap: 1.5rem; height: 64px; }
+  .brand { font-weight: 700; color: var(--text); }
+  nav { display: flex; gap: 1rem; margin-left: auto; }
+  .nav-link { color: var(--text-muted); }
+  .nav-link.active, .nav-link:hover { color: var(--accent); text-decoration: none; }
+  #theme-toggle { background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer; padding: 0.2rem 0.55rem; }
+</style>
