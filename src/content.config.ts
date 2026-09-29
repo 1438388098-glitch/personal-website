@@ -54,4 +54,12 @@ const notes = defineCollection({
   })
 });
 
-export const collections = { projects, posts, exam, notes };
+const now = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/now' }),
+  schema: z.object({
+    period: z.string().regex(/^\d{4}-\d{2}$/),
+    updated: z.coerce.date()
+  })
+});
+
+export const collections = { projects, posts, exam, notes, now };
