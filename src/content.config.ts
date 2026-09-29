@@ -62,4 +62,14 @@ const now = defineCollection({
   })
 });
 
-export const collections = { projects, posts, exam, notes, now };
+const toolbox = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/toolbox' }),
+  schema: z.object({
+    name: z.string(),
+    url: z.string().url(),
+    description: z.string(),
+    category: z.enum(['法律工具', '工程小件'])
+  })
+});
+
+export const collections = { projects, posts, exam, notes, now, toolbox };

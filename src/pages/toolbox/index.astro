@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const tools = (await getCollection('toolbox')).sort((a, b) => a.data.name.localeCompare(b.data.name));
+const categories = ['法律工具', '工程小件'] as const;
+---
+<BaseLayout title="工具箱" description="我公开在 GitHub 上的法律工具与工程小件：每条都逐一验证过仓库公开可见，功能描述取自仓库自述。">
+  <h1>工具箱</h1>
+  <p class="intro">散落各处的公开小工具收进一个清单。每条入库前都验证过仓库可公开访问，描述取自仓库自述。</p>
+  {categories.map((c) => {
+    const items = tools.filter((t) => t.data.category === c);
+    return items.length > 0 && (
+      <section>
+        <h2>{c}</h2>
+        <div class="grid">
+          {items.map((t) => (
+            <article class="tool-card">
+              <h3><a href={t.data.url} target="_blank" rel="noopener noreferrer">{t.data.name}</a></h3>
+              <p class="desc">{t.data.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    );
+  })}
+</BaseLayout>
+<style>
+  .intro { color: var(--text-muted); }
+  section { margin: 2rem 0; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .tool-card { border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.3rem; background: var(--bg); }
+  h3 { margin: 0 0 0.4rem; font-size: 1.1rem; }
+  h3 a { color: var(--text); }
+  h3 a:hover { color: var(--accent); text-decoration: none; }
+  .desc { color: var(--text-muted); margin: 0; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+</style>
