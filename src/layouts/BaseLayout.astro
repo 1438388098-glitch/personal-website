@@ -3,8 +3,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 /* 自托管衬线（OFL 协议）：标题与数字展示位使用；unicode-range 切片，按需下载。
-   中文衬线只保留 700 一个字重：600 已并入 700，减半命中切片的下载量 */
-import '@fontsource/source-serif-4/600.css';
+   只保留 700 字重：600 无使用点，砍掉可再省一份西文切片 */
 import '@fontsource/source-serif-4/700.css';
 import '@fontsource/noto-serif-sc/700.css';
 import '../styles/global.css';

@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
   pull_request:
+  # 每日一跑：定时发布（pubDate <= now 过滤）的文章靠每日构建在到日当天自动上线
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
   build-and-check:
