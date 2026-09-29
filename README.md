@@ -17,3 +17,12 @@
     src/content/projects/  项目案例（.md，frontmatter 见 src/content.config.ts）
     src/content/posts/     博客文章（.md）
 （本节随 M3 各栏目上线扩充）
+
+## 如何新增一篇项目案例
+在 src/content/projects/ 建 <repo>.md，frontmatter 参照 statute-rag.md；
+metrics 里的每个数字必须在正文「验证」一节可溯源。构建即校验，写错字段会构建失败。
+
+## 如何新增一篇文章
+在 src/content/posts/ 建 YYYY-MM-DD-<slug>.md，frontmatter 参照现有文章；
+category 三选一（工程方法论/技术笔记/法学随笔）。发布前跑：
+    npm run build && npm run check:links && npm run check:secrets
