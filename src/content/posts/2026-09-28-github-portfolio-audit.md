@@ -20,5 +20,5 @@ pubDate: 2026-09-28
 ## 结果与教训
 
 合计 85 例测试全绿、2 个 CI 上线、3 个真 bug 被顺手修掉；
-statute-rag、clause-scope、legal-hallu-guard 三个新仓从缺口清单长出来。
+缺口清单对号入座：clause-scope 从清单里长出来，legal-hallu-guard 干脆因它而新建；statute-rag 建得更早，这次审计让它的下一步聚焦到中文向量通道。
 最大的教训：包装之前先收口，指标先于功能，弱仓沉底强于硬凑门面。
