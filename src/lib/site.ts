@@ -8,8 +8,8 @@ export const SITE = {
   poems: 'https://iweistoicqc5.top/poems/',
   /** 执行时处理：从旧站页面提取知乎主页链接（curl 首页 grep zhihu）；提取不到则置空 */
   zhihu: '',
-  /** 执行时向用户确认可公开的展示邮箱；确认前保持空串，页脚不渲染邮箱项 */
-  email: ''
+  /** 用户已确认可公开的展示邮箱（2026-09-29 拍板），页脚与关于页渲染 */
+  email: 'sww00316@163.com'
 } as const;
 
 export const NAV = [
