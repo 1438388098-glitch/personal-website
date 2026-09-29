@@ -1,0 +1,22 @@
+---
+import { formatDate } from '../lib/format';
+import type { CollectionEntry } from 'astro:content';
+interface Props { post: CollectionEntry<'posts'>; }
+const { post } = Astro.props;
+const { title, description, category, pubDate, tags } = post.data;
+---
+<article class="post-card">
+  <p class="meta">{category} · {formatDate(pubDate)}</p>
+  <h3><a href={`/blog/${post.id}/`}>{title}</a></h3>
+  <p class="desc">{description}</p>
+  {tags.length > 0 && <p class="tags">{tags.map((t) => `#${t}`).join(' ')}</p>}
+</article>
+<style>
+  .post-card { padding: 1.1rem 0; border-top: 1px solid var(--border); }
+  .meta { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.3rem; }
+  h3 { margin: 0 0 0.35rem; font-size: 1.15rem; }
+  h3 a { color: var(--text); }
+  h3 a:hover { color: var(--accent); text-decoration: none; }
+  .desc { color: var(--text-muted); margin: 0 0 0.4rem; }
+  .tags { color: var(--text-muted); font-size: 0.85rem; margin: 0; }
+</style>

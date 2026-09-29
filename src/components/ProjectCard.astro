@@ -1,0 +1,30 @@
+---
+import { formatDate } from '../lib/format';
+import type { CollectionEntry } from 'astro:content';
+interface Props { project: CollectionEntry<'projects'>; }
+const { project } = Astro.props;
+const { title, summary, metrics, date, group } = project.data;
+---
+<article class="project-card">
+  <p class="meta">{group} · {formatDate(date)}</p>
+  <h3><a href={`/projects/${project.id}/`}>{title}</a></h3>
+  <p class="summary">{summary}</p>
+  {metrics.length > 0 && (
+    <ul class="metrics">
+      {metrics.slice(0, 2).map((m) => (
+        <li><strong>{m.value}</strong> {m.label}</li>
+      ))}
+    </ul>
+  )}
+</article>
+<style>
+  .project-card { border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem 1.4rem; background: var(--bg); }
+  .meta { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.4rem; }
+  h3 { margin: 0 0 0.5rem; font-size: 1.2rem; }
+  h3 a { color: var(--text); }
+  h3 a:hover { color: var(--accent); text-decoration: none; }
+  .summary { color: var(--text-muted); margin: 0 0 0.75rem; }
+  .metrics { list-style: none; display: flex; gap: 1.25rem; margin: 0; padding: 0.75rem 0 0; border-top: 1px solid var(--border); }
+  .metrics li { font-size: 0.9rem; color: var(--text-muted); }
+  .metrics strong { color: var(--accent); font-variant-numeric: tabular-nums; }
+</style>
