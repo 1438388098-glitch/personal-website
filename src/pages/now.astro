@@ -11,19 +11,11 @@ const { Content } = await render(current);
 ---
 <BaseLayout title={`Now · ${current.data.period}`} description="此刻正在做的事：备考、构建、写作与待决，按月更新。">
   <article class="prose">
-    <p class="meta">{current.data.period} · 更新于 {formatDate(current.data.updated)}</p>
+    <p class="meta">更新于 {formatDate(current.data.updated)}</p>
     <h1>Now · {current.data.period}</h1>
     <Content />
-    <p class="now-note">
-      这是一个 <a href="https://nownownow.com/" target="_blank" rel="noopener">/now 页面</a>：
-      只记录我此刻正在做的事，完整履历在关于页；按月更新，新一期发布后替换本期。这个惯例来自 nownownow.com。
-    </p>
   </article>
 </BaseLayout>
 <style>
   .meta { color: var(--text-muted); }
-  .now-note {
-    color: var(--text-muted); font-size: 0.9rem;
-    border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 2.5rem;
-  }
 </style>

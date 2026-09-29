@@ -1,5 +1,5 @@
 ---
-import { HOME_METRICS, METRICS_AS_OF } from '../lib/metrics';
+import { HOME_METRICS } from '../lib/metrics';
 ---
 <section class="metric-strip" aria-label="关键指标">
   <div class="metrics">
@@ -12,7 +12,6 @@ import { HOME_METRICS, METRICS_AS_OF } from '../lib/metrics';
       </div>
     ))}
   </div>
-  <p class="as-of">数据截至 {METRICS_AS_OF}，逐项可溯源至对应项目案例页。</p>
 </section>
 <style>
   .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
@@ -28,6 +27,5 @@ import { HOME_METRICS, METRICS_AS_OF } from '../lib/metrics';
     transition: border-color 0.15s ease, color 0.15s ease;
   }
   .source:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
-  .as-of { color: var(--text-muted); font-size: 0.85rem; margin: 0.6rem 0 0; }
   @media (max-width: 720px) { .metrics { grid-template-columns: 1fr; } }
 </style>
