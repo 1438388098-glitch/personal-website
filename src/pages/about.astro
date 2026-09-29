@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../lib/site';
+---
+<BaseLayout title={`关于 · ${SITE.title}`} description={`${SITE.author}的个人介绍与简历。`}>
+  <h1>关于</h1>
+  <div class="prose">
+    <p>
+      我是胡圣炜，广东韶关人，中南财经政法大学法学专业本科生（2023.09 - 2027.06）。
+      成长于粤北多语言环境（普通话、粤语、客家话），这让我习惯在不同语境间准确转译，
+      也让我对「表述精确」有职业级的执念。
+    </p>
+    <p>
+      我的方向是法律与 AI 的交叉地带：法律文本的结构化、检索与评估。
+      我相信法律场景的 AI 输出不能靠蒙，所以我的项目都围着同一件事转：
+      让模型的每句话可复核、可评估、可追溯。工具上重度使用 Claude Code 等 AI 编码协作，
+      并把工程纪律（测试、指标、失败案例）带进每一个法律项目。
+    </p>
+    <h2>教育背景</h2>
+    <p>中南财经政法大学 · 法学本科 · 2023.09 - 2027.06（南湖校区）</p>
+    <p>核心课程：民法总论、刑法总论、民诉、刑诉、行政法、商法、经济法、知识产权法、国际法、法律逻辑学</p>
+    <h2>技能</h2>
+    <ul>
+      <li>法律：法律检索与研究、法律文书写作、案例分析、辩论口头表达、法律英语（CET-6）</li>
+      <li>工程：Python、JavaScript/TypeScript、SQLite/FTS5、RAG 与评测管线、多 Agent 编排、Git/CI</li>
+      <li>工具：北大法宝、中国裁判文书网、Westlaw、Office、XMind、VS Code</li>
+    </ul>
+    <h2>证书与语言</h2>
+    <p>国家统一法律职业资格考试（备考中）· 大学英语六级 · 普通话 / 粤语 / 客家话（母语级）</p>
+    <h2>联系我</h2>
+    <p>
+      <a href={SITE.github} target="_blank" rel="noopener">GitHub</a>
+      {SITE.email && <> · <a href={`mailto:${SITE.email}`}>{SITE.email}</a></>}
+      。正在寻找法律科技 / AI 应用方向的实习机会。
+    </p>
+    <p><a class="resume-btn" href="/resume/hu-shengwei-resume.pdf" download>下载简历 PDF</a></p>
+    <!-- TODO(资产): 个人照片位，用户提供后插入（about 页顶部右侧，1:1，max-width 180px） -->
+  </div>
+</BaseLayout>
+<style>
+  .resume-btn { display: inline-block; border: 1px solid var(--accent); border-radius: 8px; padding: 0.45rem 1.1rem; }
+  .resume-btn:hover { background: var(--accent-soft); text-decoration: none; }
+</style>
