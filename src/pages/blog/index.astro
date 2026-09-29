@@ -8,10 +8,10 @@ import { byDateDesc } from '../../lib/sort';
 const isPublished = (p: { data: { draft: boolean; pubDate: Date } }) =>
   !p.data.draft && p.data.pubDate.valueOf() <= Date.now();
 const posts = (await getCollection('posts', isPublished)).sort(byDateDesc((p) => p.data.pubDate));
-const categories = ['工程方法论', '技术笔记', '法学随笔', '游戏手记', '杂谈', '热点快评'] as const;
+const categories = ['工程方法论', '技术笔记', '法学随笔', '游戏手记', '杂谈', '经济观察', '热点快评'] as const;
 const countOf = (c: string) => posts.filter((p) => p.data.category === c).length;
 ---
-<BaseLayout title="博客" description="法律 × AI 的工程方法论、技术笔记与法学随笔，另有游戏手记、杂谈与热点快评。">
+<BaseLayout title="博客" description="法律 × AI 的工程方法论、技术笔记与法学随笔，另有游戏手记、杂谈、经济观察与热点快评。">
   <h1>博客</h1>
 
   <div class="tabs" role="tablist" aria-label="按分类筛选">
