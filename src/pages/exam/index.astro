@@ -53,10 +53,10 @@ const stages = [
   }
 ];
 ---
-<BaseLayout title="法考 × AI" description="如何在法考备考全程深度融入 AI：错题整理、判分、刷题、检索、评测，每个环节一个自建工具，产出数据全部公开可查。">
+<BaseLayout title="法考 × AI" description="把 AI 装进法考备考的每个环节：错题整理、判分、刷题、检索、评测，每个环节一个自建工具，产出数据全部公开可查。">
   <h1>法考 × AI</h1>
   <p class="intro">
-    我的备考不是「用 AI 搜答案」，而是把每个环节都换成自己写的 AI 工具：
+    备考里的每个环节，我都换成了自己写的 AI 工具：
     错题自动变笔记、主观题机器初判、法条检索必带引用、AI 本身先过评测再上岗。
     下面是这些环节的真实运转方式与产出，数据截至 {EXAM_DATA_AS_OF}。
   </p>
@@ -64,7 +64,7 @@ const stages = [
     <h2>六个环节，六个自建工具</h2>
     <div class="stage-grid">
       {stages.map((s) => (
-        <div class="stage-card">
+        <div class="card stage-card">
           <p class="stage-name">{s.stage}</p>
           <a class="tool" href={s.href} target={s.href.startsWith('http') ? '_blank' : undefined} rel={s.href.startsWith('http') ? 'noopener' : undefined}>{s.tool}</a>
           <p class="ai">{s.ai}</p>
@@ -108,16 +108,7 @@ const stages = [
   .intro { color: var(--text-muted); max-width: 46rem; }
   section { margin: 2rem 0; }
   .stage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
-  .stage-card {
-    border: 1px solid var(--border); border-radius: 12px; padding: 1.15rem 1.3rem;
-    display: flex; flex-direction: column; gap: 0.35rem; background: var(--bg);
-    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .stage-card:hover {
-    transform: translateY(-3px);
-    border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
-    box-shadow: 0 14px 30px -20px rgba(0, 0, 0, 0.35);
-  }
+  .stage-card { padding: 1.15rem 1.3rem; display: flex; flex-direction: column; gap: 0.35rem; }
   .stage-name { margin: 0; font-family: var(--font-serif); font-weight: 700; }
   .tool {
     align-self: flex-start; font-size: 0.82rem; line-height: 1.7;

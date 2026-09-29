@@ -15,7 +15,7 @@ const categories = ['法律工具', '工程小件'] as const;
         <h2>{c}</h2>
         <div class="grid">
           {items.map((t) => (
-            <article class="tool-card">
+            <article class="card tool-card">
               <h3><a href={t.data.url} target="_blank" rel="noopener noreferrer">{t.data.name}</a></h3>
               <p class="desc">{t.data.description}</p>
             </article>
@@ -29,7 +29,7 @@ const categories = ['法律工具', '工程小件'] as const;
   .intro { color: var(--text-muted); }
   section { margin: 2rem 0; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .tool-card { border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.3rem; background: var(--bg); }
+  .tool-card { padding: 1.1rem 1.3rem; }
   h3 { margin: 0 0 0.4rem; font-size: 1.1rem; }
   h3 a { color: var(--text); }
   h3 a:hover { color: var(--accent); text-decoration: none; }

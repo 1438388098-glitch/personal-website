@@ -1,7 +1,7 @@
 export const SITE = {
   title: '胡圣炜 · Stoic',
   description:
-    '胡圣炜（Stoic）：中南财经政法大学法学在读，自学工程师。给法律场景造可复核、可评估、懂边界的 AI 工具。',
+    '胡圣炜（Stoic）：法学在读，业余造工具。法条检索、法考判分、司法评测，全部开源，数字可查。',
   url: 'https://iweistoicqc5.top',
   author: '胡圣炜',
   github: 'https://github.com/1438388098-glitch',

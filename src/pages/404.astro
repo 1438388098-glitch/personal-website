@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="页面不存在" description="这个地址没有页面，从首页、项目或博客找回去。">
+  <section class="lost">
+    <p class="code" aria-hidden="true">404</p>
+    <h1>这个地址没有页面</h1>
+    <p class="hint">链接可能敲错了，或者页面挪了地方。从这几条路找回去：</p>
+    <p class="paths">
+      <a class="btn primary" href="/">回首页</a>
+      <a class="btn" href="/projects/">看项目</a>
+      <a class="btn" href="/blog/">看博客</a>
+    </p>
+  </section>
+</BaseLayout>
+<style>
+  .lost { padding: 4rem 0 3.5rem; }
+  .code {
+    font-family: var(--font-serif); font-weight: 700; color: var(--accent);
+    font-size: clamp(4.5rem, 12vw, 7rem); line-height: 1; letter-spacing: -0.02em;
+    margin: 0 0 0.75rem;
+  }
+  h1 { margin: 0 0 0.75rem; }
+  .hint { color: var(--text-muted); margin: 0 0 1.5rem; }
+  .paths { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 0; }
+</style>
