@@ -56,6 +56,8 @@ const posts = (await getCollection('posts', (p) => !p.data.draft))
   .btn:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
   .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .btn.primary:hover { filter: brightness(1.08); color: #fff; }
+  /* a11y：暗色下朱砂底(#d4694f)配白字对比度约 3.5:1 不达标，改深字 ≈5.2:1 */
+  :global(html[data-theme='dark']) .btn.primary { color: #20100c; }
   section { margin: 2.5rem 0; }
   .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.75rem; }
   .section-head h2 { margin: 0; }

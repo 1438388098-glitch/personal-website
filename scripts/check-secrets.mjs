@@ -22,7 +22,13 @@ let hits = 0;
 for (const file of files) {
   const content = readFileSync(file, 'utf8');
   for (const [re, label] of patterns) {
-    if (re.test(content)) { console.error(`${label}: ${file}`); hits++; }
+    const hit = re.exec(content);
+    if (hit) {
+      const line = content.slice(0, hit.index).split('\n').length;
+      const snippet = hit[0].slice(0, 20);
+      console.error(`${label}: ${file}:${line}（${snippet}…）`);
+      hits++;
+    }
   }
 }
 if (hits > 0) { process.exit(1); }

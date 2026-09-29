@@ -8,7 +8,7 @@ import { HOME_METRICS, METRICS_AS_OF } from '../lib/metrics';
         <span class="value">{m.value}</span>
         <span class="label">{m.label}</span>
         <span class="detail">{m.detail}</span>
-        <span class="source">来源：{m.source}</span>
+        <a class="source" href={`/projects/${m.source}/`}>来源：{m.source}</a>
       </div>
     ))}
   </div>
@@ -20,6 +20,7 @@ import { HOME_METRICS, METRICS_AS_OF } from '../lib/metrics';
   .value { font-size: 1.9rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
   .label { font-weight: 600; }
   .detail, .source { color: var(--text-muted); font-size: 0.85rem; }
+  .source { color: var(--text-muted); }
   .as-of { color: var(--text-muted); font-size: 0.85rem; margin: 0.5rem 0 0; }
   @media (max-width: 720px) { .metrics { grid-template-columns: 1fr; } }
 </style>

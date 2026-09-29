@@ -17,5 +17,7 @@ const year = new Date().getFullYear();
   .site-footer { border-top: 1px solid var(--border); margin-top: 4rem; padding: 2rem 0 3rem; color: var(--text-muted); font-size: 0.9rem; }
   .footer-inner { display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; justify-content: space-between; }
   .footer-inner p { margin: 0; }
+  /* a11y：链接不能仅靠颜色区分，页脚全部链接统一加下划线 */
+  .site-footer a { text-decoration: underline; text-underline-offset: 3px; }
   .socials { display: flex; gap: 1rem; }
 </style>
