@@ -1,0 +1,83 @@
+/* 设计令牌：纸面 + 墨色 + 朱砂。呼应语境：墨（书写）、朱砂（印章/法律）。 */
+:root {
+  --bg: #faf9f7;
+  --bg-soft: #f2f0ec;
+  --text: #201f1d;
+  --text-muted: #6f6b64;
+  --accent: #b3402a;
+  --accent-soft: #f4e3de;
+  --border: #e4e1da;
+  --code-bg: #f4f2ee;
+  --maxw: 72rem;
+}
+html[data-theme='dark'] {
+  --bg: #151413;
+  --bg-soft: #1d1c1a;
+  --text: #e8e6e1;
+  --text-muted: #9b968d;
+  --accent: #d4694f;
+  --accent-soft: #3a2621;
+  --border: #2c2a27;
+  --code-bg: #201e1c;
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: light; scroll-behavior: smooth; }
+html[data-theme='dark'] { color-scheme: dark; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  line-height: 1.75;
+  font-size: 1rem;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+img { max-width: 100%; height: auto; }
+h1, h2, h3 { line-height: 1.25; letter-spacing: -0.01em; }
+h1 { font-size: clamp(1.9rem, 4vw, 2.8rem); }
+h2 { font-size: clamp(1.4rem, 2.5vw, 1.8rem); }
+
+.container { max-width: var(--maxw); margin-inline: auto; padding-inline: 1.25rem; }
+.skip-link {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--accent); color: #fff; padding: 0.5rem 1rem; z-index: 100;
+}
+.skip-link:focus { left: 0; }
+
+/* 文章正文 */
+.prose { max-width: 68ch; }
+.prose p { margin: 1.1em 0; }
+.prose h2 { margin-top: 2em; }
+.prose h3 { margin-top: 1.6em; }
+.prose blockquote {
+  margin: 1.4em 0; padding: 0.2em 1.1em;
+  border-left: 3px solid var(--accent);
+  background: var(--bg-soft); color: var(--text-muted);
+}
+.prose code {
+  background: var(--code-bg); border: 1px solid var(--border);
+  border-radius: 4px; padding: 0.1em 0.35em; font-size: 0.9em;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+.prose pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 1rem; overflow-x: auto;
+}
+.prose pre code { background: none; border: none; padding: 0; }
+.prose table { border-collapse: collapse; width: 100%; margin: 1.4em 0; }
+.prose th, .prose td { border: 1px solid var(--border); padding: 0.5em 0.8em; text-align: left; }
+.prose th { background: var(--bg-soft); }
+
+/* Shiki 双主题（astro.config 里 themes 配置的 dark 变量） */
+html[data-theme='dark'] .astro-code,
+html[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
