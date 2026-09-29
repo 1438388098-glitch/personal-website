@@ -8,6 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "check:links": "node scripts/check-links.mjs",
+    "check:secrets": "node scripts/check-secrets.mjs",
     "test": "vitest run"
   },
   "dependencies": {
