@@ -3,7 +3,7 @@ title: 让 Agent 通宵改代码，都有哪些花样死法？
 description: 一个驱动 Agent 自主迭代 Git 项目的工程实践：候选池排序、多级验证、硬性预算，以及那些踩过的坑。
 category: 工程方法论
 tags: [Agent, 自动化, 工程方法]
-pubDate: 2026-10-12
+pubDate: 2026-09-29
 ---
 
 "去把这个仓库持续优化一下。"
