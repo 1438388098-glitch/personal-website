@@ -1,0 +1,24 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('exam', (e) => !e.data.draft);
+  return articles.map((a) => ({ params: { slug: a.id }, props: { post: a } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, description, type, subject, date } = post.data;
+---
+<BaseLayout title={title} description={description}>
+  <article class="prose">
+    <p class="meta">{type}{subject && ` · ${subject}`} · {formatDate(date)}</p>
+    <h1>{title}</h1>
+    <Content />
+    <p><a href="/exam/">← 法考备考</a></p>
+  </article>
+</BaseLayout>
+<style>
+  .meta { color: var(--text-muted); }
+</style>

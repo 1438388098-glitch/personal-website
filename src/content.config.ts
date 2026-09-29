@@ -30,4 +30,16 @@ const posts = defineCollection({
   })
 });
 
-export const collections = { projects, posts };
+const exam = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/exam' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    subject: z.string().optional(),
+    type: z.enum(['方法论', '错题笔记', '周记']),
+    date: z.coerce.date(),
+    draft: z.boolean().default(false)
+  })
+});
+
+export const collections = { projects, posts, exam };
