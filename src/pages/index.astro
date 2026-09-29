@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import MetricStrip from '../components/MetricStrip.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import PostCard from '../components/PostCard.astro';
 import { SITE } from '../lib/site';
@@ -28,21 +27,19 @@ const nowTopics = (currentNow?.body ?? '')
   <section class="hero">
     <h1 class="fade-up">{SITE.author}</h1>
     <p class="tagline fade-up d1">法学在读，业余造工具。法条检索、法考判分、司法评测，全部开源，数字可查。</p>
-    <p class="status fade-up d2">备考法考中 · 武汉</p>
+    <p class="status fade-up d2"><span class="dot" aria-hidden="true"></span>备考法考中 · 武汉</p>
     <p class="ctas fade-up d3">
       <a class="btn primary" href="/projects/">看项目</a>
       <a class="btn" href="/about/">关于我</a>
     </p>
   </section>
 
-  <div data-reveal><MetricStrip /></div>
-
   {projects.length > 0 && (
     <section data-reveal>
       <div class="section-head"><h2>精选项目</h2><a href="/projects/">全部项目</a></div>
       <div class="featured-grid">
         {projects.map((p, i) => (
-          <div class:list={['cell', { wide: i === 0 }]}><ProjectCard project={p} /></div>
+          <div class:list={['cell', { wide: i === 0 }]}><ProjectCard project={p} showMetrics={false} /></div>
         ))}
       </div>
     </section>
@@ -77,17 +74,29 @@ const nowTopics = (currentNow?.body ?? '')
 </BaseLayout>
 
 <style>
-  .hero { padding: 4rem 0 3.5rem; }
+  .hero { padding: 4.5rem 0 3.5rem; border-bottom: 1px solid var(--border); }
   .hero h1 { margin: 0 0 1rem; font-size: clamp(2.8rem, 6vw, 4.2rem); }
   .tagline { font-family: var(--font-serif); font-weight: 700; font-size: clamp(1.2rem, 2vw, 1.4rem); line-height: 1.8; margin: 0 0 0.9rem; max-width: 34rem; text-wrap: balance; }
   .status { color: var(--text-muted); margin: 0 0 1.5rem; font-size: 0.95rem; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 0.5rem; }
+  @media (prefers-reduced-motion: no-preference) {
+    .dot { animation: pulse 2.4s ease-in-out infinite; }
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
   .ctas { display: flex; gap: 0.75rem; margin: 0; }
-  section { margin: 2.5rem 0; }
+  section { margin: 3rem 0; }
   .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.75rem; }
   .section-head h2 { margin: 0; }
   .featured-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .cell.wide { grid-column: 1 / -1; }
-  @media (max-width: 720px) { .featured-grid { grid-template-columns: 1fr; } }
+  /* 首位的精选项目升级为大卡：更宽的呼吸、更大的标题与摘要 */
+  .cell.wide :global(.project-card) { padding: 1.6rem 1.8rem; }
+  .cell.wide :global(.project-card h3) { font-size: 1.5rem; }
+  .cell.wide :global(.project-card .summary) { font-size: 1.02rem; max-width: 58ch; }
+  @media (max-width: 720px) {
+    .featured-grid { grid-template-columns: 1fr; }
+    .hero { padding: 3.5rem 0 3rem; }
+  }
   /* 首页动态区：法考卡宽、Now 窄的不对称网格，低动效（仅链接 hover 下划线） */
   .dynamic-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; align-items: stretch; }
   .dyn-card { padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.45rem; margin: 0; }

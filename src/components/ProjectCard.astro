@@ -1,15 +1,15 @@
 ---
 import { formatDate } from '../lib/format';
 import type { CollectionEntry } from 'astro:content';
-interface Props { project: CollectionEntry<'projects'>; }
-const { project } = Astro.props;
+interface Props { project: CollectionEntry<'projects'>; showMetrics?: boolean; }
+const { project, showMetrics = true } = Astro.props;
 const { title, summary, metrics, date, group } = project.data;
 ---
 <article class="card project-card">
   <p class="meta">{group} · {formatDate(date)}</p>
   <h3><a href={`/projects/${project.id}/`}>{title}</a></h3>
   <p class="summary">{summary}</p>
-  {metrics.length > 0 && (
+  {showMetrics && metrics.length > 0 && (
     <ul class="metrics">
       {metrics.slice(0, 2).map((m) => (
         <li><strong>{m.value}</strong> {m.label}</li>

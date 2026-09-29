@@ -5,7 +5,7 @@ export interface Metric {
   source: string;
 }
 
-/** 首页数字条：每个数字必须能在对应项目案例页溯源。更新数字时同步更新 METRICS_AS_OF。
+/** 站内数字来源（法考页引用）：每个数字必须能在对应项目案例页溯源。
     detail 写人话，不写指标行话（pt/MRR 这类词只在案例页与博文里出现）。 */
 export const HOME_METRICS: Metric[] = [
   { label: '法条语料', value: '14,212', detail: '条，条/款/项结构化入库', source: 'statute-rag' },
