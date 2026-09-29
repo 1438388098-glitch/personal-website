@@ -1,7 +1,6 @@
 ---
 title: 错题怎么变成可背诵的笔记：我的复习管线
 description: 1655 道错题、18 个科目、41 个单元，如何用一条多 Agent 审校管线变成 18 册可打印的背诵笔记 PDF。
-subject: 备考方法
 type: 方法论
 date: 2026-09-18
 draft: false
