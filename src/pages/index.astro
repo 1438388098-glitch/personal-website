@@ -1,6 +1,65 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import MetricStrip from '../components/MetricStrip.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import PostCard from '../components/PostCard.astro';
+import { SITE } from '../lib/site';
+
+const projects = (await getCollection('projects'))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+const posts = (await getCollection('posts', (p) => !p.data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 4);
 ---
-<BaseLayout title="胡圣炜 · Stoic">
-  <h1>scaffold ok</h1>
+<BaseLayout title={SITE.title}>
+  <section class="hero">
+    <h1>{SITE.author}</h1>
+    <p class="tagline">法律在读 × 自学工程师。我在给法律场景造可复核、可评估、懂边界的 AI 工具。</p>
+    <p class="status">备考法考中 · 武汉</p>
+    <p class="ctas">
+      <a class="btn primary" href="/projects/">看项目</a>
+      <a class="btn" href="/about/">关于我</a>
+    </p>
+  </section>
+
+  <MetricStrip />
+
+  {projects.length > 0 && (
+    <section>
+      <div class="section-head"><h2>精选项目</h2><a href="/projects/">全部项目</a></div>
+      <div class="featured-grid">
+        {projects.map((p, i) => (
+          <div class:list={['cell', { wide: i === 0 }]}><ProjectCard project={p} /></div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {posts.length > 0 && (
+    <section>
+      <div class="section-head"><h2>最近写作</h2><a href="/blog/">全部文章</a></div>
+      {posts.map((p) => <PostCard post={p} />)}
+    </section>
+  )}
 </BaseLayout>
+
+<style>
+  .hero { padding: 3.5rem 0 2.5rem; max-width: 46rem; }
+  .hero h1 { margin: 0 0 0.75rem; }
+  .tagline { font-size: 1.15rem; margin: 0 0 0.4rem; max-width: 40rem; }
+  .status { color: var(--text-muted); margin: 0 0 1.25rem; font-size: 0.95rem; }
+  .ctas { display: flex; gap: 0.75rem; margin: 0; }
+  .btn { border: 1px solid var(--border); border-radius: 8px; padding: 0.45rem 1.1rem; color: var(--text); }
+  .btn:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { filter: brightness(1.08); color: #fff; }
+  section { margin: 2.5rem 0; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.75rem; }
+  .section-head h2 { margin: 0; }
+  .featured-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .cell.wide { grid-column: 1 / -1; }
+  @media (max-width: 720px) { .featured-grid { grid-template-columns: 1fr; } }
+</style>
