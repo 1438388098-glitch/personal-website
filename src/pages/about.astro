@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE } from '../lib/site';
+// TODO(资产): 个人照片位，用户提供后插入（about 页顶部右侧，1:1，max-width 180px）
 ---
 <BaseLayout title={`关于 · ${SITE.title}`} description={`${SITE.author}的个人介绍与简历。`}>
   <h1>关于</h1>
@@ -34,7 +35,6 @@ import { SITE } from '../lib/site';
       。正在寻找法律科技 / AI 应用方向的实习机会。
     </p>
     <p><a class="resume-btn" href="/resume/hu-shengwei-resume.pdf" download>下载简历 PDF</a></p>
-    <!-- TODO(资产): 个人照片位，用户提供后插入（about 页顶部右侧，1:1，max-width 180px） -->
   </div>
 </BaseLayout>
 <style>
