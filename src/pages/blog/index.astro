@@ -55,7 +55,14 @@ const countOf = (c: string) => posts.filter((p) => p.data.category === c).length
 
   tabs.forEach((t) => t.addEventListener('click', () => select(t.dataset.cat ?? '全部')));
 
-  const fromHash = tabs.map((t) => t.dataset.cat).find((c) => c && location.hash === `#${c}`);
+  /* 浏览器会把非 ASCII fragment 百分号编码，比较前先解码，中文 hash 深链才能命中 */
+  let hash = location.hash;
+  try {
+    hash = decodeURIComponent(hash);
+  } catch {
+    /* 畸形百分号序列保持原值，不影响页面其余交互 */
+  }
+  const fromHash = tabs.map((t) => t.dataset.cat).find((c) => c && hash === `#${c}`);
   if (fromHash) select(fromHash);
 </script>
 
