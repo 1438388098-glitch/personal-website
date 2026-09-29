@@ -25,11 +25,31 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
   });
 </script>
 <style>
-  .site-header { border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 10; }
+  .site-header {
+    border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
   .header-inner { display: flex; align-items: center; gap: 1.5rem; height: 64px; }
-  .brand { font-weight: 700; color: var(--text); }
-  nav { display: flex; gap: 1rem; margin-left: auto; }
-  .nav-link { color: var(--text-muted); }
+  .brand { font-weight: 800; font-size: 1.05rem; color: var(--text); letter-spacing: -0.01em; white-space: nowrap; }
+  nav {
+    display: flex; gap: 1.25rem; margin-left: auto;
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-link { color: var(--text-muted); white-space: nowrap; }
   .nav-link.active, .nav-link:hover { color: var(--accent); text-decoration: none; }
-  #theme-toggle { background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer; padding: 0.2rem 0.55rem; }
+  #theme-toggle {
+    background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--text);
+    cursor: pointer; padding: 0.2rem 0.55rem; transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  #theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  /* 移动端：六项导航压缩到单行（缩字号收间距），禁止换行 */
+  @media (max-width: 720px) {
+    .header-inner { gap: 0.75rem; height: 56px; }
+    .brand { font-size: 1rem; }
+    nav { gap: 0.7rem; }
+    .nav-link { font-size: 0.9rem; }
+  }
 </style>

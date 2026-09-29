@@ -25,10 +25,10 @@ const nowTopics = (currentNow?.body ?? '')
 ---
 <BaseLayout title={SITE.title}>
   <section class="hero">
-    <h1>{SITE.author}</h1>
-    <p class="tagline">法律在读 × 自学工程师。我在给法律场景造可复核、可评估、懂边界的 AI 工具。</p>
-    <p class="status">备考法考中 · 武汉</p>
-    <p class="ctas">
+    <h1 class="fade-up">{SITE.author}</h1>
+    <p class="tagline fade-up d1">法学在读，业余造工具。法条检索、法考判分、司法评测，全部开源，数字可查。</p>
+    <p class="status fade-up d2">备考法考中 · 武汉</p>
+    <p class="ctas fade-up d3">
       <a class="btn primary" href="/projects/">看项目</a>
       <a class="btn" href="/about/">关于我</a>
     </p>
@@ -76,13 +76,17 @@ const nowTopics = (currentNow?.body ?? '')
 </BaseLayout>
 
 <style>
-  .hero { padding: 3.5rem 0 2.5rem; max-width: 46rem; }
-  .hero h1 { margin: 0 0 0.75rem; }
-  .tagline { font-size: 1.15rem; margin: 0 0 0.4rem; max-width: 40rem; }
-  .status { color: var(--text-muted); margin: 0 0 1.25rem; font-size: 0.95rem; }
+  .hero { padding: 4.25rem 0 3rem; }
+  .hero h1 { margin: 0 0 1rem; font-size: clamp(2.8rem, 6vw, 4.2rem); font-weight: 800; letter-spacing: -0.02em; }
+  .tagline { font-size: clamp(1.15rem, 2vw, 1.35rem); line-height: 1.75; margin: 0 0 0.9rem; max-width: 34rem; text-wrap: balance; }
+  .status { color: var(--text-muted); margin: 0 0 1.5rem; font-size: 0.95rem; }
   .ctas { display: flex; gap: 0.75rem; margin: 0; }
-  .btn { border: 1px solid var(--border); border-radius: 8px; padding: 0.45rem 1.1rem; color: var(--text); }
+  .btn {
+    border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 1.2rem; color: var(--text);
+    transition: transform 0.15s ease, border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease, filter 0.15s ease;
+  }
   .btn:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+  .btn:active { transform: translateY(1px); }
   .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .btn.primary:hover { filter: brightness(1.08); color: #fff; }
   /* a11y：暗色下朱砂底(#d4694f)配白字对比度约 3.5:1 不达标，改深字 ≈5.2:1 */
