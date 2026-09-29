@@ -13,7 +13,6 @@ A modern, clean, responsive personal website for showcasing academic achievement
 ### Tech stack
 
 - **HTML5** + **CSS3** + **vanilla JavaScript** (zero framework dependencies)
-- **Tailwind CSS v3** — only for basic container and typography utilities
 - **Font Awesome 6** — icon library
 - Google Fonts **Inter** — typeface
 - Dark/light mode — based on CSS custom properties and `prefers-color-scheme`

@@ -13,7 +13,6 @@
 ### 技术栈
 
 - **HTML5** + **CSS3** + **原生 JavaScript**（零框架依赖）
-- **Tailwind CSS v3** — 仅用于基础的容器和排版工具类
 - **Font Awesome 6** — 图标库
 - Google Fonts **Inter** — 字体
 - 深色/浅色模式 — 基于 CSS 自定义属性和 `prefers-color-scheme`
