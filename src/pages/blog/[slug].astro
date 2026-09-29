@@ -2,23 +2,56 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatDate } from '../../lib/format';
+import { byDateDesc } from '../../lib/sort';
 
+/* getStaticPaths 会被 Astro 提升到独立作用域，不能引用 frontmatter 顶层变量（连谓词都不行），需全部内联 */
 export async function getStaticPaths() {
-  const posts = await getCollection('posts', (p) => !p.data.draft);
+  const posts = await getCollection(
+    'posts',
+    (p) => !p.data.draft && p.data.pubDate.valueOf() <= Date.now()
+  );
   return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }));
 }
 const { post } = Astro.props;
 const { Content } = await render(post);
 const { title, description, category, pubDate, tags } = post.data;
+/* 相邻文章按发布日期排序：新一篇 / 旧一篇（含定时发布过滤） */
+const sorted = (await getCollection('posts', (p) => !p.data.draft && p.data.pubDate.valueOf() <= Date.now()))
+  .sort(byDateDesc((p) => p.data.pubDate));
+const idx = sorted.findIndex((p) => p.id === post.id);
+const newer = idx > 0 ? sorted[idx - 1] : undefined;
+const older = idx >= 0 && idx < sorted.length - 1 ? sorted[idx + 1] : undefined;
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  datePublished: pubDate.toISOString(),
+  author: { '@type': 'Person', name: '胡圣炜' },
+  keywords: tags.join(', ')
+});
 ---
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} type="article">
   <article class="prose">
     <p class="meta">{category} · {formatDate(pubDate)}{tags.length > 0 && ` · ${tags.map((t) => `#${t}`).join(' ')}`}</p>
     <h1>{title}</h1>
     <Content />
     <p><a href="/blog/">← 全部文章</a></p>
   </article>
+  {(newer || older) && (
+    <nav class="adjacent" aria-label="相邻文章">
+      {newer && <a class="adj-link" href={`/blog/${newer.id}/`}>← 较新：{newer.data.title}</a>}
+      {older && <a class="adj-link adj-next" href={`/blog/${older.id}/`}>较旧：{older.data.title} →</a>}
+    </nav>
+  )}
+  <script is:inline type="application/ld+json" set:html={jsonLd} />
 </BaseLayout>
 <style>
   .meta { color: var(--text-muted); }
+  .adjacent {
+    margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .adj-link { color: var(--text-muted); }
+  .adj-next { text-align: right; }
 </style>

@@ -2,9 +2,12 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
+import { byDateDesc } from '../../lib/sort';
 
-const posts = (await getCollection('posts', (p) => !p.data.draft))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+/* 定时发布：未到 pubDate 的文章不进列表 */
+const isPublished = (p: { data: { draft: boolean; pubDate: Date } }) =>
+  !p.data.draft && p.data.pubDate.valueOf() <= Date.now();
+const posts = (await getCollection('posts', isPublished)).sort(byDateDesc((p) => p.data.pubDate));
 const categories = ['工程方法论', '技术笔记', '法学随笔'] as const;
 ---
 <BaseLayout title="博客" description="法律 × AI 的工程方法论、技术笔记与法学随笔。">
@@ -18,7 +21,11 @@ const categories = ['工程方法论', '技术笔记', '法学随笔'] as const;
       </section>
     );
   })}
+  {posts.filter((p) => p.data.category === '法学随笔').length === 0 && (
+    <p class="essay-note">法学向的长文目前沉淀在<a href="/notes/">论文与研读</a>栏：竞业限制的实证研究、布雷克顿与罗马法，都在那里。</p>
+  )}
 </BaseLayout>
 <style>
   section { margin: 2rem 0; }
+  .essay-note { color: var(--text-muted); margin-top: 2.5rem; }
 </style>

@@ -1,10 +1,13 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 import { SITE } from '../lib/site';
+import { byDateDesc } from '../lib/sort';
 
+/** @param {import('astro').APIContext} context */
 export async function GET(context) {
-  const posts = (await getCollection('posts', (p) => !p.data.draft))
-    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  /* 定时发布：未到 pubDate 的文章不进订阅源 */
+  const posts = (await getCollection('posts', (p) => !p.data.draft && p.data.pubDate.valueOf() <= Date.now()))
+    .sort(byDateDesc((p) => p.data.pubDate));
   return rss({
     title: SITE.title,
     description: SITE.description,
