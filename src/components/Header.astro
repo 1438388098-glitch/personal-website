@@ -17,10 +17,16 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
   </div>
 </header>
 <script>
-  const btn = document.getElementById('theme-toggle');
-  btn?.addEventListener('click', () => {
-    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = next;
+  /* 事件委托：View Transitions 换页后按钮会被替换，挂在 document 上的监听不会丢 */
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest?.('#theme-toggle');
+    if (!btn) return;
+    const html = document.documentElement;
+    /* 切换瞬间给全元素挂 250ms 颜色过渡，避免明暗硬切 */
+    html.classList.add('theme-anim');
+    setTimeout(() => html.classList.remove('theme-anim'), 300);
+    const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+    html.dataset.theme = next;
     localStorage.setItem('theme', next);
   });
 </script>
