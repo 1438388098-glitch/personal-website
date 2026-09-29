@@ -57,7 +57,7 @@ const notes = defineCollection({
 const now = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/now' }),
   schema: z.object({
-    period: z.string().regex(/^\d{4}-\d{2}$/),
+    period: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'period 必须是合法的 YYYY-MM 月份'),
     updated: z.coerce.date()
   })
 });
@@ -68,7 +68,11 @@ const toolbox = defineCollection({
     name: z.string(),
     url: z.string().url(),
     description: z.string(),
-    category: z.enum(['法律工具', '工程小件'])
+    category: z.enum(['法律工具', '工程小件']),
+    /** 站内回链：同名项目案例页与相关博文，避免两个栏目互为孤岛 */
+    related: z
+      .array(z.object({ label: z.string(), url: z.string().refine((u) => u.startsWith('/'), '站内回链必须以 / 开头') }))
+      .default([])
   })
 });
 
