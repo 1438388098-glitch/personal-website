@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { EXAM_AGG, EXAM_DATA_AS_OF } from '../../lib/exam-progress';
+import { EXAM_AGG } from '../../lib/exam-progress';
 import { formatDate } from '../../lib/format';
 
 const articles = (await getCollection('exam', (e) => !e.data.draft))
@@ -58,7 +58,6 @@ const stages = [
   <p class="intro">
     备考里的每个环节，我都换成了自己写的 AI 工具：
     错题自动变笔记、主观题机器初判、法条检索必带引用、AI 本身先过评测再上岗。
-    下面是这些环节的真实运转方式与产出，数据截至 {EXAM_DATA_AS_OF}。
   </p>
   <section aria-label="AI 融合环节">
     <h2>六个环节，六个自建工具</h2>
@@ -89,7 +88,6 @@ const stages = [
         </div>
       ))}
     </div>
-    <p class="as-of">取自 zhuma-fakao-review 一次完整运行的实测规模。</p>
   </section>
   {articles.length > 0 && (
     <section>
@@ -125,7 +123,6 @@ const stages = [
   .value { font-family: var(--font-serif); font-size: 1.9rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
   .metric .label { font-weight: 600; }
   .metric .detail { color: var(--text-muted); font-size: 0.85rem; }
-  .as-of { color: var(--text-muted); font-size: 0.85rem; margin: 0.6rem 0 0; }
   .exam-item { padding: 1.1rem 0; border-top: 1px solid var(--border); }
   .meta { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.3rem; }
   h3 { margin: 0 0 0.35rem; font-size: 1.15rem; }

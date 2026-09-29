@@ -7,7 +7,6 @@ const categories = ['法律工具', '工程小件'] as const;
 ---
 <BaseLayout title="工具箱" description="我公开在 GitHub 上的法律工具与工程小件：每条都逐一验证过仓库公开可见，功能描述取自仓库自述。">
   <h1>工具箱</h1>
-  <p class="intro">散落各处的公开小工具收进一个清单。每条入库前都验证过仓库可公开访问，描述取自仓库自述。</p>
   {categories.map((c) => {
     const items = tools.filter((t) => t.data.category === c);
     return items.length > 0 && (
@@ -26,7 +25,6 @@ const categories = ['法律工具', '工程小件'] as const;
   })}
 </BaseLayout>
 <style>
-  .intro { color: var(--text-muted); }
   section { margin: 2rem 0; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .tool-card { padding: 1.1rem 1.3rem; }
