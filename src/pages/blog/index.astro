@@ -43,14 +43,12 @@ const countOf = (c: string) => posts.filter((p) => p.data.category === c).length
 
   const select = (cat: string) => {
     tabs.forEach((t) => t.setAttribute('aria-pressed', String(t.dataset.cat === cat)));
-    let shown = 0;
+    /* 空分类在构建期就带上 data-empty，选中的若是空分类则藏起板块、只显示占位文案 */
+    const empty = cat !== '全部' && sections.some((s) => s.dataset.category === cat && s.dataset.empty === 'true');
     sections.forEach((s) => {
-      const visible = s.dataset.category === cat;
-      s.hidden = !visible;
-      if (visible) shown += 1;
+      s.hidden = s.dataset.category !== cat || empty;
     });
-    const catEmpty = cat !== '全部' && shown === 0;
-    if (emptyNote) emptyNote.hidden = !catEmpty;
+    if (emptyNote) emptyNote.hidden = !empty;
     if (essayNote) essayNote.hidden = cat !== '全部';
     history.replaceState(null, '', cat === '全部' ? location.pathname : `#${cat}`);
   };
