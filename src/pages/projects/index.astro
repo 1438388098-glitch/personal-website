@@ -5,9 +5,9 @@ import ProjectCard from '../../components/ProjectCard.astro';
 
 const projects = (await getCollection('projects'))
   .sort((a, b) => a.data.order - b.data.order);
-const groups = ['法律主线', '工程侧证', '实验'] as const;
+const groups = ['法律主线', '法律工具', '工程侧证', '实验'] as const;
 ---
-<BaseLayout title="项目" description="法律场景 LLM 工具与评测基准：每个项目都有边界、机制与可验证的指标。">
+<BaseLayout title="项目" description="法律 AI 与工程小件的全量项目清单：每个项目都有边界、机制与可验证的事实。">
   <h1>项目</h1>
   {groups.map((g) => {
     const items = projects.filter((p) => p.data.group === g);

@@ -6,7 +6,7 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     summary: z.string(),
-    group: z.enum(['法律主线', '工程侧证', '实验']),
+    group: z.enum(['法律主线', '法律工具', '工程侧证', '实验']),
     date: z.coerce.date(),
     featured: z.boolean().default(false),
     order: z.number().default(99),
