@@ -77,8 +77,8 @@ const nowTopics = (currentNow?.body ?? '')
 
 <style>
   .hero { padding: 4.25rem 0 3rem; }
-  .hero h1 { margin: 0 0 1rem; font-size: clamp(2.8rem, 6vw, 4.2rem); font-weight: 800; letter-spacing: -0.02em; }
-  .tagline { font-size: clamp(1.15rem, 2vw, 1.35rem); line-height: 1.75; margin: 0 0 0.9rem; max-width: 34rem; text-wrap: balance; }
+  .hero h1 { margin: 0 0 1rem; font-size: clamp(2.8rem, 6vw, 4.2rem); }
+  .tagline { font-family: var(--font-serif); font-weight: 600; font-size: clamp(1.2rem, 2vw, 1.4rem); line-height: 1.8; margin: 0 0 0.9rem; max-width: 34rem; text-wrap: balance; }
   .status { color: var(--text-muted); margin: 0 0 1.5rem; font-size: 0.95rem; }
   .ctas { display: flex; gap: 0.75rem; margin: 0; }
   .btn {
@@ -105,7 +105,7 @@ const nowTopics = (currentNow?.body ?? '')
   .dyn-card h2 a { color: var(--text); }
   .dyn-card h2 a:hover { color: var(--accent); text-decoration: none; }
   .dyn-text { color: var(--text-muted); margin: 0; }
-  .dyn-figures { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .dyn-figures { margin: 0; font-family: var(--font-serif); font-weight: 600; font-variant-numeric: tabular-nums; }
   .dyn-list { margin: 0; padding-left: 1.2rem; color: var(--text-muted); }
   .dyn-link { margin-top: auto; font-size: 0.9rem; }
   @media (max-width: 720px) { .dynamic-grid { grid-template-columns: 1fr; } }
