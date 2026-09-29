@@ -1,0 +1,25 @@
+---
+import { HOME_METRICS, METRICS_AS_OF } from '../lib/metrics';
+---
+<section class="metric-strip" aria-label="关键指标">
+  <div class="metrics">
+    {HOME_METRICS.map((m) => (
+      <div class="metric">
+        <span class="value">{m.value}</span>
+        <span class="label">{m.label}</span>
+        <span class="detail">{m.detail}</span>
+        <span class="source">来源：{m.source}</span>
+      </div>
+    ))}
+  </div>
+  <p class="as-of">数据截至 {METRICS_AS_OF}，逐项可溯源至对应项目案例页。</p>
+</section>
+<style>
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .metric { background: var(--bg); padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.15rem; }
+  .value { font-size: 1.9rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .label { font-weight: 600; }
+  .detail, .source { color: var(--text-muted); font-size: 0.85rem; }
+  .as-of { color: var(--text-muted); font-size: 0.85rem; margin: 0.5rem 0 0; }
+  @media (max-width: 720px) { .metrics { grid-template-columns: 1fr; } }
+</style>
