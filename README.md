@@ -16,6 +16,9 @@
 ## 如何写内容
     src/content/projects/  项目案例（.md，frontmatter 见 src/content.config.ts）
     src/content/posts/     博客文章（.md）
+    src/content/exam/      法考文章（.md，type 三选一：方法论/错题笔记/周记）
+    src/content/notes/     论文与研读（.md，draft 默认 false，需显式发布）
+    src/content/now/       Now 月更（复制上一期 .md，改 period 与正文内容）
 （本节随 M3 各栏目上线扩充）
 
 ## 如何新增一篇项目案例

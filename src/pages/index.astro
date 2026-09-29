@@ -5,6 +5,7 @@ import MetricStrip from '../components/MetricStrip.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import PostCard from '../components/PostCard.astro';
 import { SITE } from '../lib/site';
+import { EXAM_AGG } from '../lib/exam-progress';
 
 const projects = (await getCollection('projects'))
   .filter((p) => p.data.featured)
@@ -13,6 +14,14 @@ const projects = (await getCollection('projects'))
 const posts = (await getCollection('posts', (p) => !p.data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 4);
+// Now 摘要：最新一期 + 正文前两个 H2 标题（直接从 markdown 原文按行提取，无需渲染）
+const currentNow = (await getCollection('now'))
+  .sort((a, b) => b.data.period.localeCompare(a.data.period))[0];
+const nowTopics = (currentNow?.body ?? '')
+  .split('\n')
+  .filter((line) => line.startsWith('## '))
+  .slice(0, 2)
+  .map((line) => line.replace(/^##\s*/, '').trim());
 ---
 <BaseLayout title={SITE.title}>
   <section class="hero">
@@ -44,6 +53,26 @@ const posts = (await getCollection('posts', (p) => !p.data.draft))
       {posts.map((p) => <PostCard post={p} />)}
     </section>
   )}
+
+  <section aria-label="近期动态">
+    <div class="dynamic-grid">
+      <div class="dyn-card">
+        <h2><a href="/exam/">法考备考</a></h2>
+        <p class="dyn-text">以错题为驱动备战国家统一法律职业资格考试，错题管线自动产出可背诵的笔记 PDF。</p>
+        <p class="dyn-figures">{EXAM_AGG.subjects} 科目 / {EXAM_AGG.wrongQuestions} 错题</p>
+        <a class="dyn-link" href="/exam/">进入法考专栏</a>
+      </div>
+      {currentNow && (
+        <div class="dyn-card">
+          <h2><a href="/now/">Now · {currentNow.data.period}</a></h2>
+          <ul class="dyn-list">
+            {nowTopics.map((t) => <li>{t}</li>)}
+          </ul>
+          <a class="dyn-link" href="/now/">看本期动态</a>
+        </div>
+      )}
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
@@ -64,4 +93,15 @@ const posts = (await getCollection('posts', (p) => !p.data.draft))
   .featured-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .cell.wide { grid-column: 1 / -1; }
   @media (max-width: 720px) { .featured-grid { grid-template-columns: 1fr; } }
+  /* 首页动态区：法考卡宽、Now 窄的不对称网格，低动效（仅链接 hover 下划线） */
+  .dynamic-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; align-items: stretch; }
+  .dyn-card { border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.45rem; margin: 0; }
+  .dyn-card h2 { margin: 0; font-size: 1.15rem; }
+  .dyn-card h2 a { color: var(--text); }
+  .dyn-card h2 a:hover { color: var(--accent); text-decoration: none; }
+  .dyn-text { color: var(--text-muted); margin: 0; }
+  .dyn-figures { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .dyn-list { margin: 0; padding-left: 1.2rem; color: var(--text-muted); }
+  .dyn-link { margin-top: auto; font-size: 0.9rem; }
+  @media (max-width: 720px) { .dynamic-grid { grid-template-columns: 1fr; } }
 </style>
