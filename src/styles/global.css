@@ -8,6 +8,8 @@
   --accent-soft: #f4e3de;
   --border: #e4e1da;
   --code-bg: #f4f2ee;
+  /* 暖调投影：跟纸面同族的红棕灰，比通用纯黑更贴暖底 */
+  --shadow-card: 0 14px 30px -20px rgba(74, 47, 36, 0.5);
   --maxw: 72rem;
   /* 衬线只用于标题与数字等展示位（Source Serif 4 管西文与数字，思源宋体管中文），正文保持无衬线 */
   --font-serif: 'Source Serif 4', 'Noto Serif SC', 'Songti SC', SimSun, serif;
@@ -21,6 +23,7 @@ html[data-theme='dark'] {
   --accent-soft: #3a2621;
   --border: #2c2a27;
   --code-bg: #201e1c;
+  --shadow-card: 0 14px 30px -20px rgba(0, 0, 0, 0.65);
 }
 
 * { box-sizing: border-box; }
@@ -34,12 +37,47 @@ body {
   line-height: 1.75;
   font-size: 1rem;
 }
+/* 纸面噪点：极低透明度的固定颗粒层，打破纯色死平；pointer-events none 不拦交互，层级低于页头 */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+}
+html[data-theme='dark'] body::after { opacity: 0.05; }
 a { color: var(--accent); text-decoration: none; transition: color 0.15s ease; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 img { max-width: 100%; height: auto; }
 h1, h2, h3 { font-family: var(--font-serif); line-height: 1.25; letter-spacing: 0; }
-h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); font-weight: 700; line-height: 1.2; text-wrap: balance; }
+/* 大标题负字距只给展示位：标题越大收得越紧，中文宋体收到 -0.015em 仍不挤 */
+h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); font-weight: 700; line-height: 1.2; letter-spacing: -0.015em; text-wrap: balance; }
 h2 { font-size: clamp(1.4rem, 2.5vw, 1.8rem); font-weight: 700; }
+
+/* 键盘焦点环：全站统一朱砂描边，鼠标点击不触发（focus-visible） */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+/* 卡片公共类：四处卡片（项目/法考环节/首页动态/工具箱）共用一套表面与悬停 */
+.card {
+  border: 1px solid var(--border); border-radius: 12px; background: var(--bg);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow: var(--shadow-card);
+}
+
+/* 按钮公共类：主按钮实心朱砂，次按钮描边 */
+.btn {
+  display: inline-block; border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 1.2rem; color: var(--text);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease, filter 0.2s ease;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; transform: translateY(-1px); }
+.btn:active { transform: translateY(1px); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { filter: brightness(1.08); color: #fff; }
+/* a11y：暗色下朱砂底(#d4694f)配白字对比度约 3.5:1 不达标，改深字 ≈5.2:1 */
+html[data-theme='dark'] .btn.primary { color: #20100c; }
 /* 标题层级：内容区 h2 统一朱砂侧标（首页 section-head、各栏目分组标题、文章正文） */
 .section-head h2, main > section > h2, .prose h2 {
   border-left: 4px solid var(--accent);

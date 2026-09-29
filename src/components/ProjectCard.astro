@@ -5,7 +5,7 @@ interface Props { project: CollectionEntry<'projects'>; }
 const { project } = Astro.props;
 const { title, summary, metrics, date, group } = project.data;
 ---
-<article class="project-card">
+<article class="card project-card">
   <p class="meta">{group} · {formatDate(date)}</p>
   <h3><a href={`/projects/${project.id}/`}>{title}</a></h3>
   <p class="summary">{summary}</p>
@@ -18,15 +18,7 @@ const { title, summary, metrics, date, group } = project.data;
   )}
 </article>
 <style>
-  .project-card {
-    border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem 1.5rem; background: var(--bg);
-    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .project-card:hover {
-    transform: translateY(-3px);
-    border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
-    box-shadow: 0 14px 30px -20px rgba(0, 0, 0, 0.35);
-  }
+  .project-card { padding: 1.3rem 1.5rem; }
   .meta { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.4rem; }
   h3 { margin: 0 0 0.5rem; font-size: 1.2rem; }
   h3 a { color: var(--text); }

@@ -56,14 +56,14 @@ const nowTopics = (currentNow?.body ?? '')
 
   <section aria-label="近期动态" data-reveal>
     <div class="dynamic-grid">
-      <div class="dyn-card">
+      <div class="card dyn-card">
         <h2><a href="/exam/">法考 × AI</a></h2>
-        <p class="dyn-text">把 AI 深深缝进备考流程：错题变笔记、主观题机器初判、法条检索必带引用，每个环节一个自建工具。</p>
+        <p class="dyn-text">把 AI 缝进备考流程：错题变笔记、主观题机器初判、法条检索必带引用，每个环节一个自建工具。</p>
         <p class="dyn-figures">{EXAM_AGG.subjects} 科目 / {EXAM_AGG.wrongQuestions} 错题</p>
         <a class="dyn-link" href="/exam/">看备考工作流</a>
       </div>
       {currentNow && (
-        <div class="dyn-card">
+        <div class="card dyn-card">
           <h2><a href="/now/">Now · {currentNow.data.period}</a></h2>
           <ul class="dyn-list">
             {nowTopics.map((t) => <li>{t}</li>)}
@@ -76,21 +76,11 @@ const nowTopics = (currentNow?.body ?? '')
 </BaseLayout>
 
 <style>
-  .hero { padding: 4.25rem 0 3rem; }
+  .hero { padding: 4rem 0 3.5rem; }
   .hero h1 { margin: 0 0 1rem; font-size: clamp(2.8rem, 6vw, 4.2rem); }
   .tagline { font-family: var(--font-serif); font-weight: 600; font-size: clamp(1.2rem, 2vw, 1.4rem); line-height: 1.8; margin: 0 0 0.9rem; max-width: 34rem; text-wrap: balance; }
   .status { color: var(--text-muted); margin: 0 0 1.5rem; font-size: 0.95rem; }
   .ctas { display: flex; gap: 0.75rem; margin: 0; }
-  .btn {
-    border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 1.2rem; color: var(--text);
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease, filter 0.2s ease;
-  }
-  .btn:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; transform: translateY(-1px); }
-  .btn:active { transform: translateY(1px); }
-  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .btn.primary:hover { filter: brightness(1.08); color: #fff; }
-  /* a11y：暗色下朱砂底(#d4694f)配白字对比度约 3.5:1 不达标，改深字 ≈5.2:1 */
-  :global(html[data-theme='dark']) .btn.primary { color: #20100c; }
   section { margin: 2.5rem 0; }
   .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.75rem; }
   .section-head h2 { margin: 0; }
@@ -99,8 +89,7 @@ const nowTopics = (currentNow?.body ?? '')
   @media (max-width: 720px) { .featured-grid { grid-template-columns: 1fr; } }
   /* 首页动态区：法考卡宽、Now 窄的不对称网格，低动效（仅链接 hover 下划线） */
   .dynamic-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; align-items: stretch; }
-  .dyn-card { border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.45rem; margin: 0; background: var(--bg); transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1); }
-  .dyn-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); box-shadow: 0 14px 30px -20px rgba(0, 0, 0, 0.35); }
+  .dyn-card { padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.45rem; margin: 0; }
   .dyn-card h2 { margin: 0; font-size: 1.15rem; }
   .dyn-card h2 a { color: var(--text); }
   .dyn-card h2 a:hover { color: var(--accent); text-decoration: none; }
