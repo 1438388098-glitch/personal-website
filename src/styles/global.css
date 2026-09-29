@@ -5,8 +5,9 @@
   --text: #201f1d;
   --text-muted: #6f6b64;
   --accent: #b3402a;
-  --accent-soft: #f4e3de;
   --border: #e4e1da;
+  /* 组件边界色：对背景 ≥3:1（WCAG 1.4.11 非文本对比），--border 仅作装饰性分隔 */
+  --border-strong: #94908a;
   --code-bg: #f4f2ee;
   /* 暖调投影：跟纸面同族的红棕灰，比通用纯黑更贴暖底 */
   --shadow-card: 0 14px 30px -20px rgba(74, 47, 36, 0.5);
@@ -20,8 +21,8 @@ html[data-theme='dark'] {
   --text: #e8e6e1;
   --text-muted: #9b968d;
   --accent: #d4694f;
-  --accent-soft: #3a2621;
   --border: #2c2a27;
+  --border-strong: #6e6a63;
   --code-bg: #201e1c;
   --shadow-card: 0 14px 30px -20px rgba(0, 0, 0, 0.65);
 }
@@ -69,7 +70,7 @@ h2 { font-size: clamp(1.4rem, 2.5vw, 1.8rem); font-weight: 700; }
 
 /* 按钮公共类：主按钮实心朱砂，次按钮描边 */
 .btn {
-  display: inline-block; border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 1.2rem; color: var(--text);
+  display: inline-block; border: 1px solid var(--border-strong); border-radius: 8px; padding: 0.5rem 1.2rem; color: var(--text);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease, filter 0.2s ease;
 }
 .btn:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; transform: translateY(-1px); }

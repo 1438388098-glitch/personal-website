@@ -2,9 +2,17 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatDate } from '../../lib/format';
+import { byDateDesc } from '../../lib/sort';
+import { EXAM_AGG } from '../../lib/exam-progress';
+import { HOME_METRICS } from '../../lib/metrics';
 
 const articles = (await getCollection('exam', (e) => !e.data.draft))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  .sort(byDateDesc((e) => e.data.date));
+
+/* 输出数字从 lib 层单源拼装，不在此页复述字面量 */
+const judbench = HOME_METRICS.find((m) => m.source === 'cn-judbench');
+const judbenchPacks = judbench?.detail.split('，')[1] ?? '12 个评测包';
+const judbenchCount = judbench?.value ?? '323';
 
 // 备考一圈的先后顺序：客观题错题从竹马来，从整理错题起步，主观题收尾；产出数据均可溯源到对应案例页
 const stages = [
@@ -14,7 +22,7 @@ const stages = [
     tool: 'zhuma-fakao-review',
     href: '/projects/zhuma-fakao-review/',
     ai: '客观题的错题自动抓全，审查后按科目装订成可背诵的笔记 PDF',
-    output: '1,655 道错题 → 18 册 PDF，约 9 分钟一轮'
+    output: `${EXAM_AGG.wrongQuestions.toLocaleString('en-US')} 道错题 → 18 册 PDF，约 ${EXAM_AGG.minutesPerRound} 分钟一轮`
   },
   {
     step: '02',
@@ -46,7 +54,7 @@ const stages = [
     tool: 'cn-judbench（法衡）',
     href: '/projects/cn-judbench/',
     ai: '评分标准提前公开，判分照标准机器来——AI 先测行不行，再进流程',
-    output: '12 个评测包 · 323 道公开题'
+    output: `${judbenchPacks} · ${judbenchCount} 道公开题`
   },
   {
     step: '06',
@@ -101,7 +109,8 @@ const stages = [
   .stage-name { margin: 0; font-family: var(--font-serif); font-weight: 700; }
   .tool {
     align-self: flex-start; font-size: 0.82rem; line-height: 1.7;
-    border: 1px solid var(--border); border-radius: 999px; padding: 0 0.6rem;
+    border: 1px solid var(--border-strong); border-radius: 999px; padding: 0.15rem 0.6rem;
+    min-height: 24px; display: inline-flex; align-items: center;
     color: var(--accent);
     transition: border-color 0.15s ease;
   }

@@ -8,7 +8,11 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
     <a class="brand" href="/">{SITE.author}</a>
     <nav aria-label="主导航">
       {NAV.map((item) => (
-        <a class:list={['nav-link', { active: isActive(item.href) }]} href={item.href}>
+        <a
+          class:list={['nav-link', { active: isActive(item.href) }]}
+          aria-current={isActive(item.href) ? 'page' : undefined}
+          href={item.href}
+        >
           {item.label}
         </a>
       ))}
@@ -47,15 +51,15 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
   .nav-link { color: var(--text-muted); white-space: nowrap; }
   .nav-link.active, .nav-link:hover { color: var(--accent); text-decoration: none; }
   #theme-toggle {
-    background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--text);
+    background: none; border: 1px solid var(--border-strong); border-radius: 6px; color: var(--text);
     cursor: pointer; padding: 0.2rem 0.55rem; transition: border-color 0.15s ease, color 0.15s ease;
   }
   #theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
-  /* 移动端：六项导航压缩到单行（缩字号收间距），禁止换行 */
+  /* 移动端：六项导航允许换行（隐形横向滚动条对触屏不可发现），高度放开自适应 */
   @media (max-width: 720px) {
-    .header-inner { gap: 0.75rem; height: 56px; }
+    .header-inner { gap: 0.75rem; height: auto; min-height: 56px; flex-wrap: wrap; padding-block: 0.5rem; }
     .brand { font-size: 1rem; }
-    nav { gap: 0.7rem; }
+    nav { gap: 0.7rem; overflow-x: visible; flex-wrap: wrap; }
     .nav-link { font-size: 0.9rem; }
   }
 </style>
