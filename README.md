@@ -12,6 +12,8 @@
 ## 如何测试
     npm test         # Vitest 单测（纯函数）
     npm run check    # astro check 类型检查
+    npm run check:links    # 全站死链检查（需先 npm run build）
+    npm run check:secrets  # 密钥泄漏扫描
 
 ## 如何写内容
     src/content/projects/  项目案例（.md，frontmatter 见 src/content.config.ts）
@@ -19,7 +21,8 @@
     src/content/exam/      法考文章（.md，type 三选一：方法论/错题笔记/周记）
     src/content/notes/     论文与研读（.md，draft 默认 false，需显式发布）
     src/content/now/       Now 月更（复制上一期 .md，改 period 与正文内容）
-（本节随 M3 各栏目上线扩充）
+    src/content/toolbox/   工具箱（.md，文件名 = repo 名，url 需验证公开可访问）
+（M3 四栏目 exam/notes/now/toolbox 已上线，2026-09-29 验收通过）
 
 ## 如何新增一篇项目案例
 在 src/content/projects/ 建 <repo>.md，frontmatter 参照 statute-rag.md；
