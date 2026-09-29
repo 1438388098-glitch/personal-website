@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate } from '../../lib/format';
+
+const notes = (await getCollection('notes', (n) => !n.data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const categories = ['课程论文', '文献研读', '读书笔记'] as const;
+---
+<BaseLayout title="论文与研读" description="课程论文与文献研读的索引：论文条目待作者确认后发布，研读清单持续更新。">
+  <h1>论文与研读</h1>
+  {categories.map((c) => {
+    const items = notes.filter((n) => n.data.category === c);
+    return items.length > 0 && (
+      <section>
+        <h2>{c}</h2>
+        {items.map((n) => (
+          <article class="note-item">
+            <p class="meta">{n.data.status} · {formatDate(n.data.date)}</p>
+            <h3><a href={`/notes/${n.id}/`}>{n.data.title}</a></h3>
+            <p class="desc">{n.data.description}</p>
+          </article>
+        ))}
+      </section>
+    );
+  })}
+</BaseLayout>
+<style>
+  section { margin: 2rem 0; }
+  .note-item { padding: 1.1rem 0; border-top: 1px solid var(--border); }
+  .meta { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.3rem; }
+  h3 { margin: 0 0 0.35rem; font-size: 1.15rem; }
+  h3 a { color: var(--text); }
+  h3 a:hover { color: var(--accent); text-decoration: none; }
+  .desc { color: var(--text-muted); margin: 0; }
+</style>

@@ -42,4 +42,16 @@ const exam = defineCollection({
   })
 });
 
-export const collections = { projects, posts, exam };
+const notes = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/notes' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    category: z.enum(['课程论文', '文献研读', '读书笔记']),
+    date: z.coerce.date(),
+    status: z.enum(['已完成', '写作中', '在读']).default('已完成'),
+    draft: z.boolean().default(false)
+  })
+});
+
+export const collections = { projects, posts, exam, notes };
