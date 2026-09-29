@@ -6,28 +6,94 @@ import { formatDate } from '../../lib/format';
 
 const articles = (await getCollection('exam', (e) => !e.data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const cards = [
-  { label: '科目', value: `${EXAM_AGG.subjects}`, detail: '客观题一 9 + 客观题二 9' },
-  { label: '处理单元', value: `${EXAM_AGG.units}`, detail: '每单元不超过 55 题' },
-  { label: '唯一错题', value: `${EXAM_AGG.wrongQuestions}`, detail: '按 id 去重，带完整官方解析' },
-  { label: '单轮抓取', value: `约 ${EXAM_AGG.minutesPerRound} 分钟`, detail: '全量错题一次抓完，断点续跑' }
+
+// AI 融合环节：备考每个环节对应的自建工具，产出数据均可溯源到对应案例页
+const stages = [
+  {
+    stage: '错题整理',
+    tool: 'zhuma-fakao-review',
+    href: '/projects/zhuma-fakao-review/',
+    ai: '多 Agent 抓取错题，六维审查闭环生成可背诵笔记 PDF',
+    output: '1,655 道错题 → 18 册 PDF，约 9 分钟一轮'
+  },
+  {
+    stage: '主观题判分',
+    tool: 'fakao-grader',
+    href: '/projects/fakao-grader/',
+    ai: '按官方采分点逐点判分，置信度分级，低置信强制二次复核',
+    output: '✓ / △ / ✗ 三级判定，±3 分考场预估带'
+  },
+  {
+    stage: '刷题练习',
+    tool: 'fakao-shuati',
+    href: 'https://github.com/1438388098-glitch/fakao-shuati',
+    ai: '自托管刷题平台，题目与作答数据本地留存',
+    output: '练习记录不出本机'
+  },
+  {
+    stage: '法条检索',
+    tool: 'statute-rag',
+    href: '/projects/statute-rag/',
+    ai: 'BM25 混合检索，强制条文引用，检索不到就拒答',
+    output: 'Recall@5 98.9%（合成金标 177 题）'
+  },
+  {
+    stage: 'AI 能力评测',
+    tool: 'cn-judbench（法衡）',
+    href: '/projects/cn-judbench/',
+    ai: '预注册统计协议 + 机检判分，先测 AI 行不行，再让它进流程',
+    output: '12 个评测包 · 323 道公开题'
+  },
+  {
+    stage: '工具制造',
+    tool: 'Claude Code 等 AI 编码协作',
+    href: '/toolbox/',
+    ai: '把上面每个环节工具化：测试、指标、失败案例随仓交付',
+    output: '11 个公开仓库，全部可审计'
+  }
 ];
 ---
-<BaseLayout title="法考备考" description="备战国家统一法律职业资格考试：以错题为驱动的方法论与备考记录。">
-  <h1>法考备考</h1>
-  <p class="intro">备战国家统一法律职业资格考试，以错题为驱动。数据截至 {EXAM_DATA_AS_OF}，取自 zhuma-fakao-review 一次完整运行的实测规模。</p>
-  <section class="metrics" aria-label="错题规模">
-    {cards.map((c) => (
-      <div class="metric">
-        <span class="value">{c.value}</span>
-        <span class="label">{c.label}</span>
-        <span class="detail">{c.detail}</span>
-      </div>
-    ))}
+<BaseLayout title="法考 × AI" description="如何在法考备考全程深度融入 AI：错题整理、判分、刷题、检索、评测，每个环节一个自建工具，产出数据全部公开可查。">
+  <h1>法考 × AI</h1>
+  <p class="intro">
+    我的备考不是「用 AI 搜答案」，而是把每个环节都换成自己写的 AI 工具：
+    错题自动变笔记、主观题机器初判、法条检索必带引用、AI 本身先过评测再上岗。
+    下面是这些环节的真实运转方式与产出，数据截至 {EXAM_DATA_AS_OF}。
+  </p>
+  <section aria-label="AI 融合环节">
+    <h2>六个环节，六个自建工具</h2>
+    <div class="stage-grid">
+      {stages.map((s) => (
+        <div class="stage-card">
+          <p class="stage-name">{s.stage}</p>
+          <a class="tool" href={s.href} target={s.href.startsWith('http') ? '_blank' : undefined} rel={s.href.startsWith('http') ? 'noopener' : undefined}>{s.tool}</a>
+          <p class="ai">{s.ai}</p>
+          <p class="output">{s.output}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+  <section class="metrics" aria-label="错题规模实测">
+    <h2>错题规模实测</h2>
+    <div class="metric-grid">
+      {[
+        { label: '科目', value: `${EXAM_AGG.subjects}`, detail: '客观题一 9 + 客观题二 9' },
+        { label: '处理单元', value: `${EXAM_AGG.units}`, detail: '每单元不超过 55 题' },
+        { label: '唯一错题', value: `${EXAM_AGG.wrongQuestions}`, detail: '按 id 去重，带完整官方解析' },
+        { label: '单轮抓取', value: `约 ${EXAM_AGG.minutesPerRound} 分钟`, detail: '全量错题一次抓完，断点续跑' }
+      ].map((c) => (
+        <div class="metric">
+          <span class="value">{c.value}</span>
+          <span class="label">{c.label}</span>
+          <span class="detail">{c.detail}</span>
+        </div>
+      ))}
+    </div>
+    <p class="as-of">取自 zhuma-fakao-review 一次完整运行的实测规模。</p>
   </section>
   {articles.length > 0 && (
     <section>
-      <h2>文章</h2>
+      <h2>实录文章</h2>
       {articles.map((a) => (
         <article class="exam-item">
           <p class="meta">{a.data.type}{a.data.subject && ` · ${a.data.subject}`} · {formatDate(a.data.date)}</p>
@@ -39,18 +105,44 @@ const cards = [
   )}
 </BaseLayout>
 <style>
-  .intro { color: var(--text-muted); }
-  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1.5rem 0; }
+  .intro { color: var(--text-muted); max-width: 46rem; }
+  section { margin: 2rem 0; }
+  .stage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+  .stage-card {
+    border: 1px solid var(--border); border-radius: 12px; padding: 1.15rem 1.3rem;
+    display: flex; flex-direction: column; gap: 0.35rem; background: var(--bg);
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .stage-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+    box-shadow: 0 14px 30px -20px rgba(0, 0, 0, 0.35);
+  }
+  .stage-name { margin: 0; font-weight: 700; }
+  .tool {
+    align-self: flex-start; font-size: 0.82rem; line-height: 1.7;
+    border: 1px solid var(--border); border-radius: 999px; padding: 0 0.6rem;
+    color: var(--accent);
+    transition: border-color 0.15s ease;
+  }
+  .tool:hover { border-color: var(--accent); text-decoration: none; }
+  .ai { margin: 0; color: var(--text); font-size: 0.95rem; }
+  .output { margin: 0; color: var(--text-muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+  .metrics { margin: 2rem 0; }
+  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 1rem; }
   .metric { background: var(--bg); padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.15rem; }
   .value { font-size: 1.9rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
-  .label { font-weight: 600; }
-  .detail { color: var(--text-muted); font-size: 0.85rem; }
-  section { margin: 2rem 0; }
+  .metric .label { font-weight: 600; }
+  .metric .detail { color: var(--text-muted); font-size: 0.85rem; }
+  .as-of { color: var(--text-muted); font-size: 0.85rem; margin: 0.6rem 0 0; }
   .exam-item { padding: 1.1rem 0; border-top: 1px solid var(--border); }
   .meta { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.3rem; }
   h3 { margin: 0 0 0.35rem; font-size: 1.15rem; }
   h3 a { color: var(--text); }
   h3 a:hover { color: var(--accent); text-decoration: none; }
   .desc { color: var(--text-muted); margin: 0; }
-  @media (max-width: 720px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 720px) {
+    .stage-grid { grid-template-columns: 1fr; }
+    .metric-grid { grid-template-columns: repeat(2, 1fr); }
+  }
 </style>
