@@ -1,0 +1,28 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+
+const projects = (await getCollection('projects'))
+  .sort((a, b) => a.data.order - b.data.order);
+const groups = ['法律主线', '工程侧证', '实验'] as const;
+---
+<BaseLayout title="项目" description="法律场景 LLM 工具与评测基准：每个项目都有边界、机制与可验证的指标。">
+  <h1>项目</h1>
+  <p class="intro">每个项目固定四段式：问题、边界、机制、验证。数字都能溯源。</p>
+  {groups.map((g) => {
+    const items = projects.filter((p) => p.data.group === g);
+    return items.length > 0 && (
+      <section>
+        <h2>{g}</h2>
+        <div class="grid">{items.map((p) => <ProjectCard project={p} />)}</div>
+      </section>
+    );
+  })}
+</BaseLayout>
+<style>
+  .intro { color: var(--text-muted); }
+  section { margin: 2rem 0; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+</style>

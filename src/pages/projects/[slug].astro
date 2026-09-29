@@ -1,0 +1,46 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((p) => ({ params: { slug: p.id }, props: { project: p } }));
+}
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { title, summary, group, date, metrics, links, disclaimer } = project.data;
+---
+<BaseLayout title={title} description={summary}>
+  <article class="prose">
+    <p class="meta">{group} · {formatDate(date)}</p>
+    <h1>{title}</h1>
+    <p class="summary"><strong>{summary}</strong></p>
+
+    {metrics.length > 0 && (
+      <table>
+        <thead><tr><th>指标</th><th>数值</th><th>说明</th></tr></thead>
+        <tbody>
+          {metrics.map((m) => (
+            <tr><td>{m.label}</td><td><strong>{m.value}</strong></td><td>{m.detail ?? ''}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+
+    <Content />
+
+    {links.length > 0 && (
+      <p class="links">
+        {links.map((l) => <a href={l.url} target="_blank" rel="noopener">{l.label}</a>)}
+      </p>
+    )}
+    <p class="disclaimer">{disclaimer}</p>
+    <p><a href="/projects/">← 全部项目</a></p>
+  </article>
+</BaseLayout>
+<style>
+  .meta { color: var(--text-muted); }
+  .links { display: flex; gap: 1rem; }
+  .disclaimer { color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+</style>
