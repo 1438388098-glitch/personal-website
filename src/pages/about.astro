@@ -34,6 +34,7 @@ import { SITE } from '../lib/site';
       中级微观经济学、中级宏观经济学、中级计量经济学
     </p>
     <h2>实习经历</h2>
+    {/* TODO(内容): 每段实习补一行「单位 · 岗位 · 时间 · 一件具体做过的事」；涉密可写「某红圈所争议解决组」级别 */}
     <p>律师事务所、法院、企业法务部门累计三段实习，覆盖诉讼与合规的初步实务。</p>
     <h2>荣誉奖项</h2>
     <ul>
@@ -42,9 +43,10 @@ import { SITE } from '../lib/site';
       <li>2024 盈之楚辩论赛外联统筹（洽谈企业赞助，实现赛事经费自给）</li>
     </ul>
     <h2>技能</h2>
+    {/* 技能写具体事实，不做「精通/高级」自评分级——分级无信息量且是面试第一个被挑战的点 */}
     <ul>
-      <li>法律：法律检索与研究（精通）、法律文书写作与案例分析（高级）、法律英语与法律经济学分析（中级）</li>
-      <li>工程：Python、JavaScript/TypeScript、SQLite/FTS5、RAG 与评测管线、多 Agent 编排、Git/CI</li>
+      <li>法律：民商法、刑法基础；法律检索常用北大法宝、中国裁判文书网、Westlaw；课程论文《竞业限制的滥用与规制》完成 556 份裁判文书的实证统计（见<a href="/notes/non-compete/">笔记栏</a>）</li>
+      <li>工程：Python、JavaScript/TypeScript、SQLite/FTS5、RAG 与评测管线、多 Agent 编排、Git/CI（全部有公开仓库背书，见<a href="/projects/">项目栏</a>）</li>
       <li>工具：北大法宝、中国裁判文书网、Westlaw、Office、XMind、VS Code</li>
     </ul>
     <h2>证书与语言</h2>
@@ -55,6 +57,7 @@ import { SITE } from '../lib/site';
       {SITE.email && <> · <a href={`mailto:${SITE.email}`}>{SITE.email}</a></>}
       。正在寻找法律科技 / AI 应用方向的实习机会。
     </p>
-    <p><a class="btn" href="/resume/hu-shengwei-resume.pdf" download>下载简历 PDF</a></p>
+    {/* TODO(资产): 简历 PDF 补齐后恢复下载按钮（href=/resume/hu-shengwei-resume.pdf），并移除 check-links 白名单 */}
+    <p>简历可<a href={`mailto:${SITE.email}?subject=${encodeURIComponent('简历索取')}`}>来信索取</a>。</p>
   </div>
 </BaseLayout>

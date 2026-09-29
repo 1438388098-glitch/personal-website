@@ -1,21 +1,28 @@
 ---
 import { SITE } from '../lib/site';
 import { ClientRouter } from 'astro:transitions';
-interface Props { title: string; description?: string; }
-const { title, description = SITE.description } = Astro.props;
+interface Props { title: string; description?: string; type?: 'website' | 'article'; image?: string; noindex?: boolean; }
+const { title, description = SITE.description, type = 'website', image = '/og-default.png', noindex = false } = Astro.props;
 const pageTitle = title.includes(SITE.author) ? title : `${title} · ${SITE.title}`;
+/* 域名单一事实源：astro.config.mjs 的 site 字段（经 Astro.site 注入） */
+const siteUrl = Astro.site ?? new URL(SITE.url);
+const ogImage = new URL(image, siteUrl);
 ---
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="alternate" type="application/rss+xml" title={SITE.title} href={new URL('/feed.xml', siteUrl)} />
+<link rel="sitemap" href="/sitemap-index.xml" />
 <meta name="generator" content={Astro.generator} />
 <title>{pageTitle}</title>
 <meta name="description" content={description} />
 <meta name="author" content={SITE.author} />
-<link rel="canonical" href={new URL(Astro.url.pathname, SITE.url)} />
-<meta property="og:type" content="website" />
+{noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={new URL(Astro.url.pathname, siteUrl)} />}
+<meta property="og:type" content={type} />
 <meta property="og:title" content={pageTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:url" content={new URL(Astro.url.pathname, SITE.url)} />
-<meta name="twitter:card" content="summary" />
+<meta property="og:url" content={new URL(Astro.url.pathname, siteUrl)} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:site_name" content={SITE.title} />
+<meta name="twitter:card" content="summary_large_image" />
 <ClientRouter />
 <script is:inline>
   (function () {
