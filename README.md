@@ -19,10 +19,11 @@
     src/content/projects/  项目案例（.md，frontmatter 见 src/content.config.ts）
     src/content/posts/     博客文章（.md）
     src/content/exam/      法考文章（.md，type 三选一：方法论/错题笔记/周记）
-    src/content/notes/     论文与研读（.md，draft 默认 false，需显式发布）
+    src/content/notes/     论文与研读（.md，默认发布，需隐藏须显式写 draft: true）
     src/content/now/       Now 月更（复制上一期 .md，改 period 与正文内容）
     src/content/toolbox/   工具箱（.md，文件名 = repo 名，url 需验证公开可访问）
 （M3 四栏目 exam/notes/now/toolbox 已上线，2026-09-29 验收通过）
+    正文排版约定：一个自然段一行（不手工折行），2026-09 起的存量文章按此惯例。
 
 ## 如何新增一篇项目案例
 在 src/content/projects/ 建 <repo>.md，frontmatter 参照 statute-rag.md；
