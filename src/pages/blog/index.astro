@@ -12,7 +12,7 @@ const countOf = (c: string) => posts.filter((p) => p.data.category === c).length
 <BaseLayout title="博客" description="法律 × AI 的工程方法论、技术笔记与法学随笔，另有游戏手记、杂谈、经济观察与热点快评。">
   <h1>博客</h1>
 
-  <div class="tabs" role="tablist" aria-label="按分类筛选">
+  <div class="tabs">
     <button class="tab" type="button" data-cat="全部" aria-pressed="true">全部 <span class="count">{posts.length}</span></button>
     {categories.map((c) => (
       <button class="tab" type="button" data-cat={c} aria-pressed="false">{c} <span class="count">{countOf(c)}</span></button>
