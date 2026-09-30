@@ -32,6 +32,11 @@ roots.forEach((r) => walk(r));
 
 let hits = 0;
 for (const file of files) {
+  /* frontmatter 体例：.md 首行必须是标准三连字符（六连字符等变体会破坏按行解析的脚本；兼容 CRLF） */
+  if (extname(file) === '.md' && readFileSync(file, 'utf8').split(/\r?\n/, 1)[0] !== '---') {
+    console.error(`frontmatter 首行必须是 ---: ${file}`);
+    hits++;
+  }
   /* 书名号引用先剥除：标题是别人的文本，不替别人改稿 */
   const content = readFileSync(file, 'utf8').replace(/《[^》]*》/g, (m) => '·'.repeat(m.length));
   for (const [re, label] of hardPatterns) {
