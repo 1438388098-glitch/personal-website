@@ -22,6 +22,9 @@ const ogImage = new URL(image, siteUrl);
 <meta property="og:url" content={new URL(Astro.url.pathname, siteUrl)} />
 <meta property="og:image" content={ogImage} />
 <meta property="og:site_name" content={SITE.title} />
+/* 手机浏览器地址栏随明暗主题着色（与 global.css 的 --bg 同源） */
+<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#151413" media="(prefers-color-scheme: dark)" />
 <meta name="twitter:card" content="summary_large_image" />
 <ClientRouter />
 <script is:inline>
