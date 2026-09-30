@@ -1,0 +1,125 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { isPublished } from '../lib/publish';
+
+/* 正文压成纯文本：剥代码块、图片、链接语法与行内标记，限长避免索引虚胖 */
+const toText = (md: string | undefined) =>
+  (md ?? '')
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`([^`]*)`/g, '$1')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^>\s?/gm, '')
+    .replace(/[*_]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 20000);
+
+const docs = [
+  ...(await getCollection('posts', isPublished)).map((p) => ({
+    url: `/blog/${p.id}/`, title: p.data.title, description: p.data.description, text: toText(p.body),
+  })),
+  ...(await getCollection('exam', (e) => !e.data.draft)).map((e) => ({
+    url: `/exam/${e.id}/`, title: e.data.title, description: e.data.description, text: toText(e.body),
+  })),
+  ...(await getCollection('notes', (n) => !n.data.draft)).map((n) => ({
+    url: `/notes/${n.id}/`, title: n.data.title, description: n.data.description, text: toText(n.body),
+  })),
+];
+---
+<BaseLayout title="搜索" description="站内搜索：在已发布的博客、法考实录与研读笔记里找关键词。">
+  <h1>搜索</h1>
+  <p class="intro">{docs.length} 篇已发布内容，找关键词直达。</p>
+  <noscript><p class="noscript">搜索需要启用 JavaScript。</p></noscript>
+  <div class="searchbox">
+    <input id="q" type="search" placeholder="试试：幻觉、错题、竞业限制…" autocomplete="off" aria-label="搜索关键词" />
+    <p class="count" id="count" aria-live="polite"></p>
+  </div>
+  <ul id="results"></ul>
+  <script type="application/json" id="search-data" set:html={JSON.stringify(docs)} />
+</BaseLayout>
+<style>
+  .intro { color: var(--text-muted); margin: 0 0 1.5rem; }
+  .noscript { color: var(--accent); }
+  .searchbox input {
+    width: 100%; max-width: 34rem; padding: 0.6rem 0.9rem; font-size: 1rem;
+    border: 1px solid var(--border-strong); border-radius: 8px; background: var(--bg); color: var(--text);
+  }
+  .count { color: var(--text-muted); font-size: 0.9rem; margin: 0.6rem 0 0; min-height: 1.4em; }
+  #results { list-style: none; padding: 0; margin: 1.5rem 0 0; }
+  #results li { padding: 0.9rem 0; border-top: 1px solid var(--border); }
+  #results a { font-weight: 700; }
+  #results .snippet { color: var(--text-muted); font-size: 0.9rem; margin: 0.3rem 0 0; }
+  #results mark { background: color-mix(in srgb, var(--accent) 22%, transparent); color: inherit; padding: 0 0.1em; }
+</style>
+<script>
+  const DATA: { url: string; title: string; description: string; text: string }[] = JSON.parse(
+    document.getElementById('search-data')!.textContent!
+  );
+  const input = document.getElementById('q') as HTMLInputElement;
+  const list = document.getElementById('results')!;
+  const count = document.getElementById('count')!;
+
+  const escapeHtml = (s: string) =>
+    s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+
+  /* 命中词高亮：先转义原文再包 mark，正则转义搜索词防注入 */
+  const highlight = (text: string, terms: string[]) => {
+    let out = escapeHtml(text);
+    for (const t of terms) {
+      const re = new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+      out = out.replace(re, (m) => `<mark>${m}</mark>`);
+    }
+    return out;
+  };
+
+  const run = () => {
+    const raw = input.value.trim();
+    list.innerHTML = '';
+    if (!raw) { count.textContent = ''; return; }
+    const terms = raw.split(/\s+/).map((w) => w.toLowerCase());
+    const hits = DATA
+      .map((d) => {
+        const title = d.title.toLowerCase();
+        const desc = (d.description ?? '').toLowerCase();
+        const text = d.text.toLowerCase();
+        let score = 0;
+        for (const t of terms) {
+          const inTitle = title.includes(t);
+          const inDesc = desc.includes(t);
+          const inText = text.includes(t);
+          if (!inTitle && !inDesc && !inText) return null; /* 全部词都得命中（AND） */
+          if (inTitle) score += 10;
+          if (inDesc) score += 3;
+          if (inText) score += 1;
+        }
+        return { ...d, score };
+      })
+      .filter((h): h is NonNullable<typeof h> => h !== null)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 20);
+
+    count.textContent = hits.length
+      ? `${hits.length} 条结果${hits.length >= 20 ? '（只显示前 20 条，换个更具体的词）' : ''}`
+      : '没有匹配的内容，换个词试试。';
+
+    const first = terms[0];
+    list.innerHTML = hits.map((h) => {
+      const i = h.text.toLowerCase().indexOf(first);
+      const start = Math.max(0, (i < 0 ? 0 : i) - 40);
+      const snippet = (start > 0 ? '…' : '') + h.text.slice(start, start + 160) + (start + 160 < h.text.length ? '…' : '');
+      return `<li><a href="${h.url}">${escapeHtml(h.title)}</a><p class="snippet">${highlight(snippet, terms)}</p></li>`;
+    }).join('');
+  };
+
+  let timer: ReturnType<typeof setTimeout>;
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(run, 150);
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { clearTimeout(timer); run(); }
+  });
+</script>
