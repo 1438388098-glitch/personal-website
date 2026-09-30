@@ -14,8 +14,10 @@ const { Content } = await render(current);
     <p class="meta">更新于 {formatDate(current.data.updated)}</p>
     <h1>Now · {current.data.period}</h1>
     <Content />
+    <p class="see-also">我的背景与联系方式见<a href="/about/">关于</a>页。</p>
   </article>
 </BaseLayout>
 <style>
   .meta { color: var(--text-muted); }
+  .see-also { color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
 </style>
