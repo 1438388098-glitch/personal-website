@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatDate } from '../../lib/format';
 import { byDateDesc } from '../../lib/sort';
+import EntryCard from '../../components/EntryCard.astro';
 
 const notes = (await getCollection('notes', (n) => !n.data.draft))
   .sort(byDateDesc((n) => n.data.date));
@@ -17,11 +18,12 @@ const categories = ['课程论文', '文献研读', '读书笔记'] as const;
       <section>
         <h2>{c}</h2>
         {items.map((n) => (
-          <article class="note-item">
-            <p class="meta">{n.data.status} · {formatDate(n.data.date)}</p>
-            <h3><a href={`/notes/${n.id}/`}>{n.data.title}</a></h3>
-            <p class="desc">{n.data.description}</p>
-          </article>
+          <EntryCard
+            href={`/notes/${n.id}/`}
+            meta={`${n.data.status} · ${formatDate(n.data.date)}`}
+            title={n.data.title}
+            description={n.data.description}
+          />
         ))}
       </section>
     );
@@ -29,11 +31,5 @@ const categories = ['课程论文', '文献研读', '读书笔记'] as const;
 </BaseLayout>
 <style>
   section { margin: 2rem 0; }
-  .note-item { padding: 1.1rem 0; border-top: 1px solid var(--border); }
-  .meta { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.3rem; }
-  h3 { margin: 0 0 0.35rem; font-size: 1.15rem; }
-  h3 a { color: var(--text); }
-  h3 a:hover { color: var(--accent); text-decoration: none; }
-  .desc { color: var(--text-muted); margin: 0; }
   .intro { margin: 0 0 1.5rem; }
 </style>

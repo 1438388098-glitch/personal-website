@@ -5,6 +5,7 @@ import { formatDate } from '../../lib/format';
 import { byDateDesc } from '../../lib/sort';
 import { EXAM_AGG } from '../../lib/exam-progress';
 import { figure } from '../../lib/metrics';
+import EntryCard from '../../components/EntryCard.astro';
 
 const articles = (await getCollection('exam', (e) => !e.data.draft))
   .sort(byDateDesc((e) => e.data.date));
@@ -89,11 +90,12 @@ const stages = [
     <section>
       <h2>实录文章</h2>
       {articles.map((a) => (
-        <article class="exam-item">
-          <p class="meta">{a.data.type} · {formatDate(a.data.date)}</p>
-          <h3><a href={`/exam/${a.id}/`}>{a.data.title}</a></h3>
-          <p class="desc">{a.data.description}</p>
-        </article>
+        <EntryCard
+          href={`/exam/${a.id}/`}
+          meta={`${a.data.type} · ${formatDate(a.data.date)}`}
+          title={a.data.title}
+          description={a.data.description}
+        />
       ))}
     </section>
   )}
@@ -115,7 +117,6 @@ const stages = [
   .tool:hover { border-color: var(--accent); text-decoration: none; }
   .ai { margin: 0; color: var(--text); font-size: 0.95rem; }
   .output { margin: 0; color: var(--text-muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
-  .exam-item { padding: 1.1rem 0; border-top: 1px solid var(--border); }
   .meta { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.3rem; }
   h3 { margin: 0 0 0.35rem; font-size: 1.15rem; }
   h3 a { color: var(--text); }

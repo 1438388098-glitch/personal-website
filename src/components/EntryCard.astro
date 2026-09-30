@@ -1,0 +1,18 @@
+---
+/** 素引类卡片的公共骨架：meta 行 + 标题链接 + 一句摘要（法考实录/研读条目共用）。 */
+interface Props { href: string; meta: string; title: string; description: string; }
+const { href, meta, title, description } = Astro.props;
+---
+<article class="entry-card">
+  <p class="meta">{meta}</p>
+  <h3><a href={href}>{title}</a></h3>
+  <p class="desc">{description}</p>
+</article>
+<style>
+  .entry-card { padding: 1.1rem 0; border-top: 1px solid var(--border); }
+  .meta { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.3rem; }
+  h3 { margin: 0 0 0.35rem; font-size: 1.15rem; }
+  h3 a { color: var(--text); }
+  h3 a:hover { color: var(--accent); text-decoration: none; }
+  .desc { color: var(--text-muted); margin: 0; }
+</style>
