@@ -15,14 +15,10 @@ const projects = (await getCollection('projects'))
 const posts = (await getCollection('posts', isPublished))
   .sort(byDateDesc((p) => p.data.pubDate))
   .slice(0, 4);
-// Now 摘要：最新一期 + 正文前两个 H2 标题（直接从 markdown 原文按行提取，无需渲染）
+// Now 摘要：最新一期 + frontmatter topics（结构化字段，正文不再承担取数职责）
 const currentNow = (await getCollection('now'))
   .sort((a, b) => b.data.period.localeCompare(a.data.period))[0];
-const nowTopics = (currentNow?.body ?? '')
-  .split('\n')
-  .filter((line) => line.startsWith('## '))
-  .slice(0, 2)
-  .map((line) => line.replace(/^##\s*/, '').trim());
+const nowTopics = currentNow?.data.topics ?? [];
 ---
 <BaseLayout title={SITE.title}>
   <section class="hero">
@@ -64,9 +60,11 @@ const nowTopics = (currentNow?.body ?? '')
       {currentNow && (
         <div class="card dyn-card">
           <h2><a href="/now/">Now · {currentNow.data.period}</a></h2>
-          <ul class="dyn-list">
-            {nowTopics.map((t) => <li>{t}</li>)}
-          </ul>
+          {nowTopics.length > 0 && (
+            <ul class="dyn-list">
+              {nowTopics.map((t) => <li>{t}</li>)}
+            </ul>
+          )}
           <a class="dyn-link" href="/now/">看本期动态</a>
         </div>
       )}

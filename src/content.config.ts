@@ -60,7 +60,9 @@ const now = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/now' }),
   schema: z.object({
     period: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'period 必须是合法的 YYYY-MM 月份'),
-    updated: z.coerce.date()
+    updated: z.coerce.date(),
+    /* 首页动态卡展示的话题：结构化数据走 frontmatter，正文不再被按行切割取标题 */
+    topics: z.array(z.string()).max(3).default([])
   })
 });
 
