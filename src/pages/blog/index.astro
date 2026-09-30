@@ -4,9 +4,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
 import { byDateDesc } from '../../lib/sort';
 import { isPublished } from '../../lib/publish';
+import { POST_CATEGORIES } from '../../lib/categories';
 
 const posts = (await getCollection('posts', isPublished)).sort(byDateDesc((p) => p.data.pubDate));
-const categories = ['工程方法论', '技术笔记', '法学随笔', '游戏手记', '杂谈', '经济观察', '热点快评'] as const;
+const categories = POST_CATEGORIES;
 const countOf = (c: string) => posts.filter((p) => p.data.category === c).length;
 ---
 <BaseLayout title="博客" description="法律 × AI 的工程方法论、技术笔记与法学随笔，另有游戏手记、杂谈、经济观察与热点快评。">

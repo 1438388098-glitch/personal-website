@@ -90,7 +90,7 @@ const stages = [
       <h2>实录文章</h2>
       {articles.map((a) => (
         <article class="exam-item">
-          <p class="meta">{a.data.type}{a.data.subject && ` · ${a.data.subject}`} · {formatDate(a.data.date)}</p>
+          <p class="meta">{a.data.type} · {formatDate(a.data.date)}</p>
           <h3><a href={`/exam/${a.id}/`}>{a.data.title}</a></h3>
           <p class="desc">{a.data.description}</p>
         </article>

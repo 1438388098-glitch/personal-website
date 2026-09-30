@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { POST_CATEGORIES } from './lib/categories';
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
@@ -23,7 +24,7 @@ const posts = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    category: z.enum(['法学随笔', '技术笔记', '工程方法论', '游戏手记', '杂谈', '经济观察', '热点快评']),
+    category: z.enum(POST_CATEGORIES),
     tags: z.array(z.string()).default([]),
     pubDate: z.coerce.date(),
     draft: z.boolean().default(false),
@@ -37,7 +38,6 @@ const exam = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    subject: z.string().optional(),
     type: z.enum(['方法论', '错题笔记', '周记']),
     date: z.coerce.date(),
     draft: z.boolean().default(false)
