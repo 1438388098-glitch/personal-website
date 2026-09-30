@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'feat/**']
   pull_request:
   # 每日一跑：定时发布（pubDate <= now 过滤）的文章到日当天由构建验证可正常产出。
   # 注意：本 workflow 只验证不部署，站点上线由站主手动构建发布；
@@ -10,9 +10,18 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
+# 最小权限：构建与检查只需读代码
+permissions:
+  contents: read
+# 同分支并发跑只保留最新一次（cron 与 push 撞车时不白跑）
+concurrency:
+  group: ci-\${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
