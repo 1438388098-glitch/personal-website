@@ -26,7 +26,9 @@ const posts = defineCollection({
     category: z.enum(['法学随笔', '技术笔记', '工程方法论', '游戏手记', '杂谈', '经济观察', '热点快评']),
     tags: z.array(z.string()).default([]),
     pubDate: z.coerce.date(),
-    draft: z.boolean().default(false)
+    draft: z.boolean().default(false),
+    /* 社交分享图（站内绝对路径如 /og-xxx.png）；缺省用全站默认 og 图 */
+    image: z.string().optional()
   })
 });
 
