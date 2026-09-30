@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { HOME_METRICS, METRICS_AS_OF } from './metrics';
+import { HOME_METRICS, METRICS_AS_OF, figure } from './metrics';
 import { EXAM_AGG } from './exam-progress';
 import { byDateDesc } from './sort';
 
@@ -36,12 +36,27 @@ describe('EXAM_AGG', () => {
     expect(EXAM_AGG.subjects).toBe(18);
     expect(EXAM_AGG.units).toBeGreaterThan(EXAM_AGG.subjects);
     expect(EXAM_AGG.wrongQuestions).toBeGreaterThan(1000);
+    expect(EXAM_AGG.pdfBooklets).toBeGreaterThan(0);
     expect(EXAM_AGG.minutesPerRound).toBeLessThan(60);
   });
   it('每个数字都能在 zhuma-fakao-review 案例页溯源', () => {
-    for (const v of [EXAM_AGG.subjects, EXAM_AGG.units, EXAM_AGG.wrongQuestions, EXAM_AGG.minutesPerRound]) {
+    for (const v of [EXAM_AGG.subjects, EXAM_AGG.units, EXAM_AGG.wrongQuestions, EXAM_AGG.pdfBooklets, EXAM_AGG.minutesPerRound]) {
       expect(zhuma).toContain(String(v));
     }
+  });
+});
+
+describe('figure 结构化取数', () => {
+  it('命中返回值', () => {
+    expect(figure('statute-rag', 'hitRate')).toBe('98.9%');
+    expect(figure('cn-judbench', 'packs')).toBe('12 个评测包');
+  });
+  it('同 source 多条时取带该 key 的那条（法条语料在前但无 figures，不得误中）', () => {
+    expect(figure('statute-rag', 'questions')).toBe('177 道模拟测试题');
+  });
+  it('缺失抛错而非静默降级', () => {
+    expect(() => figure('statute-rag', 'nope')).toThrow();
+    expect(() => figure('no-such-source', 'x')).toThrow();
   });
 });
 

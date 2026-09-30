@@ -4,15 +4,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatDate } from '../../lib/format';
 import { byDateDesc } from '../../lib/sort';
 import { EXAM_AGG } from '../../lib/exam-progress';
-import { HOME_METRICS } from '../../lib/metrics';
+import { figure } from '../../lib/metrics';
 
 const articles = (await getCollection('exam', (e) => !e.data.draft))
   .sort(byDateDesc((e) => e.data.date));
 
-/* 输出数字从 lib 层单源拼装，不在此页复述字面量 */
-const judbench = HOME_METRICS.find((m) => m.source === 'cn-judbench');
-const judbenchPacks = judbench?.detail.split('，')[1] ?? '12 个评测包';
-const judbenchCount = judbench?.value ?? '323';
+/* 输出数字从 lib 层单源取结构化 figures，不在此页复述字面量 */
+const publicRepos = (await getCollection('toolbox')).length;
 
 // 备考一圈的先后顺序：客观题错题从竹马来，从整理错题起步，主观题收尾；产出数据均可溯源到对应案例页
 const stages = [
@@ -22,7 +20,7 @@ const stages = [
     tool: 'zhuma-fakao-review',
     href: '/projects/zhuma-fakao-review/',
     ai: '客观题的错题自动抓全，审查后按科目装订成可背诵的笔记 PDF',
-    output: `${EXAM_AGG.wrongQuestions.toLocaleString('en-US')} 道错题 → 18 册 PDF，约 ${EXAM_AGG.minutesPerRound} 分钟一轮`
+    output: `${EXAM_AGG.wrongQuestions.toLocaleString('en-US')} 道错题 → ${EXAM_AGG.pdfBooklets} 册 PDF，约 ${EXAM_AGG.minutesPerRound} 分钟一轮`
   },
   {
     step: '02',
@@ -30,7 +28,7 @@ const stages = [
     tool: 'statute-rag',
     href: '/projects/statute-rag/',
     ai: '只回答带条号的法条原文，检索不到就明说',
-    output: '177 道模拟测试题，98.9% 检中正确条文'
+    output: `${figure('statute-rag', 'questions')}，${figure('statute-rag', 'hitRate')} 检中正确条文`
   },
   {
     step: '03',
@@ -54,7 +52,7 @@ const stages = [
     tool: 'cn-judbench（法衡）',
     href: '/projects/cn-judbench/',
     ai: '评分标准提前公开，判分照标准机器来：AI 先测行不行，再进流程',
-    output: `${judbenchPacks} · ${judbenchCount} 道公开题`
+    output: `${figure('cn-judbench', 'packs')} · ${figure('cn-judbench', 'questions')}`
   },
   {
     step: '06',
@@ -62,7 +60,7 @@ const stages = [
     tool: 'Claude Code 等 AI 编码协作',
     href: '/toolbox/',
     ai: '上面每个工具都是这么造出来的：带测试、带数据、带失败记录',
-    output: '11 个公开仓库，全部可查'
+    output: `${publicRepos} 个公开仓库，全部可查`
   }
 ];
 ---
