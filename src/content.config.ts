@@ -1,6 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
-import { POST_CATEGORIES } from './lib/categories';
+import { POST_CATEGORIES, TAG_VOCAB } from './lib/categories';
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
@@ -23,9 +23,9 @@ const posts = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/posts' }),
   schema: z.object({
     title: z.string(),
-    description: z.string(),
+    description: z.string().max(120),
     category: z.enum(POST_CATEGORIES),
-    tags: z.array(z.string()).default([]),
+    tags: z.array(z.enum(TAG_VOCAB)).max(4).default([]),
     pubDate: z.coerce.date(),
     draft: z.boolean().default(false),
     /* 社交分享图（站内绝对路径如 /og-xxx.png）；缺省用全站默认 og 图 */
