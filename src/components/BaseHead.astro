@@ -1,6 +1,7 @@
 ---
 import { SITE } from '../lib/site';
 import { ClientRouter } from 'astro:transitions';
+import fontsCssUrl from '../styles/fonts.css?url';
 interface Props { title: string; description?: string; type?: 'website' | 'article'; image?: string; noindex?: boolean; }
 const { title, description = SITE.description, type = 'website', image = '/og-default.png', noindex = false } = Astro.props;
 const pageTitle = title.includes(SITE.author) ? title : `${title} · ${SITE.title}`;
@@ -26,6 +27,9 @@ const ogImage = new URL(image, siteUrl);
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#151413" media="(prefers-color-scheme: dark)" />
 <meta name="twitter:card" content="summary_large_image" />
+{/* 字体声明非阻塞加载：print 样式不拦首绘，加载完翻转为 all；无 JS 环境由 noscript 兜底 */}
+<link rel="stylesheet" href={fontsCssUrl} media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href={fontsCssUrl} /></noscript>
 <ClientRouter />
 <script is:inline>
   (function () {

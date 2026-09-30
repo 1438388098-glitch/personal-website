@@ -1,0 +1,6 @@
+/* 自托管衬线（OFL 协议）：标题与数字展示位使用；unicode-range 切片，按需下载。
+   只保留 700 字重：600 无使用点。
+   本文件经 BaseHead 以非阻塞方式加载（media=print + onload 翻转）：107 个 @font-face
+   声明占 gzip 53KB，全部塞进阻塞样式表会让每个首访访客为声明文本买单。 */
+@import '@fontsource/source-serif-4/700.css';
+@import '@fontsource/noto-serif-sc/700.css';
