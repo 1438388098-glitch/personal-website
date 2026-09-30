@@ -2,7 +2,7 @@
 title: 为什么我给法考评分造了一个判分 Agent
 description: 法考主观题的 AI 评分，难在采分点对齐。 fakao-grader 的设计取舍：rubric 拆点、置信度分级与二次复核。
 category: 工程方法论
-tags: [法考, Agent, 评估]
+tags: [法考, Agent, 评测]
 pubDate: 2026-09-20
 # TODO(内容): 本文是项目卡的缩写，独立叙事价值不足已撤下（draft）。
 # 要重新发布就扩写成真文章：补翻车案例、决策过程与反直觉发现，数字不外包给仓库。
