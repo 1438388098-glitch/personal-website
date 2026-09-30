@@ -13,7 +13,8 @@ export async function getStaticPaths() {
 }
 const { post } = Astro.props;
 const { Content } = await render(post);
-const { title, description, category, pubDate, tags } = post.data;
+const { title, description, category, pubDate, tags, image } = post.data;
+const shareImage = new URL(image ?? '/og-default.png', SITE.url).toString();
 /* 相邻文章按发布日期排序：新一篇 / 旧一篇（含定时发布过滤） */
 const sorted = (await getCollection('posts', isPublished))
   .sort(byDateDesc((p) => p.data.pubDate));
@@ -26,7 +27,7 @@ const jsonLd = JSON.stringify({
   headline: title,
   description,
   /* Google 文章富结果要求 image 与 canonical url；分享图暂用全站默认 og 图 */
-  image: [new URL('/og-default.png', SITE.url).toString()],
+  image: [shareImage],
   url: new URL(Astro.url.pathname, SITE.url).toString(),
   mainEntityOfPage: { '@type': 'WebPage', '@id': new URL(Astro.url.pathname, SITE.url).toString() },
   datePublished: pubDate.toISOString(),
@@ -35,9 +36,12 @@ const jsonLd = JSON.stringify({
   keywords: tags.join(', ')
 });
 ---
-<BaseLayout title={title} description={description} type="article">
+<BaseLayout title={title} description={description} type="article" image={image}>
   <article class="prose">
-    <p class="meta">{category} · {formatDate(pubDate)}{tags.length > 0 && ` · ${tags.map((t) => `#${t}`).join(' ')}`}</p>
+    <p class="meta">
+      {category} · {formatDate(pubDate)}
+      {tags.length > 0 && <span class="tag-row"> · {tags.map((t) => <a class="tag-link" href={`/tags/${t}/`}>#{t}</a>)}</span>}
+    </p>
     <h1>{title}</h1>
     <Content />
     <p><a href="/blog/">← 全部文章</a></p>
@@ -52,6 +56,9 @@ const jsonLd = JSON.stringify({
 </BaseLayout>
 <style>
   .meta { color: var(--text-muted); }
+  .tag-row { display: inline-flex; gap: 0.6rem; margin-left: 0.35rem; }
+  .tag-link { color: var(--text-muted); }
+  .tag-link:hover { color: var(--accent); text-decoration: none; }
   .adjacent {
     margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border);
     display: flex; flex-direction: column; gap: 0.5rem;

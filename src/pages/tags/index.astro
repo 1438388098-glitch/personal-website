@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { isPublished } from '../../lib/publish';
+
+const posts = await getCollection('posts', isPublished);
+const counts = new Map<string, number>();
+for (const p of posts) for (const t of p.data.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
+/* 多的在前，同级按拼音序，方便扫读也方便找 */
+const tags = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh'));
+---
+<BaseLayout title="标签" description="全部文章按标签索引：点一个标签，看同一主题下写过什么。">
+  <h1>标签</h1>
+  <p class="intro">{tags.length} 个标签，来自 {posts.length} 篇文章；点进去看同主题的文章。</p>
+  <ul class="cloud">
+    {tags.map(([t, n]) => (
+      <li><a href={`/tags/${t}/`}>{t} <span class="count">{n}</span></a></li>
+    ))}
+  </ul>
+</BaseLayout>
+<style>
+  .intro { color: var(--text-muted); margin: 0 0 1.5rem; }
+  .cloud { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0; margin: 0; }
+  .cloud a {
+    display: inline-block; border: 1px solid var(--border-strong); border-radius: 999px;
+    padding: 0.25rem 0.8rem; color: var(--text-muted); font-size: 0.9rem;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .cloud a:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
+  .count { font-size: 0.8rem; opacity: 0.8; }
+</style>
