@@ -72,6 +72,14 @@ const nowTopics = (currentNow?.body ?? '')
       )}
     </div>
   </section>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE.title,
+    description: SITE.description,
+    url: SITE.url,
+    author: { '@type': 'Person', name: SITE.author, jobTitle: '法学在读 · 法律 × AI', url: SITE.github }
+  })} />
 </BaseLayout>
 
 <style>
@@ -110,11 +118,3 @@ const nowTopics = (currentNow?.body ?? '')
   .dyn-link { margin-top: auto; font-size: 0.9rem; }
   @media (max-width: 720px) { .dynamic-grid { grid-template-columns: 1fr; } }
 </style>
-<script is:inline type="application/ld+json" set:html={JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: SITE.title,
-  description: SITE.description,
-  url: SITE.url,
-  author: { '@type': 'Person', name: SITE.author, jobTitle: '法学在读 · 法律 × AI', url: SITE.github }
-})} />

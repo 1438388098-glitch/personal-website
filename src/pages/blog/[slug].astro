@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatDate } from '../../lib/format';
 import { byDateDesc } from '../../lib/sort';
 import { isPublished } from '../../lib/publish';
+import { SITE } from '../../lib/site';
 
 /* getStaticPaths 会被 Astro 提升到独立作用域，不能引用 frontmatter 顶层变量；lib 层导入可用 */
 export async function getStaticPaths() {
@@ -24,8 +25,13 @@ const jsonLd = JSON.stringify({
   '@type': 'BlogPosting',
   headline: title,
   description,
+  /* Google 文章富结果要求 image 与 canonical url；分享图暂用全站默认 og 图 */
+  image: [new URL('/og-default.png', SITE.url).toString()],
+  url: new URL(Astro.url.pathname, SITE.url).toString(),
+  mainEntityOfPage: { '@type': 'WebPage', '@id': new URL(Astro.url.pathname, SITE.url).toString() },
   datePublished: pubDate.toISOString(),
-  author: { '@type': 'Person', name: '胡圣炜' },
+  dateModified: pubDate.toISOString(),
+  author: { '@type': 'Person', name: SITE.author, url: SITE.github },
   keywords: tags.join(', ')
 });
 ---
