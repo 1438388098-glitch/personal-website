@@ -16,7 +16,7 @@ const { project, inToolbox } = Astro.props;
 const { Content } = await render(project);
 const { title, summary, group, date, metrics, links, disclaimer } = project.data;
 ---
-<BaseLayout title={title} description={summary}>
+<BaseLayout title={title} description={summary} type="article">
   <article class="prose">
     <p class="meta">{group} · {formatDate(date)}</p>
     <h1>{title}</h1>
