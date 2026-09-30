@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=18.17.1"
+    "node": ">=20.3.0"
   },
   "scripts": {
     "dev": "astro dev",
@@ -16,6 +16,7 @@
     "check:style": "node scripts/check-style.mjs",
     "check:audit": "npm audit --omit=dev --registry=https://registry.npmjs.org",
     "check:extlinks": "node scripts/check-extlinks.mjs",
+    "check:content": "node scripts/check-content.mjs",
     "test": "vitest run"
   },
   "dependencies": {

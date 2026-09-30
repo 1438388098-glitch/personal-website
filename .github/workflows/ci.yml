@@ -37,3 +37,4 @@ jobs:
       - run: npm run check:links
       - run: npm run check:secrets
       - run: npm run check:style
+      - run: npm run check:content
