@@ -32,8 +32,6 @@ const countOf = (c: string) => posts.filter((p) => p.data.category === c).length
 
   <p class="essay-note" data-note>法学向的长文收录在<a href="/notes/">论文与研读</a>栏：竞业限制的实证研究、布雷克顿与罗马法，都在那里。</p>
   <p class="empty-note" data-empty-note hidden>这个分类还没攒出稿子，先看看别的。</p>
-</BaseLayout>
-
 <script>
   /* astro:page-load 首次加载与每次换页后都触发：ClientRouter 换页会替换 DOM，
      打包脚本整个会话只执行一次，绑定放顶层会让返回本页后的筛选全部失灵 */
@@ -68,23 +66,4 @@ const countOf = (c: string) => posts.filter((p) => p.data.category === c).length
     if (fromHash) select(fromHash);
   });
 </script>
-
-<style>
-  .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.5rem 0 0.25rem; }
-  .tab {
-    border: 1px solid var(--border-strong); border-radius: 999px; background: var(--bg);
-    color: var(--text-muted); padding: 0.3rem 0.85rem; font-size: 0.9rem; cursor: pointer;
-    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
-  }
-  .tab:hover { border-color: var(--accent); color: var(--accent); }
-  .tab[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .tab[aria-pressed='true']:hover { color: #fff; }
-  /* a11y：暗色下朱砂底白字对比度约 3.5:1 不达标，照 btn.primary 先例改深字 */
-  html[data-theme='dark'] .tab[aria-pressed='true'] { color: #20100c; }
-  html[data-theme='dark'] .tab[aria-pressed='true']:hover { color: #20100c; }
-  /* 计数字号小，0.75 透明度会跌破 4.5:1，去掉透明度靠 muted 色本身弱化 */
-  .count { font-size: 0.8rem; }
-  section { margin: 2rem 0; }
-  .essay-note { color: var(--text-muted); margin-top: 2.5rem; }
-  .empty-note { color: var(--text-muted); margin-top: 2.5rem; }
-</style>
+</BaseLayout>

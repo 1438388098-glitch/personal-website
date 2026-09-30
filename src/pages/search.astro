@@ -20,45 +20,30 @@ const toText = (md: string | undefined) =>
 
 const docs = [
   ...(await getCollection('posts', isPublished)).map((p) => ({
-    url: `/blog/${p.id}/`, title: p.data.title, description: p.data.description, text: toText(p.body),
+    url: `/blog/${p.id}/`, title: p.data.title, description: p.data.description, tags: p.data.tags, text: toText(p.body),
   })),
   ...(await getCollection('exam', (e) => !e.data.draft)).map((e) => ({
-    url: `/exam/${e.id}/`, title: e.data.title, description: e.data.description, text: toText(e.body),
+    url: `/exam/${e.id}/`, title: e.data.title, description: e.data.description, tags: [] as string[], text: toText(e.body),
   })),
   ...(await getCollection('notes', (n) => !n.data.draft)).map((n) => ({
-    url: `/notes/${n.id}/`, title: n.data.title, description: n.data.description, text: toText(n.body),
+    url: `/notes/${n.id}/`, title: n.data.title, description: n.data.description, tags: [] as string[], text: toText(n.body),
   })),
 ];
 ---
 <BaseLayout title="搜索" description="站内搜索：在已发布的博客、法考实录与研读笔记里找关键词。">
   <h1>搜索</h1>
   <p class="intro">{docs.length} 篇已发布内容，找关键词直达。</p>
-  <noscript><p class="noscript">搜索需要启用 JavaScript。</p></noscript>
+  <noscript><p class="noscript">搜索需要启用 JavaScript；也可以改用无需脚本的<a href="/tags/">标签索引</a>。</p></noscript>
   <div class="searchbox">
     <input id="q" type="search" placeholder="试试：幻觉、错题、竞业限制…" autocomplete="off" aria-label="搜索关键词" />
     <p class="count" id="count" aria-live="polite"></p>
   </div>
   <ul id="results"></ul>
   <script type="application/json" id="search-data" set:html={JSON.stringify(docs).replace(/</g, '\u003c')} />
-</BaseLayout>
-<style>
-  .intro { color: var(--text-muted); margin: 0 0 1.5rem; }
-  .noscript { color: var(--accent); }
-  .searchbox input {
-    width: 100%; max-width: 34rem; padding: 0.6rem 0.9rem; font-size: 1rem;
-    border: 1px solid var(--border-strong); border-radius: 8px; background: var(--bg); color: var(--text);
-  }
-  .count { color: var(--text-muted); font-size: 0.9rem; margin: 0.6rem 0 0; min-height: 1.4em; }
-  #results { list-style: none; padding: 0; margin: 1.5rem 0 0; }
-  #results li { padding: 0.9rem 0; border-top: 1px solid var(--border); }
-  #results a { font-weight: 700; }
-  #results .snippet { color: var(--text-muted); font-size: 0.9rem; margin: 0.3rem 0 0; }
-  #results mark { background: color-mix(in srgb, var(--accent) 22%, transparent); color: inherit; padding: 0 0.1em; }
-</style>
 <script>
   /* astro:page-load 首次加载与每次换页后都触发：与博客页 tabs 同理，顶层绑定会在返回本页后失灵 */
   document.addEventListener('astro:page-load', () => {
-  const DATA: { url: string; title: string; description: string; text: string }[] = JSON.parse(
+  const DATA: { url: string; title: string; description: string; tags: string[]; text: string }[] = JSON.parse(
     document.getElementById('search-data')!.textContent!
   );
   const input = document.getElementById('q') as HTMLInputElement;
@@ -87,15 +72,18 @@ const docs = [
       .map((d) => {
         const title = d.title.toLowerCase();
         const desc = (d.description ?? '').toLowerCase();
+        const tags = (d.tags ?? []).join(' ').toLowerCase();
         const text = d.text.toLowerCase();
         let score = 0;
         for (const t of terms) {
           const inTitle = title.includes(t);
           const inDesc = desc.includes(t);
+          const inTags = tags.includes(t);
           const inText = text.includes(t);
-          if (!inTitle && !inDesc && !inText) return null; /* 全部词都得命中（AND） */
+          if (!inTitle && !inDesc && !inTags && !inText) return null; /* 全部词都得命中（AND） */
           if (inTitle) score += 10;
           if (inDesc) score += 3;
+          if (inTags) score += 5;
           if (inText) score += 1;
         }
         return { ...d, score };
@@ -127,3 +115,4 @@ const docs = [
   });
   });
 </script>
+</BaseLayout>
