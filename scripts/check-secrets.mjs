@@ -20,6 +20,12 @@ const patterns = [
   [/(?<!\d)\d{17}[\dXx](?!\d)/g, '疑似身份证号（内容红线）']
 ];
 
+/* 豁免通道：名单内文件（按文件名后缀精确匹配）整体跳过扫描，必须写明理由。
+   只用于确证无害的样例/ fixtures；线上产物出现命中时应修内容而非加豁免。 */
+const ALLOWLIST = [
+  // { file: 'example.html', reason: '样例页面含演示用假密钥（公开测试 fixtures）' },
+];
+
 /** 扫一段文本，返回命中的红线列表（label + 脱敏片段 + 位置） */
 export function scanSecrets(text) {
   const hits = [];
@@ -48,6 +54,7 @@ function main() {
 
   let hits = 0;
   for (const file of files) {
+    if (ALLOWLIST.some((a) => file.endsWith(a.file))) continue;
     const content = readFileSync(file, 'utf8');
     for (const hit of scanSecrets(content)) {
       const line = content.slice(0, hit.index).split('\n').length;
