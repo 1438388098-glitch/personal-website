@@ -29,6 +29,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # scripts/*.mjs 游离于 astro check 与 vitest 之外，语法错在这里当天暴露
+      - run: status=0; for f in scripts/*.mjs; do node --check "$f" || status=1; done; test "$status" -eq 0
       - run: npm run check
       - run: npm test
       - run: npm run build
