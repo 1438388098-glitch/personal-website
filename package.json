@@ -15,6 +15,7 @@
     "check:secrets": "node scripts/check-secrets.mjs",
     "check:style": "node scripts/check-style.mjs",
     "check:audit": "npm audit --omit=dev --registry=https://registry.npmjs.org",
+    "check:extlinks": "node scripts/check-extlinks.mjs",
     "test": "vitest run"
   },
   "dependencies": {

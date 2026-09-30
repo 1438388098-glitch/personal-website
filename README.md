@@ -18,6 +18,7 @@ Node ≥ 18.17（开发环境 22 LTS，见 .nvmrc）。
     npm run check:secrets  # 密钥泄漏扫描
     npm run check:style    # 文风红线扫描（破折号/黑话禁词/句式堆叠）
     npm run check:audit    # 依赖漏洞雷达（固定官方 registry；定期手动跑，暂不入 CI）
+    npm run check:extlinks # 站外链接探活（网络门禁易抖动，建议每月或发布前手动跑，暂不入 CI）
 
 ## 如何写内容
     src/content/projects/  项目案例（.md，frontmatter 见 src/content.config.ts）
