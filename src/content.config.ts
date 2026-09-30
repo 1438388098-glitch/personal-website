@@ -28,7 +28,7 @@ const posts = defineCollection({
     tags: z.array(z.enum(TAG_VOCAB)).max(4).default([]),
     pubDate: z.coerce.date(),
     draft: z.boolean().default(false),
-    /* 社交分享图（站内绝对路径如 /og-xxx.png）；缺省用全站默认 og 图 */
+    /* 社交分享图（站内绝对路径如 /og-my-post.png）；缺省用全站默认 og 图 */
     image: z.string().optional()
   })
 });
