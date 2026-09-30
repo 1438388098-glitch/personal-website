@@ -5,9 +5,14 @@ import { formatDate } from '../../lib/format';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
-  return projects.map((p) => ({ params: { slug: p.id }, props: { project: p } }));
+  /* 工具箱与项目库同名互链：详情页给出「工具箱收录」回链，两栏不互为孤岛 */
+  const toolboxIds = new Set((await getCollection('toolbox')).map((t) => t.id));
+  return projects.map((p) => ({
+    params: { slug: p.id },
+    props: { project: p, inToolbox: toolboxIds.has(p.id) },
+  }));
 }
-const { project } = Astro.props;
+const { project, inToolbox } = Astro.props;
 const { Content } = await render(project);
 const { title, summary, group, date, metrics, links, disclaimer } = project.data;
 ---
@@ -36,6 +41,11 @@ const { title, summary, group, date, metrics, links, disclaimer } = project.data
       </p>
     )}
     <p class="disclaimer">{disclaimer}</p>
+    {inToolbox && (
+      <p class="toolbox-link">
+        本项目收录在<a href={`/toolbox/#${project.id}`}>工具箱</a>目录，仓库入口在卡片标题处。
+      </p>
+    )}
     <p><a href="/projects/">← 全部项目</a></p>
   </article>
 </BaseLayout>
@@ -43,4 +53,5 @@ const { title, summary, group, date, metrics, links, disclaimer } = project.data
   .meta { color: var(--text-muted); }
   .links { display: flex; gap: 1rem; }
   .disclaimer { color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+  .toolbox-link { color: var(--text-muted); font-size: 0.9rem; }
 </style>
