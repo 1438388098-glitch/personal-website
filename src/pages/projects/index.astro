@@ -9,6 +9,7 @@ const groups = ['法律主线', '法律工具', '工程侧证', '实验'] as con
 ---
 <BaseLayout title="项目" description="法律 AI 与工程小件的全量项目清单：每个项目都有边界、机制与可验证的事实。">
   <h1>项目</h1>
+  <p class="intro">每个项目讲机制、边界与可验证的数字；全部公开仓库的速览目录在<a href="/toolbox/">工具箱</a>。</p>
   {groups.map((g) => {
     const items = projects.filter((p) => p.data.group === g);
     return items.length > 0 && (
@@ -20,6 +21,7 @@ const groups = ['法律主线', '法律工具', '工程侧证', '实验'] as con
   })}
 </BaseLayout>
 <style>
+  .intro { color: var(--text-muted); margin: 0 0 1.5rem; }
   section { margin: 2rem 0; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
