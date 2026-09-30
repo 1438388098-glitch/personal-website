@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseLinks, decodeLink, linkTargetExists } from './check-links.mjs';
 import { scanSecrets } from './check-secrets.mjs';
+import { scanStyle } from './check-style.mjs';
 
 describe('parseLinks 站内链接提取', () => {
   it('提取 href/src 的站内绝对路径，剔掉锚点与查询串', () => {
@@ -71,5 +72,36 @@ describe('scanSecrets 红线命中', () => {
   });
   it('17 位数字差一位凑不成身份证，不误报', () => {
     expect(scanSecrets('编号 12345678901234567（17 位数字）')).toEqual([]);
+  });
+});
+
+describe('scanStyle 文风红线', () => {
+  it('命中破折号与禁词并报行号', () => {
+    const issues = scanStyle('第一行正常。\n这里用了——破折号和闭环写法', false);
+    expect(issues.map((i) => i.label).join()).toContain('破折号');
+    expect(issues.map((i) => i.label).join()).toContain('闭环');
+    expect(issues[0].line).toBe(2);
+  });
+  it('《书名号》内的禁词豁免（标题是别人的文本）', () => {
+    expect(scanStyle('《去中心化自治组织对公司治理的赋能与创新》是论文标题', false)).toEqual([]);
+  });
+  it('单个「不是A，是B」放行，堆叠两处才拦', () => {
+    expect(scanStyle('问题不是没钱，是没人排。', false)).toEqual([]);
+    const stacked = '不是A，是B。不是C，是D。';
+    expect(scanStyle(stacked, false).length).toBe(2);
+  });
+  it('md 首行必须是三连字符（兼容 CRLF）', () => {
+    expect(scanStyle('---\r\ntitle: t\r\n', true)).toEqual([]);
+    expect(scanStyle('------\ntitle: t\n', true).map((i) => i.label).join()).toContain('---');
+    expect(scanStyle('正文没有frontmatter', true).length).toBe(1);
+  });
+  it('非 md 文件不查首行', () => {
+    expect(scanStyle('const x = 1; // astro 里没有 frontmatter 首行要求', false)).toEqual([]);
+  });
+  it('新增禁词（底层逻辑/沉淀/颗粒度）生效', () => {
+    const labels = scanStyle('底层逻辑、沉淀、颗粒度', false).map((i) => i.label).join();
+    expect(labels).toContain('底层逻辑');
+    expect(labels).toContain('沉淀');
+    expect(labels).toContain('颗粒度');
   });
 });

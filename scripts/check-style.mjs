@@ -14,10 +14,39 @@ const hardPatterns = [
   [/中台/g, '工程黑话「中台」'],
   [/赋能/g, '工程黑话「赋能」'],
   [/抓手/g, '工程黑话「抓手」'],
+  [/底层逻辑/g, '工程黑话「底层逻辑」：改「原理」「思路」'],
+  [/沉淀/g, '工程黑话「沉淀」：改「收录」「留得下来」等平实说法'],
+  [/颗粒度/g, '工程黑话「颗粒度」：技术语境用「粒度」'],
 ];
 /* 「不是A，而是B」偶一处是自然转折，同文件堆叠（超过 1 处）才算 AI 腔 */
 const stackPattern = /不是[^。\n]{1,24}(，而是|而是|，是)/g;
 const STACK_LIMIT = 1;
+
+/** 对一段文本跑文风红线，返回违规列表（line + label + snippet）。纯函数，gates 测试消费。 */
+export function scanStyle(rawContent, isMd) {
+  const issues = [];
+  /* frontmatter 体例：.md 首行必须是标准三连字符（六连字符等变体会破坏按行解析的脚本；兼容 CRLF） */
+  if (isMd && rawContent.split(/\r?\n/, 1)[0] !== '---') {
+    issues.push({ line: 1, label: 'frontmatter 首行必须是 ---' });
+  }
+  /* 书名号引用先剥除：标题是别人的文本，不替别人改稿 */
+  const content = rawContent.replace(/《[^》]*》/g, (m) => '·'.repeat(m.length));
+  for (const [re, label] of hardPatterns) {
+    for (const hit of content.matchAll(re)) {
+      issues.push({ line: content.slice(0, hit.index).split('\n').length, label, snippet: hit[0].slice(0, 16) });
+    }
+  }
+  const stacks = [...content.matchAll(stackPattern)];
+  if (stacks.length > STACK_LIMIT) {
+    for (const hit of stacks) {
+      issues.push({
+        line: content.slice(0, hit.index).split('\n').length,
+        label: `「不是…而是」句式堆叠（${stacks.length} 处）`,
+      });
+    }
+  }
+  return issues;
+}
 
 const files = [];
 function walk(dir) {
@@ -32,28 +61,10 @@ roots.forEach((r) => walk(r));
 
 let hits = 0;
 for (const file of files) {
-  /* frontmatter 体例：.md 首行必须是标准三连字符（六连字符等变体会破坏按行解析的脚本；兼容 CRLF） */
-  if (extname(file) === '.md' && readFileSync(file, 'utf8').split(/\r?\n/, 1)[0] !== '---') {
-    console.error(`frontmatter 首行必须是 ---: ${file}`);
+  const raw = readFileSync(file, 'utf8');
+  for (const issue of scanStyle(raw, extname(file) === '.md')) {
+    console.error(`${issue.label}: ${file}:${issue.line}${issue.snippet ? `（${issue.snippet}…）` : ''}`);
     hits++;
-  }
-  /* 书名号引用先剥除：标题是别人的文本，不替别人改稿 */
-  const content = readFileSync(file, 'utf8').replace(/《[^》]*》/g, (m) => '·'.repeat(m.length));
-  for (const [re, label] of hardPatterns) {
-    for (const hit of content.matchAll(re)) {
-      const line = content.slice(0, hit.index).split('\n').length;
-      const snippet = hit[0].slice(0, 16);
-      console.error(`${label}: ${file}:${line}（${snippet}…）`);
-      hits++;
-    }
-  }
-  const stacks = [...content.matchAll(stackPattern)];
-  if (stacks.length > STACK_LIMIT) {
-    for (const hit of stacks) {
-      const line = content.slice(0, hit.index).split('\n').length;
-      console.error(`「不是…而是」句式堆叠（${stacks.length} 处）: ${file}:${line}`);
-      hits++;
-    }
   }
 }
 if (hits > 0) { process.exit(1); }
