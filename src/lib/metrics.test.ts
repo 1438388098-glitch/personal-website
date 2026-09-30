@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { HOME_METRICS, METRICS_AS_OF, figure } from './metrics';
+import { HOME_METRICS, figure } from './metrics';
 import { EXAM_AGG } from './exam-progress';
 import { byDateDesc } from './sort';
 
@@ -15,9 +15,6 @@ describe('HOME_METRICS', () => {
       expect(m.value).not.toMatch(/[—–]/);
       expect(m.detail).not.toMatch(/[—–]/);
     }
-  });
-  it('数据截至日期为 YYYY-MM 格式', () => {
-    expect(METRICS_AS_OF).toMatch(/^\d{4}-\d{2}$/);
   });
   it('数字条每个 value 都能在对应案例页内容中溯源', () => {
     for (const m of HOME_METRICS) {

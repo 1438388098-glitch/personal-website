@@ -17,7 +17,6 @@ export const HOME_METRICS: Metric[] = [
     figures: { questions: '177 道模拟测试题', hitRate: '98.9%' } }
 ];
 
-export const METRICS_AS_OF = '2026-09';
 
 /** 按 source+key 取结构化数字；同 source 多条时取带该 key 的那条。
     缺数据在构建期抛错，不静默降级（避免页面输出 undefined）。 */
