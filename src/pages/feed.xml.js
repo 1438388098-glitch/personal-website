@@ -16,7 +16,9 @@ export async function GET(context) {
       title: p.data.title,
       description: p.data.description,
       pubDate: p.data.pubDate,
-      link: `/blog/${p.id}/`
+      link: `/blog/${p.id}/`,
+      /* 栏目与标签随条目输出，订阅器可按分类过滤 */
+      categories: [p.data.category, ...p.data.tags]
     }))
   });
 }
