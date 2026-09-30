@@ -6,12 +6,13 @@ import PostCard from '../components/PostCard.astro';
 import { SITE } from '../lib/site';
 import { EXAM_AGG } from '../lib/exam-progress';
 import { byDateDesc } from '../lib/sort';
+import { isPublished } from '../lib/publish';
 
 const projects = (await getCollection('projects'))
   .filter((p) => p.data.featured)
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 3);
-const posts = (await getCollection('posts', (p) => !p.data.draft && p.data.pubDate.valueOf() <= Date.now()))
+const posts = (await getCollection('posts', isPublished))
   .sort(byDateDesc((p) => p.data.pubDate))
   .slice(0, 4);
 // Now 摘要：最新一期 + 正文前两个 H2 标题（直接从 markdown 原文按行提取，无需渲染）

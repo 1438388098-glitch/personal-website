@@ -3,20 +3,18 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatDate } from '../../lib/format';
 import { byDateDesc } from '../../lib/sort';
+import { isPublished } from '../../lib/publish';
 
-/* getStaticPaths 会被 Astro 提升到独立作用域，不能引用 frontmatter 顶层变量（连谓词都不行），需全部内联 */
+/* getStaticPaths 会被 Astro 提升到独立作用域，不能引用 frontmatter 顶层变量；lib 层导入可用 */
 export async function getStaticPaths() {
-  const posts = await getCollection(
-    'posts',
-    (p) => !p.data.draft && p.data.pubDate.valueOf() <= Date.now()
-  );
+  const posts = await getCollection('posts', isPublished);
   return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }));
 }
 const { post } = Astro.props;
 const { Content } = await render(post);
 const { title, description, category, pubDate, tags } = post.data;
 /* 相邻文章按发布日期排序：新一篇 / 旧一篇（含定时发布过滤） */
-const sorted = (await getCollection('posts', (p) => !p.data.draft && p.data.pubDate.valueOf() <= Date.now()))
+const sorted = (await getCollection('posts', isPublished))
   .sort(byDateDesc((p) => p.data.pubDate));
 const idx = sorted.findIndex((p) => p.id === post.id);
 const newer = idx > 0 ? sorted[idx - 1] : undefined;
