@@ -76,7 +76,11 @@ const countOf = (c: string) => posts.filter((p) => p.data.category === c).length
   .tab:hover { border-color: var(--accent); color: var(--accent); }
   .tab[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: #fff; }
   .tab[aria-pressed='true']:hover { color: #fff; }
-  .count { font-size: 0.8rem; opacity: 0.75; }
+  /* a11y：暗色下朱砂底白字对比度约 3.5:1 不达标，照 btn.primary 先例改深字 */
+  html[data-theme='dark'] .tab[aria-pressed='true'] { color: #20100c; }
+  html[data-theme='dark'] .tab[aria-pressed='true']:hover { color: #20100c; }
+  /* 计数字号小，0.75 透明度会跌破 4.5:1，去掉透明度靠 muted 色本身弱化 */
+  .count { font-size: 0.8rem; }
   section { margin: 2rem 0; }
   .essay-note { color: var(--text-muted); margin-top: 2.5rem; }
   .empty-note { color: var(--text-muted); margin-top: 2.5rem; }
