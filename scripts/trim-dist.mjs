@@ -28,6 +28,26 @@ try {
   }
   console.log(`trim-dist: 已改写 ${rewritten} 个 CSS 的 .woff 悬挂引用。`);
 
+  /* 非 CJK 切片（中文站永不命中 unicode-range）：删文件并从 CSS 抹掉对应 @font-face 块。
+     latin 保留：数字与西文展示位在用。 */
+  const nonCjk = /(cyrillic|vietnamese|greek|latin-ext)/;
+  let sliced = 0;
+  for (const f of readdirSync(dir)) {
+    if (f.endsWith('.woff2') && nonCjk.test(f)) {
+      unlinkSync(join(dir, f));
+      sliced++;
+    }
+  }
+  let blocks = 0;
+  for (const f of readdirSync(dir)) {
+    if (!f.endsWith('.css')) continue;
+    const p = join(dir, f);
+    const css = readFileSync(p, 'utf8');
+    const next = css.replace(/@font-face\s*{[^}]*}[\s\S]?/g, (m) => (nonCjk.test(m) ? (blocks++, '') : m));
+    if (next !== css) writeFileSync(p, next);
+  }
+  console.log(`trim-dist: 已剔除 ${sliced} 个非 CJK 切片、${blocks} 个对应 @font-face 块。`);
+
   /* public/ 会被逐字部署：dist 里出现 .md 说明把内部工作笔记当静态资产发了，直接失败 */
   const strays = [];
   (function walkMd(d) {
