@@ -39,7 +39,7 @@ const docs = [
     <p class="count" id="count" aria-live="polite"></p>
   </div>
   <ul id="results"></ul>
-  <script type="application/json" id="search-data" set:html={JSON.stringify(docs)} />
+  <script type="application/json" id="search-data" set:html={JSON.stringify(docs).replace(/</g, '\u003c')} />
 </BaseLayout>
 <style>
   .intro { color: var(--text-muted); margin: 0 0 1.5rem; }
@@ -56,6 +56,8 @@ const docs = [
   #results mark { background: color-mix(in srgb, var(--accent) 22%, transparent); color: inherit; padding: 0 0.1em; }
 </style>
 <script>
+  /* astro:page-load 首次加载与每次换页后都触发：与博客页 tabs 同理，顶层绑定会在返回本页后失灵 */
+  document.addEventListener('astro:page-load', () => {
   const DATA: { url: string; title: string; description: string; text: string }[] = JSON.parse(
     document.getElementById('search-data')!.textContent!
   );
@@ -122,5 +124,6 @@ const docs = [
   });
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { clearTimeout(timer); run(); }
+  });
   });
 </script>
