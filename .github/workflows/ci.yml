@@ -4,7 +4,9 @@ on:
   push:
     branches: [main]
   pull_request:
-  # 每日一跑：定时发布（pubDate <= now 过滤）的文章靠每日构建在到日当天自动上线
+  # 每日一跑：定时发布（pubDate <= now 过滤）的文章到日当天由构建验证可正常产出。
+  # 注意：本 workflow 只验证不部署，站点上线由站主手动构建发布；
+  # cron 为 UTC 时间，0 0 对应北京时间 08:00，此前一天的文章在该时刻后才会被纳入。
   schedule:
     - cron: '0 0 * * *'
 
