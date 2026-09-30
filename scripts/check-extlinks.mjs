@@ -6,7 +6,14 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const dist = resolve('dist');
-const SITE_ORIGIN = 'https://iweistoicqc5.top';
+/* 域名唯一事实源：从 src/lib/site.ts 提取（.mjs 不能直接 import .ts） */
+const siteTs = readFileSync(resolve('src/lib/site.ts'), 'utf8');
+const siteMatch = /url:\s*'([^']+)'/.exec(siteTs);
+if (!siteMatch) {
+  console.error('无法从 src/lib/site.ts 提取站点域名');
+  process.exit(1);
+}
+const SITE_ORIGIN = siteMatch[1];
 
 /* 豁免清单：URL 前缀精确匹配，必须写明理由 */
 const ALLOWLIST = [
@@ -40,7 +47,7 @@ async function probe(url) {
         method: 'HEAD',
         redirect: 'follow',
         signal: AbortSignal.timeout(10_000),
-        headers: { 'user-agent': 'site-link-check/1.0 (+https://iweistoicqc5.top)' },
+        headers: { 'user-agent': 'site-link-check/1.0' },
       });
       if (res.status < 400) return { url, ok: true, status: res.status };
       /* 不少站点不支持 HEAD，降级 GET 再试 */
