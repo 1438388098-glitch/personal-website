@@ -17,6 +17,7 @@
     "check:audit": "npm audit --omit=dev --registry=https://registry.npmjs.org",
     "check:extlinks": "node scripts/check-extlinks.mjs",
     "check:content": "node scripts/check-content.mjs",
+    "check:dist": "node scripts/check-dist.mjs",
     "test": "vitest run"
   },
   "dependencies": {
