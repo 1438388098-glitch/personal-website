@@ -8,3 +8,4 @@ dist/
 Thumbs.db
 .preview.log
 .preview.err.log
+.autopilot/
