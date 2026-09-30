@@ -15,7 +15,8 @@ const toText = (md: string | undefined) =>
     .replace(/[*_]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
-    .slice(0, 20000);
+    /* snippet 只展示正负 200 字，4 千字外的正文命中价值极低：cap 控制内嵌索引体积 */
+    .slice(0, 4000);
 
 const docs = [
   ...(await getCollection('posts', isPublished)).map((p) => ({
