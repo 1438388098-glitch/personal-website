@@ -41,7 +41,8 @@ describe('EXAM_AGG', () => {
   });
   it('每个数字都能在 zhuma-fakao-review 案例页溯源', () => {
     for (const v of [EXAM_AGG.subjects, EXAM_AGG.units, EXAM_AGG.wrongQuestions, EXAM_AGG.pdfBooklets, EXAM_AGG.minutesPerRound]) {
-      expect(zhuma).toContain(String(v));
+      /* 页面散文统一千位逗号口径（14,212 / 1,655 同规） */
+      expect(zhuma).toContain(v.toLocaleString('en-US'));
     }
   });
 });
