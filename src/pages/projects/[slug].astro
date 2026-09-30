@@ -37,7 +37,7 @@ const { title, summary, group, date, metrics, links, disclaimer } = project.data
 
     {links.length > 0 && (
       <p class="links">
-        {links.map((l) => <a href={l.url} target="_blank" rel="noopener">{l.label}</a>)}
+        {links.map((l) => <a href={l.url} target="_blank" rel="noopener noreferrer">{l.label}</a>)}
       </p>
     )}
     <p class="disclaimer">{disclaimer}</p>
