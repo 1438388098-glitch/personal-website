@@ -42,7 +42,11 @@ const { title, description, type, noindex } = Astro.props;
           });
         }
         scan();
-        document.addEventListener('astro:after-swap', scan);
+        /* 换页会替换 <html>，fx 类须与主题一样在 after-swap 重放，否则首屏之后动画全站失效 */
+        document.addEventListener('astro:after-swap', function () {
+          document.documentElement.classList.add('fx');
+          scan();
+        });
       })();
     </script>
   </body>
