@@ -43,8 +43,13 @@ try {
     if (!f.endsWith('.css')) continue;
     const p = join(dir, f);
     const css = readFileSync(p, 'utf8');
-    const next = css.replace(/@font-face\s*{[^}]*}[\s\S]?/g, (m) => (nonCjk.test(m) ? (blocks++, '') : m));
+    const next = css.replace(/@font-face\s*\{[^}]*\}\s*/g, (m) => (nonCjk.test(m) ? (blocks++, '') : m));
     if (next !== css) writeFileSync(p, next);
+  }
+  if (sliced !== blocks) {
+    /* 不变式：删掉的切片文件数必须等于抹掉的声明块数，脱钩说明有块漏删（引用已删文件）或多删 */
+    console.error(`trim-dist: 切片文件 ${sliced} 个 ≠ 声明块 ${blocks} 个，CSS 与产物文件脱钩，请核对`);
+    process.exit(1);
   }
   console.log(`trim-dist: 已剔除 ${sliced} 个非 CJK 切片、${blocks} 个对应 @font-face 块。`);
 
