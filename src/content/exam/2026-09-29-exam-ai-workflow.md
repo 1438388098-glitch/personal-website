@@ -17,7 +17,7 @@ draft: false
 [statute-rag](/projects/statute-rag/)，它只回带条号的原文，检索不到就明说。
 到了主观题，练习放在自托管的
 [fakao-shuati](https://github.com/1438388098-glitch/fakao-shuati) 上，
-判分交给 [fakao-grader](/projects/fakao-grader/)——按官方采分点逐点判，
+判分交给 [fakao-grader](/projects/fakao-grader/)：按官方采分点逐点判，
 没把握的判定强制复核。这些工具行不行，AI 自己说了不算，
 [cn-judbench](/projects/cn-judbench/) 用 323 道公开题先测一遍。
 造出这五个工具的，是第六个环节：Claude Code 等 AI 编码协作。
