@@ -7,6 +7,10 @@ const dir = resolve('dist/_astro');
 try {
   const woffs = readdirSync(dir).filter((f) => f.endsWith('.woff'));
   for (const f of woffs) unlinkSync(join(dir, f));
+  if (woffs.length === 0) {
+    /* 产物目录名变化或上游已不产 .woff：静默通过会掩盖漏删，构建日志必须喊一声 */
+    console.warn(`trim-dist: ${dir} 下没有可删的 .woff（0 个）。若上游仍产 .woff，说明产物目录名变了，请核对。`);
+  }
   console.log(`trim-dist: 已删除 ${woffs.length} 个 .woff 死重文件。`);
 } catch (err) {
   if (err.code === 'ENOENT') {
