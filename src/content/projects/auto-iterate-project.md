@@ -14,7 +14,7 @@ metrics:
     detail: 标记、吞异常、语法错误、测试缺口、热点、死导出、文档漂移，判断式扩展只做第二波
   - label: 自举验证
     value: '20 轮'
-    detail: 1.6.0 版本由对过夜自托管迭代产出，产品用自己的循环开发自己
+    detail: 1.6.0 版本是让它对自己的仓库跑了一整夜自托管迭代产出的
 links:
   - label: GitHub 仓库
     url: https://github.com/1438388098-glitch/auto-iterate-project
@@ -30,7 +30,7 @@ links:
 
 ## 验证
 
-被测对象是那个确定性 helper：scripts/autopilot_state.py，Python 3.6+，仅标准库，循环里的每个决策都经它落盘。测试套件 README 口径约 190 例，本地按套件自己的统计表达式清点为 209 个测试方法；CI 在 Python 3.8 与 3.13、Ubuntu 与 Windows 四个组合上跑全量，另有 --smoke 快检，约 1 秒跑完一轮视机器而定的轮循环检查。套件自带一个元守卫用例：收集到的用例数必须等于源码定义数，否则构建失败；起因是曾有两个测试类重名，第二个静默遮蔽第一个，14 个用例在套件全绿的情况下一次都没跑过。安全路径有账可查：密钥扫描覆盖 AWS、私钥、GitHub、Slack、Google、sk-*、JWT 等模式，sk-proj- 与 sk-ant- 形态曾漏报，修复后补了 8 模式参数化测试；config.json 写入 SHA-256 指纹，被篡改时 check 会告警。项目对自身做过一轮六维度审查（U-01 到 U-49），修复记录写明每批改动的验证方式：全量测试加手动端到端场景（init、backlog、begin、commit、complete、check、finish，外加密钥脱敏与路径守卫），当时基线 155 用例全绿；审查还顺带补上了此前缺失的 CI。1.6.0 版本由对过夜自托管迭代产出：产品用自己的循环开发自己。
+被测对象是那个确定性 helper：scripts/autopilot_state.py，Python 3.6+，仅标准库，循环里的每个决策都经它落盘。测试套件 README 口径约 190 例，本地按套件自己的统计表达式清点为 209 个测试方法；CI 在 Python 3.8 与 3.13、Ubuntu 与 Windows 四个组合上跑全量，另有 --smoke 快检，约 15 秒跑完一轮视机器而定的轮循环检查。套件自带一个元守卫用例：收集到的用例数必须等于源码定义数，否则构建失败；起因是曾有两个测试类重名，第二个静默遮蔽第一个，14 个用例在套件全绿的情况下一次都没跑过。安全路径有账可查：密钥扫描覆盖 AWS、私钥、GitHub、Slack、Google、sk-*、JWT 等模式，sk-proj- 与 sk-ant- 形态曾漏报，修复后补了 8 模式参数化测试；config.json 写入 SHA-256 指纹，被篡改时 check 会告警。项目对自身做过一轮六维度审查（U-01 到 U-49），修复记录写明每批改动的验证方式：全量测试加手动端到端场景（init、backlog、begin、commit、complete、check、finish，外加密钥脱敏与路径守卫），当时基线 155 用例全绿；审查还顺带补上了此前缺失的 CI。1.6.0 这个版本，是让它对自己的仓库跑了一整夜迭代出来的。
 
 ## 已知失败
 

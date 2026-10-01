@@ -30,7 +30,7 @@ links:
 
 ## 验证
 
-正确性主要靠回归测试与攻击者视角自测守住，材料全部在仓库公开。2026-08-13 授权审计轮的修复带全套回归：test_all 38/38、test_security_fixes 66/66、test_x3dh_full 25/25、test_chat 18/18，单元测试合计 161 例通过。3.2.0 批次（15 轮自动迭代）在发行说明里给出验证清单：pytest 集合 300+ 全过，TUI 冒烟加登录屏 44+31 全过，真实服务进程的本地双端 E2E 13/13，打包实测（PyInstaller 重建加 exe 级加解密往返、GUI 探活）全过，pip-audit 双依赖锁 0 已知漏洞。涉及随机字节、文件系统、线程的修复要求合入前全量 pytest 三连跑（2026-09-11 执行，三次 exit=0），全仓 TODO/FIXME 清点为 0。更早的红队自测报告走攻击者视角：实测打穿 auth token 明文落盘与 WS 不校验证书两条链路，修复后安全回归套件从 46 项扩到 66 项全绿。构建可复现：requirements.lock.txt 锁依赖，产物带 SBOM.json、buildinfo.json 与 SHA256SUMS.txt。
+正确性主要靠回归测试与攻击者视角自测守住，材料全部在仓库公开。2026-08-13 授权审计轮的修复带全套回归：test_all 38/38、test_security_fixes 66/66、test_x3dh_full 25/25、test_chat 18/18，单元测试合计 161 例通过。3.2.0 批次（15 轮自动迭代）在发行说明里给出验证清单：pytest 集合 300+ 全过，TUI 冒烟加登录屏 44+31 全过，真实服务进程的本地双端 E2E 13/13，打包实测（PyInstaller 重建加 exe 级加解密往返、GUI 探活）全过，pip-audit 双依赖锁 0 已知漏洞。涉及随机字节、文件系统、线程的修复要求合入前全量 pytest 三连跑（2026-09-11 执行，三次 exit=0），全仓 TODO/FIXME 清点为 0。更早的红队自测报告走攻击者视角：实测打穿 auth token 明文落盘与 WS 不校验证书两处弱点，修复后安全回归套件从 46 项扩到 66 项全绿。构建可复现：requirements.lock.txt 锁依赖，产物带 SBOM.json、buildinfo.json 与 SHA256SUMS.txt。
 
 ## 已知失败
 

@@ -31,7 +31,7 @@ links:
 
 ## 验证
 
-先如实交代：仓库里没有自动化测试，没有 CI，也没有数据校验脚本，README 通篇未提测试，这一层是空的。实际的检验靠三条路径。其一，本地可运行：README 给出的启动方式是 php -S localhost:8080，或者不起后端、直接双击 index.html 读全部诗，等于一条手工冒烟路径。其二，部署链路明确：站点跑在阿里云 ECS 的 Nginx 加 PHP 环境上，凭域名访问；后台凭据按 admin/config.example.php 模板手工复制配置，密码哈希用 php -r 调 password_hash 生成，凭据不进版本库。其三，线上实际运行：2026 年 10 月 1 日核验，线上 /poems/ 路径返回 HTTP 200，页面副标题标注作品跨度二〇二一到二〇二六，与 README 写的 2021 至 2026 一致。后端一共 5 个 PHP 文件（check_access、guestbook、likes、log_search、track），各管一件事，出问题时排查面很小。
+先如实交代：仓库里没有自动化测试，没有 CI，也没有数据校验脚本，README 通篇未提测试，这一层是空的。实际的检验靠三条路径。其一，本地可运行：README 给出的启动方式是 php -S localhost:8080，或者不起后端、直接双击 index.html 读全部诗，等于一条手工冒烟路径。其二，部署路径明确：站点跑在阿里云 ECS 的 Nginx 加 PHP 环境上，凭域名访问；后台凭据按 admin/config.example.php 模板手工复制配置，密码哈希用 php -r 调 password_hash 生成，凭据不进版本库。其三，线上实际运行：2026 年 10 月 1 日核验，线上 /poems/ 路径返回 HTTP 200，页面副标题标注作品跨度二〇二一到二〇二六，与 README 写的 2021 至 2026 一致。后端一共 5 个 PHP 文件（check_access、guestbook、likes、log_search、track），各管一件事，出问题时排查面很小。
 
 ## 已知失败
 
