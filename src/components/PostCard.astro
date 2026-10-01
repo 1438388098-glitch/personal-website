@@ -6,19 +6,28 @@ const { post } = Astro.props;
 const { title, description, category, pubDate, tags } = post.data;
 ---
 <article class="post-card">
-  <p class="meta">{category} · {formatDate(pubDate)}</p>
+  <p class="date mono">{formatDate(pubDate)}</p>
   <h3><a href={`/blog/${post.id}/`}>{title}</a></h3>
   <p class="desc">{description}</p>
-  {tags.length > 0 && <p class="tags">{tags.map((t) => <a href={`/tags/${t}/`}>#{t}</a>)}</p>}
+  <p class="tags">{category && <span class="cat">{category}</span>}{tags.map((t) => <a href={`/tags/${t}/`}>#{t}</a>)}</p>
 </article>
 <style>
-  .post-card { padding: 1.1rem 0; border-top: 1px solid var(--border); }
-  .meta { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.3rem; }
-  h3 { margin: 0 0 0.35rem; font-size: 1.15rem; }
+  /* 列表行：左侧 hover 指示小方块（灰变蓝），等宽日期列对齐 */
+  .post-card { padding: 1rem 0 1rem 1.1rem; border-top: 1px solid var(--border); position: relative; }
+  .post-card::before {
+    content: ''; position: absolute; left: 0; top: 1.55rem;
+    width: 7px; height: 7px; background: var(--border);
+    transition: background-color 0.15s ease;
+  }
+  .post-card:hover::before { background: var(--accent); }
+  .date { color: var(--text-muted); font-size: 0.82rem; margin: 0 0 0.15rem; }
+  h3 { margin: 0 0 0.3rem; font-size: 1.08rem; font-weight: 700; }
   h3 a { color: var(--text); }
-  h3 a:hover { color: var(--accent); text-decoration: none; }
-  .desc { color: var(--text-muted); margin: 0 0 0.4rem; }
-  .tags { font-size: 0.85rem; margin: 0; display: flex; gap: 0.7rem; }
+  h3 a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--accent); }
+  .desc { color: var(--text-muted); margin: 0 0 0.35rem; font-size: 0.95rem; }
+  .tags { font-size: 0.85rem; margin: 0; display: flex; gap: 0.7rem; align-items: baseline; }
+  .cat { color: var(--text-muted); }
+  .cat::after { content: ' ·'; color: var(--text-muted); margin-left: 0.1rem; }
   .tags a { color: var(--text-muted); }
   .tags a:hover { color: var(--accent); text-decoration: none; }
 </style>

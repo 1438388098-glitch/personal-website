@@ -1,0 +1,376 @@
+<!doctype html>
+<!--
+  首页改版 demo v3：瑞士风格的底子 + 可读性 + 小图形设计元素
+  相比 v2：正文加深加大、内容不再用全大写小字承载；设计感改由小图形承担——
+  几何构成（呼应参考图的黑块构成）、加号网格底纹、强调色小方块、区块编号、箭头符号。
+  强调色只出现在小图形上（方块/编号/箭头/hover），不用于正文。
+  内容全部取自站点真实数据。字体 CDN 仅为演示，落地时自托管切片。
+-->
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>改版 demo v3 · 胡圣炜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  /* ---- 令牌：暖白底 + 近黑 + 单一强调蓝（只给小图形） ---- */
+  :root {
+    --bg: #faf9f6;
+    --surface: #ffffff;
+    --ink: #17160f;
+    --text: #23221b;
+    --muted: #5f5e55;
+    --line: #e5e3db;
+    --line-strong: #17160f;
+    --accent: #2745f0;
+    --maxw: 72rem;
+  }
+  html[data-theme='dark'] {
+    --bg: #151513;
+    --surface: #1d1d1a;
+    --ink: #f2f1ea;
+    --text: #e6e5de;
+    --muted: #a3a29a;
+    --line: #2c2b28;
+    --line-strong: #f2f1ea;
+    --accent: #8b9dff;
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light; }
+  html[data-theme='dark'] { color-scheme: dark; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Archivo', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-size: 16.5px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, p, ul { margin: 0; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .container { max-width: var(--maxw); margin-inline: auto; padding-inline: 1.5rem; }
+
+  /* 小标签：中文正常大小写，英文对照才用大写宽距——关键信息不再压成小字 */
+  .label { display: inline-flex; align-items: center; gap: 0.55rem; font-size: 0.86rem; font-weight: 700; color: var(--text); }
+  .label::before { content: ''; width: 8px; height: 8px; background: var(--accent); flex: none; }
+  .label .en { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--faint, #a9a89f); }
+  html[data-theme='dark'] .label .en { color: #77766e; }
+
+  /* ---- 页头 ---- */
+  .site-header { border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: 0; z-index: 10; }
+  .header-inner { display: flex; align-items: center; gap: 2rem; height: 64px; }
+  .brand { display: inline-flex; align-items: center; gap: 0.6rem; font-weight: 800; font-size: 1.05rem; }
+  .brand-mark { width: 14px; height: 14px; background: var(--ink); position: relative; flex: none; }
+  .brand-mark::after { content: ''; position: absolute; inset: 4px; background: var(--accent); }
+  .brand .en { font-weight: 500; color: var(--muted); margin-left: 0.25em; font-size: 0.8em; letter-spacing: 0.08em; }
+  nav { display: flex; gap: 1.5rem; margin-left: auto; }
+  .nav-link { font-size: 0.95rem; color: var(--muted); }
+  .nav-link:hover { color: var(--ink); }
+  .nav-link.active { color: var(--ink); font-weight: 700; box-shadow: inset 0 -2px var(--accent); padding-bottom: 2px; }
+  #theme-toggle {
+    font: inherit; font-size: 0.9rem; background: none; border: 1px solid var(--line-strong);
+    color: var(--ink); cursor: pointer; padding: 0.28rem 0.8rem;
+  }
+  #theme-toggle:hover { background: var(--ink); color: var(--bg); }
+
+  /* ---- 首屏：左侧文案 + 右侧几何构成与数字面板 ---- */
+  .hero {
+    display: grid; grid-template-columns: 1.12fr 1fr; gap: 3.5rem;
+    padding: 4.5rem 0 4.5rem; align-items: start;
+    /* 加号网格底纹：极淡，制造「图纸」感，不干扰阅读 */
+    background-image: radial-gradient(color-mix(in srgb, var(--ink) 14%, transparent) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: center top;
+    -webkit-mask-image: linear-gradient(#000 60%, transparent);
+            mask-image: linear-gradient(#000 60%, transparent);
+  }
+  .hero .label { margin-bottom: 1.3rem; }
+  .hero h1 {
+    font-family: 'Archivo', 'Noto Sans SC', sans-serif;
+    font-size: clamp(2.3rem, 4.6vw, 3.4rem); font-weight: 900;
+    line-height: 1.18; letter-spacing: -0.01em;
+  }
+  .hero h1 .hl { box-shadow: inset 0 -0.32em color-mix(in srgb, var(--accent) 26%, transparent); }
+  .hero .lede { margin-top: 1.3rem; max-width: 30rem; color: var(--muted); font-size: 1.06rem; }
+  .pills { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.5rem; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    background: var(--surface); border: 1px solid var(--line);
+    padding: 0.34rem 0.9rem; font-size: 0.88rem; font-weight: 500; color: var(--text);
+  }
+  .pill::before { content: ''; width: 7px; height: 7px; background: var(--ink); flex: none; }
+  .pill.alt::before { background: var(--accent); border-radius: 50%; }
+  .ctas { display: flex; gap: 0.8rem; margin-top: 2.1rem; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.68rem 1.5rem; font-size: 0.98rem; font-weight: 700;
+    border: 1.5px solid var(--line-strong); color: var(--ink);
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  .btn .arr { font-family: 'Space Mono', monospace; transition: transform 0.2s ease; }
+  .btn:hover { background: var(--ink); color: var(--bg); }
+  .btn:hover .arr { transform: translateX(4px); }
+  .btn.primary { background: var(--ink); color: var(--bg); }
+  .btn.primary:hover { opacity: 0.88; }
+  .link-plain { font-size: 0.95rem; font-weight: 600; box-shadow: inset 0 -1.5px var(--accent); padding-bottom: 1px; }
+  .link-plain:hover { box-shadow: inset 0 -2.5px var(--accent); }
+
+  /* 右侧面板：几何构成（呼应参考图的黑块构成）+ 数字清单 */
+  .numbers { background: var(--surface); border: 1.5px solid var(--line-strong); }
+  .comp { display: flex; align-items: flex-end; gap: 10px; padding: 1.6rem 1.8rem 0; height: 180px; }
+  .comp i { display: block; border: 1.5px solid var(--ink); }
+  .comp .c1 { width: 96px; height: 150px; }
+  .comp .c2 { width: 44px; height: 96px; }
+  .comp .c3 { width: 44px; height: 64px; }
+  .comp .c4 { width: 96px; height: 108px; background: var(--ink); position: relative; }
+  .comp .c4::after { content: ''; position: absolute; right: 10px; top: 10px; width: 12px; height: 12px; background: var(--accent); }
+  .num-list { padding: 0.4rem 1.8rem 1.2rem; }
+  .num-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.85rem 0; border-bottom: 1px solid var(--line); }
+  .num-row:last-child { border-bottom: none; }
+  .num-row .k { font-size: 0.9rem; color: var(--muted); }
+  .num-row .v { font-family: 'Space Mono', monospace; font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
+  .num-row .v small { font-size: 0.85rem; color: var(--muted); margin-left: 0.25em; }
+
+  /* ---- 区块：编号 + 标签 + 通栏黑线 ---- */
+  section { margin: 4.5rem 0; }
+  .sec-head {
+    display: flex; align-items: baseline; gap: 1rem;
+    border-bottom: 2px solid var(--line-strong); padding-bottom: 0.7rem; margin-bottom: 0.4rem;
+  }
+  .sec-head .no { font-family: 'Space Mono', monospace; font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+  .sec-head .label::before { display: none; }
+  .sec-head a { margin-left: auto; font-size: 0.9rem; font-weight: 600; color: var(--muted); }
+  .sec-head a:hover { color: var(--accent); }
+
+  /* 项目：编号网格，hover 时标题下划线 + 编号变块 */
+  .proj-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .proj { padding: 1.8rem 1.6rem 2rem; border-bottom: 1px solid var(--line); }
+  .proj-grid .proj:nth-child(odd) { border-right: 1px solid var(--line); padding-left: 0; }
+  .proj-grid .proj:nth-child(even) { padding-right: 0; }
+  .proj:last-child { border-bottom: none; }
+  .proj .idx {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 2rem; height: 1.5rem; padding: 0 0.4rem;
+    font-family: 'Space Mono', monospace; font-size: 0.82rem; font-weight: 700;
+    border: 1.5px solid var(--line-strong); margin-bottom: 0.9rem;
+    transition: background-color 0.18s ease, color 0.18s ease;
+  }
+  .proj:hover .idx { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .proj h3 { font-size: 1.22rem; font-weight: 800; line-height: 1.4; letter-spacing: -0.005em; }
+  .proj h3 a:hover { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; text-decoration-color: var(--accent); }
+  .proj .summary { margin-top: 0.55rem; color: var(--muted); font-size: 0.98rem; max-width: 52ch; }
+  .proj .figures { margin-top: 1rem; display: flex; gap: 2.2rem; }
+  .proj .figures .k { font-size: 0.82rem; color: var(--muted); }
+  .proj .figures .v { font-family: 'Space Mono', monospace; font-size: 1.02rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); }
+
+  /* 文章：日期等宽字体 + 标题 + 栏目，hover 出现小方块指示 */
+  .post { display: grid; grid-template-columns: 7.5rem 1fr auto; gap: 1.5rem; align-items: baseline; padding: 1rem 0; border-bottom: 1px solid var(--line); position: relative; padding-left: 1.1rem; }
+  .post::before { content: ''; position: absolute; left: 0; top: 50%; width: 7px; height: 7px; transform: translateY(-50%); background: var(--line); transition: background-color 0.15s ease; }
+  .post:hover::before { background: var(--accent); }
+  .post .date { font-family: 'Space Mono', monospace; font-size: 0.82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .post h3 { font-size: 1.08rem; font-weight: 700; }
+  .post h3 a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--accent); }
+  .post .cat { font-size: 0.85rem; color: var(--muted); }
+  .post .cat::before { content: '· '; color: var(--faint, #a9a89f); }
+
+  /* 法考 × AI：通栏黑块 + 几何角标 */
+  .band { background: var(--ink); color: var(--bg); margin: 4.5rem 0; position: relative; }
+  .band::before, .band::after {
+    content: '+'; position: absolute; font-family: 'Space Mono', monospace;
+    font-size: 1.1rem; color: var(--bg); opacity: 0.5; top: 8px;
+  }
+  .band::before { left: 12px; }
+  .band::after { right: 12px; }
+  .band-inner { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; padding: 2.8rem 0; }
+  .band .label { color: var(--bg); }
+  .band .label::before { background: var(--accent); }
+  html[data-theme='dark'] .band .label::before { background: var(--accent); }
+  .band .label .en { color: var(--bg); opacity: 0.55; }
+  .band h2 { font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 900; margin-top: 0.6rem; }
+  .band p { margin-top: 0.6rem; opacity: 0.75; max-width: 44rem; font-size: 1rem; }
+  .band .btn { border-color: var(--bg); color: var(--bg); }
+  .band .btn:hover { background: var(--bg); color: var(--ink); }
+
+  footer { border-top: 1px solid var(--line); margin-top: 4.5rem; }
+  .footer-inner { display: flex; gap: 1.8rem; padding: 1.8rem 0 2.6rem; font-size: 0.92rem; color: var(--muted); }
+  .footer-inner .mark { display: inline-block; width: 10px; height: 10px; background: var(--accent); margin-right: 0.4rem; }
+  .footer-inner a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+  .demo-panel {
+    position: fixed; right: 1.2rem; bottom: 1.2rem; z-index: 50; display: flex; gap: 0.5rem;
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.18));
+  }
+  .demo-panel button {
+    font: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer;
+    border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--ink);
+    padding: 0.55rem 1.1rem;
+  }
+  .demo-panel button:hover { background: var(--ink); color: var(--surface); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 2.4rem; padding: 3rem 0; }
+    .proj-grid { grid-template-columns: 1fr; }
+    .proj-grid .proj:nth-child(odd) { border-right: none; padding-left: 0; padding-right: 0; }
+    .proj-grid .proj:nth-child(even) { padding-right: 0; }
+    .post { grid-template-columns: 1fr; gap: 0.15rem; }
+    .post .cat { display: none; }
+    .band-inner { grid-template-columns: 1fr; }
+    nav { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="#"><span class="brand-mark" aria-hidden="true"></span>胡圣炜<span class="en">HU SHENGWEI</span></a>
+    <nav aria-label="主导航">
+      <a class="nav-link active" href="#">首页</a>
+      <a class="nav-link" href="#">项目</a>
+      <a class="nav-link" href="#">博客</a>
+      <a class="nav-link" href="#">法考 × AI</a>
+      <a class="nav-link" href="#">工具箱</a>
+      <a class="nav-link" href="#">关于</a>
+    </nav>
+    <button id="theme-toggle" type="button">暗色</button>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div>
+      <span class="label">法律 × 工程<span class="en">Law × Engineering</span></span>
+      <h1>法学在读，<br />业余<span class="hl">造工具</span>。</h1>
+      <p class="lede">法条检索、法考判分、司法评测，全部开源，数字可查。</p>
+      <div class="pills">
+        <span class="pill">备考法考中</span>
+        <span class="pill alt">武汉</span>
+        <span class="pill">全部开源</span>
+      </div>
+      <p class="ctas">
+        <a class="btn primary" href="#">看项目 <span class="arr">→</span></a>
+        <a class="link-plain" href="#">关于我</a>
+      </p>
+    </div>
+    <aside class="numbers" aria-label="关键数字">
+      <div class="comp" aria-hidden="true">
+        <i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i>
+      </div>
+      <div class="num-list">
+        <div class="num-row"><span class="k">法条检索 Recall@5</span><span class="v">98.9%</span></div>
+        <div class="num-row"><span class="k">入库法条</span><span class="v">14,212<small>条</small></span></div>
+        <div class="num-row"><span class="k">评测规模 · 法衡</span><span class="v">12<small>包</small>/323<small>题</small></span></div>
+        <div class="num-row"><span class="k">判分口径 · 逐采分点</span><span class="v">✓/△/✗</span></div>
+      </div>
+    </aside>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="no">01</span>
+      <span class="label">精选项目<span class="en">Selected Work</span></span>
+      <a href="#">全部项目 →</a>
+    </div>
+    <div class="proj-grid">
+      <div class="proj">
+        <span class="idx">01</span>
+        <h3><a href="#">statute-rag：法条混合检索底座</a></h3>
+        <p class="summary">把 14,212 条法条结构化入库，用多通道 BM25 混合检索与强制条文引用，让法条问答可评测、可回跳。</p>
+        <div class="figures">
+          <div><div class="k">Recall@5</div><div class="v">98.9%</div></div>
+          <div><div class="k">入库法条</div><div class="v">14,212</div></div>
+        </div>
+      </div>
+      <div class="proj">
+        <span class="idx">02</span>
+        <h3><a href="#">cn-judbench（法衡）：中国司法 LLM 评测基准</a></h3>
+        <p class="summary">用 12 个任务包、323 道公开题测中国司法工作流：判分全程机检、统计协议预注册。</p>
+        <div class="figures">
+          <div><div class="k">任务包</div><div class="v">12</div></div>
+          <div><div class="k">公开题</div><div class="v">323</div></div>
+        </div>
+      </div>
+      <div class="proj">
+        <span class="idx">03</span>
+        <h3><a href="#">fakao-grader：法考主观题 AI 评分老师</a></h3>
+        <p class="summary">在 Agent CLI 里按官方采分点逐点判分，输出可行动的丢分点清单。</p>
+        <div class="figures">
+          <div><div class="k">判定口径</div><div class="v">✓/△/✗</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="no">02</span>
+      <span class="label">最近写作<span class="en">Writing</span></span>
+      <a href="#">全部文章 →</a>
+    </div>
+    <div class="post">
+      <span class="date">2026-10-15</span>
+      <h3><a href="#">药监局也开始用AI审药了</a></h3>
+      <span class="cat">法学随笔</span>
+    </div>
+    <div class="post">
+      <span class="date">2026-10-14</span>
+      <h3><a href="#">AI责任的两种算法</a></h3>
+      <span class="cat">杂谈</span>
+    </div>
+    <div class="post">
+      <span class="date">2026-10-13</span>
+      <h3><a href="#">法院第一次给模型参数标了价：160万</a></h3>
+      <span class="cat">热点快评</span>
+    </div>
+    <div class="post">
+      <span class="date">2026-10-11</span>
+      <h3><a href="#">8月2日之后，你的AI必须自报家门</a></h3>
+      <span class="cat">热点快评</span>
+    </div>
+  </section>
+
+  <div class="band">
+    <div class="container band-inner">
+      <div>
+        <span class="label">法考 × AI<span class="en">Exam Workflow</span></span>
+        <h2>把 AI 缝进备考流程</h2>
+        <p>错题变笔记、主观题机器初判、法条检索必带引用，每个环节一个自建工具。</p>
+      </div>
+      <a class="btn" href="#">看备考工作流 <span class="arr">→</span></a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container footer-inner">
+      <span><span class="mark" aria-hidden="true"></span>© 2026 胡圣炜</span>
+      <a href="#">GitHub</a>
+      <a href="#">sww00316@163.com</a>
+    </div>
+  </footer>
+</main>
+
+<div class="demo-panel">
+  <button id="t-theme" type="button">明 / 暗</button>
+</div>
+
+<script>
+  var root = document.documentElement;
+  var btn = document.getElementById('t-theme');
+  /* 默认跟随系统深浅色；手动切换后以手动为准（本页不做持久化，刷新回到系统值） */
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    root.dataset.theme = 'dark';
+    document.getElementById('theme-toggle').textContent = '亮色';
+  }
+  btn.addEventListener('click', function () {
+    var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    document.getElementById('theme-toggle').textContent = next === 'dark' ? '亮色' : '暗色';
+  });
+</script>
+</body>
+</html>

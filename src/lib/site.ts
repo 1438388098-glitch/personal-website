@@ -4,6 +4,8 @@ export const SITE = {
     '胡圣炜（Stoic）：法学在读，业余造工具。法条检索、法考判分、司法评测，全部开源，数字可查。',
   url: 'https://iweistoicqc5.top',
   author: '胡圣炜',
+  /** 站长拉丁转写：页头品牌行与中文并列（v3 设计语言） */
+  authorEn: 'HU SHENGWEI',
   github: 'https://github.com/1438388098-glitch',
   poems: 'https://iweistoicqc5.top/poems/',
   /** 执行时处理：从旧站页面提取知乎主页链接（curl 首页 grep zhihu）；提取不到则置空 */

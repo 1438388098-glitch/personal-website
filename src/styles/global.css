@@ -1,29 +1,36 @@
-/* 设计令牌：纸面 + 墨色 + 朱砂。呼应语境：墨（书写）、朱砂（印章/法律）。 */
+/* 设计令牌 v3：瑞士风格的底子。暖白纸面 + 近黑 + 单一强调蓝。
+   蓝色只出现在小元素上（小方块、编号、hover 指示、链接），不用于大面积铺色；
+   层级靠字重与留白，不用彩色侧条；全站直角（无圆角、无噪点纹理）。
+   呼应语境：图纸感网格 + 高对比黑白 + 数据等宽字。 */
 :root {
-  --bg: #faf9f7;
-  --bg-soft: #f2f0ec;
-  --text: #201f1d;
-  --text-muted: #6f6b64;
-  --accent: #b3402a;
-  --border: #e4e1da;
-  /* 组件边界色：对背景 ≥3:1（WCAG 1.4.11 非文本对比），--border 仅作装饰性分隔 */
-  --border-strong: #94908a;
-  --code-bg: #f4f2ee;
-  /* 暖调投影：跟纸面同族的红棕灰，比通用纯黑更贴暖底 */
-  --shadow-card: 0 14px 30px -20px rgba(74, 47, 36, 0.5);
+  --bg: #faf9f6;
+  --bg-soft: #f1efe8;
+  --surface: #ffffff;
+  --ink: #17160f;
+  --text: #23221b;
+  --text-muted: #5f5e55;
+  --accent: #2745f0;
+  --border: #e5e3db;
+  /* 组件强边界：与墨色同源（对背景高对比），--border 仅作装饰性分隔 */
+  --border-strong: var(--ink);
+  --code-bg: #f1efe8;
+  /* 投影：跟纸面同族的中性灰，比通用纯黑更贴暖底 */
+  --shadow-card: 0 14px 30px -22px rgba(23, 22, 15, 0.35);
   --maxw: 72rem;
-  /* 衬线只用于标题与数字等展示位（Source Serif 4 管西文与数字，思源宋体管中文），正文保持无衬线 */
-  --font-serif: 'Source Serif 4', 'Noto Serif SC', 'Songti SC', SimSun, serif;
+  /* 展示字族：Archivo 管西文与数字展示位，思源黑体管中文；正文同族小字重 */
+  --font-display: 'Archivo', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
 }
 html[data-theme='dark'] {
-  --bg: #151413;
-  --bg-soft: #1d1c1a;
-  --text: #e8e6e1;
-  --text-muted: #9b968d;
-  --accent: #d4694f;
-  --border: #2c2a27;
-  --border-strong: #6e6a63;
-  --code-bg: #201e1c;
+  --bg: #151513;
+  --bg-soft: #1d1d1a;
+  --surface: #1c1c19;
+  --ink: #f2f1ea;
+  --text: #e6e5de;
+  --text-muted: #a3a29a;
+  --accent: #8b9dff;
+  --border: #2c2b28;
+  --code-bg: #201f1c;
   --shadow-card: 0 14px 30px -20px rgba(0, 0, 0, 0.65);
 }
 
@@ -34,25 +41,18 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  font-family: var(--font-display);
   line-height: 1.75;
   font-size: 1rem;
 }
-/* 纸面噪点：极低透明度的固定颗粒层，打破纯色死平；pointer-events none 不拦交互，层级低于页头 */
-body::after {
-  content: '';
-  position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.03;
-}
-html[data-theme='dark'] body::after { opacity: 0.05; }
 a { color: var(--accent); text-decoration: none; transition: color 0.15s ease; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 img { max-width: 100%; height: auto; }
-h1, h2, h3 { font-family: var(--font-serif); line-height: 1.25; letter-spacing: 0; }
-/* 大标题负字距只给展示位：标题越大收得越紧，中文宋体收到 -0.015em 仍不挤 */
-h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); font-weight: 700; line-height: 1.2; letter-spacing: -0.015em; text-wrap: balance; }
-h2 { font-size: clamp(1.4rem, 2.5vw, 1.8rem); font-weight: 700; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.25; letter-spacing: 0; }
+/* 展示标题：超大字重（900/800）撑层级，负字距只给 h1 */
+h1 { font-size: clamp(2.3rem, 4.6vw, 3.4rem); font-weight: 900; line-height: 1.18; letter-spacing: -0.01em; text-wrap: balance; }
+h2 { font-size: clamp(1.4rem, 2.4vw, 1.8rem); font-weight: 800; }
+h3 { font-weight: 800; }
 
 /* 标题锚链：默认隐形，悬停/聚焦浮现，不进 tab 序也不进读屏 */
 .prose .anchor { opacity: 0; margin-left: 0.35em; text-decoration: none; }
@@ -61,36 +61,45 @@ h2 { font-size: clamp(1.4rem, 2.5vw, 1.8rem); font-weight: 700; }
   .prose .anchor { opacity: 1; }
 }
 
-/* 键盘焦点环：全站统一朱砂描边，鼠标点击不触发（focus-visible） */
+/* 键盘焦点环：全站统一强调蓝描边，鼠标点击不触发（focus-visible） */
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
 
-/* 卡片公共类：四处卡片（项目/法考环节/首页动态/工具箱）共用一套表面与悬停 */
+/* 卡片公共类：直角白面（暗色浅面），hover 抬升 + 边框加深 */
 .card {
-  border: 1px solid var(--border); border-radius: 12px; background: var(--bg);
+  border: 1.5px solid var(--border); border-radius: 0; background: var(--surface);
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .card:hover {
-  transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
   box-shadow: var(--shadow-card);
 }
 
-/* 按钮公共类：主按钮实心朱砂，次按钮描边 */
+/* 按钮公共类：直角矩形，1.5px 墨色描边；主按钮墨底反白 */
 .btn {
-  display: inline-block; border: 1px solid var(--border-strong); border-radius: 8px; padding: 0.5rem 1.2rem; color: var(--text);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease, filter 0.2s ease;
+  display: inline-block; border: 1.5px solid var(--border-strong); border-radius: 0; padding: 0.6rem 1.4rem; color: var(--text); font-weight: 700;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
-.btn:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; transform: translateY(-1px); }
+.btn:hover { background: var(--ink); color: var(--bg); text-decoration: none; }
 .btn:active { transform: translateY(1px); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn.primary:hover { filter: brightness(1.08); color: #fff; }
-/* a11y：暗色下朱砂底(#d4694f)配白字对比度约 3.5:1 不达标，改深字 ≈5.2:1 */
-html[data-theme='dark'] .btn.primary { color: #20100c; }
-/* 标题层级：内容区 h2 统一朱砂侧标（首页 section-head、各栏目分组标题、文章正文） */
-.section-head h2, main > section > h2, .prose h2 {
-  border-left: 4px solid var(--accent);
-  padding-left: 0.65rem;
+.btn.primary { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.btn.primary:hover { opacity: 0.88; color: var(--bg); }
+
+/* 设计小图形语言：区块头（编号 + 标题 + 英文对照 + 通栏黑线）、等宽数字 */
+.sec-head {
+  display: flex; align-items: baseline; gap: 1rem;
+  border-bottom: 2px solid var(--border-strong); padding-bottom: 0.7rem; margin-bottom: 0.4rem;
 }
+.sec-no { font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+.sec-en { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-left: 0.4em; }
+.sec-head h2 { margin: 0; font-size: 1.3rem; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* 兼容旧标记：既有的 .section-head 布局升级为黑线通栏（编号由各页自行加 .sec-no） */
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; border-bottom: 2px solid var(--border-strong); padding-bottom: 0.7rem; margin-bottom: 0.75rem; }
+.section-head h2 { margin: 0; }
+.section-head a { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
+.section-head a:hover { color: var(--accent); }
 
 /* 入场动效：仅在未开启「减少动态效果」时生效，一次性 transform/opacity，GPU 友好 */
 @media (prefers-reduced-motion: no-preference) {
@@ -119,7 +128,7 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 .container { max-width: var(--maxw); margin-inline: auto; padding-inline: 1.25rem; }
 .skip-link {
   position: absolute; left: -9999px; top: 0;
-  background: var(--accent); color: #fff; padding: 0.5rem 1rem; z-index: 100;
+  background: var(--ink); color: var(--bg); padding: 0.5rem 1rem; z-index: 100;
 }
 .skip-link:focus { left: 0; }
 
@@ -135,12 +144,12 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 }
 .prose code {
   background: var(--code-bg); border: 1px solid var(--border);
-  border-radius: 4px; padding: 0.1em 0.35em; font-size: 0.9em;
+  border-radius: 0; padding: 0.1em 0.35em; font-size: 0.9em;
   font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
 }
 .prose pre {
   background: var(--code-bg); border: 1px solid var(--border);
-  border-radius: 8px; padding: 1rem; overflow-x: auto;
+  border-radius: 0; padding: 1rem; overflow-x: auto;
 }
 .prose pre code { background: none; border: none; padding: 0; }
 .prose table { border-collapse: collapse; width: 100%; margin: 1.4em 0; }

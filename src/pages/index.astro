@@ -8,7 +8,7 @@ import { EXAM_AGG } from '../lib/exam-progress';
 import { byDateDesc } from '../lib/sort';
 import { isPublished } from '../lib/publish';
 
-const projects = (await getCollection('projects'))
+const featuredProjects = (await getCollection('projects'))
   .filter((p) => p.data.featured)
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 3);
@@ -19,24 +19,54 @@ const posts = (await getCollection('posts', isPublished))
 const currentNow = (await getCollection('now'))
   .sort((a, b) => b.data.period.localeCompare(a.data.period))[0];
 const nowTopics = currentNow?.data.topics ?? [];
+// 数字面板：取自精选项目 frontmatter 的 metrics（单一事实源在内容文件，此处只做展示挑选）
+const metricOf = (id: string, label: string) =>
+  featuredProjects.find((p) => p.id === id)?.data.metrics.find((m) => m.label.startsWith(label))?.value ?? '';
+const panelRows = [
+  { k: '法条检索 Recall@5', v: metricOf('statute-rag', 'Recall@5') },
+  { k: '入库法条', v: metricOf('statute-rag', '语料规模') },
+  { k: '评测规模 · 法衡', v: metricOf('cn-judbench', '评测规模') },
+  { k: '判分口径 · 逐采分点', v: metricOf('fakao-grader', '判定口径') },
+];
 ---
 <BaseLayout title={SITE.title}>
   <section class="hero">
-    <h1 class="fade-up">{SITE.author}</h1>
-    <p class="tagline fade-up d1">法学在读，业余造工具。法条检索、法考判分、司法评测，全部开源，数字可查。</p>
-    <p class="status fade-up d2"><span class="dot" aria-hidden="true"></span>备考法考中 · 武汉</p>
-    <p class="ctas fade-up d3">
-      <a class="btn primary" href="/projects/">看项目</a>
-      <a class="btn" href="/about/">关于我</a>
-    </p>
+    <div>
+      <p class="label fade-up">法律 × 工程<span class="sec-en">Law × Engineering</span></p>
+      <h1 class="fade-up d1">法学在读，<br />业余<span class="hl">造工具</span>。</h1>
+      <p class="lede fade-up d2">法条检索、法考判分、司法评测，全部开源，数字可查。</p>
+      <div class="pills fade-up d2">
+        <span class="pill">备考法考中</span>
+        <span class="pill alt">武汉</span>
+        <span class="pill">全部开源</span>
+      </div>
+      <p class="ctas fade-up d3">
+        <a class="btn primary" href="/projects/">看项目 <span class="arr" aria-hidden="true">→</span></a>
+        <a class="link-plain" href="/about/">关于我</a>
+      </p>
+    </div>
+    <aside class="numbers fade-up d2" aria-label="关键数字">
+      <div class="comp" aria-hidden="true">
+        <i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i>
+      </div>
+      <div class="num-list">
+        {panelRows.map((row) => (
+          <div class="num-row"><span class="k">{row.k}</span><span class="v mono">{row.v}</span></div>
+        ))}
+      </div>
+    </aside>
   </section>
 
-  {projects.length > 0 && (
+  {featuredProjects.length > 0 && (
     <section data-reveal>
-      <div class="section-head"><h2>精选项目</h2><a href="/projects/">全部项目</a></div>
+      <div class="sec-head">
+        <span class="sec-no">01</span>
+        <h2>精选项目<span class="sec-en">Selected Work</span></h2>
+        <a href="/projects/">全部项目 →</a>
+      </div>
       <div class="featured-grid">
-        {projects.map((p, i) => (
-          <div class:list={['cell', { wide: i === 0 }]}><ProjectCard project={p} showMetrics={false} /></div>
+        {featuredProjects.map((p, i) => (
+          <div class:list={['cell', { wide: i === 0 }]}><ProjectCard project={p} showMetrics={false} index={i + 1} /></div>
         ))}
       </div>
     </section>
@@ -44,32 +74,39 @@ const nowTopics = currentNow?.data.topics ?? [];
 
   {posts.length > 0 && (
     <section data-reveal>
-      <div class="section-head"><h2>最近写作</h2><a href="/blog/">全部文章</a></div>
+      <div class="sec-head">
+        <span class="sec-no">02</span>
+        <h2>最近写作<span class="sec-en">Writing</span></h2>
+        <a href="/blog/">全部文章 →</a>
+      </div>
       {posts.map((p) => <PostCard post={p} />)}
     </section>
   )}
 
-  <section aria-label="近期动态" data-reveal>
-    <div class="dynamic-grid">
-      <div class="card dyn-card">
-        <h2><a href="/exam/">法考 × AI</a></h2>
-        <p class="dyn-text">把 AI 缝进备考流程：错题变笔记、主观题机器初判、法条检索必带引用，每个环节一个自建工具。</p>
-        <p class="dyn-figures">{EXAM_AGG.subjects} 科目 / {EXAM_AGG.wrongQuestions} 错题</p>
-        <a class="dyn-link" href="/exam/">看备考工作流</a>
+  <section class="band" aria-label="近期动态" data-reveal>
+    <div class="band-inner">
+      <div>
+        <p class="label">法考 × AI<span class="sec-en">Exam Workflow</span></p>
+        <h2>把 AI 缝进备考流程</h2>
+        <p class="band-text">错题变笔记、主观题机器初判、法条检索必带引用，每个环节一个自建工具。</p>
+        <p class="band-figures mono">{EXAM_AGG.subjects} 科目 / {EXAM_AGG.wrongQuestions} 错题</p>
       </div>
-      {currentNow && (
-        <div class="card dyn-card">
-          <h2><a href="/now/">Now · {currentNow.data.period}</a></h2>
-          {nowTopics.length > 0 && (
-            <ul class="dyn-list">
-              {nowTopics.map((t) => <li>{t}</li>)}
-            </ul>
-          )}
-          <a class="dyn-link" href="/now/">看本期动态</a>
-        </div>
-      )}
+      <a class="btn band-btn" href="/exam/">看备考工作流 <span class="arr" aria-hidden="true">→</span></a>
     </div>
   </section>
+
+  {currentNow && (
+    <section class="now-strip" data-reveal>
+      <div class="sec-head">
+        <span class="sec-no">03</span>
+        <h2>Now<span class="sec-en">{currentNow.data.period}</span></h2>
+        <a href="/now/">看本期动态 →</a>
+      </div>
+      <ul class="now-list">
+        {nowTopics.map((t) => <li>{t}</li>)}
+      </ul>
+    </section>
+  )}
   <script is:inline type="application/ld+json" set:html={JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -79,40 +116,87 @@ const nowTopics = currentNow?.data.topics ?? [];
     author: { '@type': 'Person', name: SITE.author, jobTitle: '法学在读 · 法律 × AI', url: SITE.github }
   })} />
 </BaseLayout>
-
 <style>
-  .hero { padding: 4.5rem 0 3.5rem; border-bottom: 1px solid var(--border); }
-  .hero h1 { margin: 0 0 1rem; font-size: clamp(2.8rem, 6vw, 4.2rem); }
-  .tagline { font-family: var(--font-serif); font-weight: 700; font-size: clamp(1.2rem, 2vw, 1.4rem); line-height: 1.8; margin: 0 0 0.9rem; max-width: 34rem; text-wrap: balance; }
-  .status { color: var(--text-muted); margin: 0 0 1.5rem; font-size: 0.95rem; }
-  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 0.5rem; }
-  @media (prefers-reduced-motion: no-preference) {
-    .dot { animation: pulse 2.4s ease-in-out infinite; }
+  /* ---- 首屏：左侧文案 + 右侧几何构成与数字面板（v3 demo 定稿语言） ---- */
+  .hero {
+    display: grid; grid-template-columns: 1.12fr 1fr; gap: 3.5rem;
+    padding: 4.5rem 0; align-items: start;
+    /* 图纸感点阵底纹：极淡、向下渐隐，不干扰阅读 */
+    background-image: radial-gradient(color-mix(in srgb, var(--ink) 14%, transparent) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: center top;
+    -webkit-mask-image: linear-gradient(#000 60%, transparent);
+            mask-image: linear-gradient(#000 60%, transparent);
   }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-  .ctas { display: flex; gap: 0.75rem; margin: 0; }
-  section { margin: 3rem 0; }
-  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.75rem; }
-  .section-head h2 { margin: 0; }
-  .featured-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .hero .label { display: inline-flex; align-items: center; gap: 0.55rem; font-size: 0.86rem; font-weight: 700; margin: 0 0 1.3rem; }
+  .hero .label::before { content: ''; width: 8px; height: 8px; background: var(--accent); flex: none; }
+  .hero .hl { box-shadow: inset 0 -0.32em color-mix(in srgb, var(--accent) 26%, transparent); }
+  .lede { margin: 1.3rem 0 0; max-width: 30rem; color: var(--text-muted); font-size: 1.06rem; }
+  .pills { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 1.5rem 0 0; padding: 0; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 0.34rem 0.9rem; font-size: 0.88rem; font-weight: 500; color: var(--text);
+  }
+  .pill::before { content: ''; width: 7px; height: 7px; background: var(--ink); flex: none; }
+  .pill.alt::before { background: var(--accent); border-radius: 50%; }
+  .ctas { display: flex; gap: 0.9rem; margin: 2.1rem 0 0; align-items: center; }
+  .btn .arr { font-family: var(--font-mono); transition: transform 0.2s ease; }
+  .btn:hover .arr { transform: translateX(4px); }
+  .link-plain { font-size: 0.95rem; font-weight: 600; color: var(--text); box-shadow: inset 0 -1.5px var(--accent); padding-bottom: 1px; }
+  .link-plain:hover { color: var(--text); box-shadow: inset 0 -2.5px var(--accent); text-decoration: none; }
+
+  /* 数字面板：白底描边盒，几何构成（呼应设计参考的黑块构成）+ 等宽指标行 */
+  .numbers { background: var(--surface); border: 1.5px solid var(--border-strong); }
+  .comp { display: flex; align-items: flex-end; gap: 10px; padding: 1.6rem 1.8rem 0; height: 180px; }
+  .comp i { display: block; border: 1.5px solid var(--ink); }
+  .comp .c1 { width: 96px; height: 150px; }
+  .comp .c2 { width: 44px; height: 96px; }
+  .comp .c3 { width: 44px; height: 64px; }
+  .comp .c4 { width: 96px; height: 108px; background: var(--ink); position: relative; }
+  .comp .c4::after { content: ''; position: absolute; right: 10px; top: 10px; width: 12px; height: 12px; background: var(--accent); }
+  .num-list { padding: 0.4rem 1.8rem 1.2rem; }
+  .num-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.85rem 0; border-bottom: 1px solid var(--border); }
+  .num-row:last-child { border-bottom: none; }
+  .num-row .k { font-size: 0.9rem; color: var(--text-muted); }
+  .num-row .v { font-size: 1.15rem; font-weight: 700; white-space: nowrap; color: var(--text); }
+
+  section { margin: 4.5rem 0; }
+  section.band { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+  .featured-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
   .cell.wide { grid-column: 1 / -1; }
-  /* 首位的精选项目升级为大卡：更宽的呼吸、更大的标题与摘要 */
-  .cell.wide :global(.project-card) { padding: 1.6rem 1.8rem; }
-  .cell.wide :global(.project-card h3) { font-size: 1.5rem; }
+  /* 首位精选项目升级为大卡：更宽的呼吸、更大的标题与摘要 */
+  .cell.wide :global(.project-card) { padding: 1.7rem 1.9rem; }
+  .cell.wide :global(.project-card h3) { font-size: 1.45rem; }
   .cell.wide :global(.project-card .summary) { font-size: 1.02rem; max-width: 58ch; }
-  @media (max-width: 720px) {
-    .featured-grid { grid-template-columns: 1fr; }
-    .hero { padding: 3.5rem 0 3rem; }
+
+  /* 法考 × AI 通栏反色块：全页最重的高对比色块，两角 + 记号呼应图纸底纹 */
+  .band { background: var(--ink); color: var(--bg); position: relative; }
+  .band::before, .band::after {
+    content: '+'; position: absolute; font-family: var(--font-mono);
+    font-size: 1.1rem; color: var(--bg); opacity: 0.5; top: 8px;
   }
-  /* 首页动态区：法考卡宽、Now 窄的不对称网格，低动效（仅链接 hover 下划线） */
-  .dynamic-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; align-items: stretch; }
-  .dyn-card { padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.45rem; margin: 0; }
-  .dyn-card h2 { margin: 0; font-size: 1.15rem; }
-  .dyn-card h2 a { color: var(--text); }
-  .dyn-card h2 a:hover { color: var(--accent); text-decoration: none; }
-  .dyn-text { color: var(--text-muted); margin: 0; }
-  .dyn-figures { margin: 0; font-family: var(--font-serif); font-weight: 700; font-variant-numeric: tabular-nums; }
-  .dyn-list { margin: 0; padding-left: 1.2rem; color: var(--text-muted); }
-  .dyn-link { margin-top: auto; font-size: 0.9rem; }
-  @media (max-width: 720px) { .dynamic-grid { grid-template-columns: 1fr; } }
+  .band::before { left: 12px; }
+  .band::after { right: 12px; }
+  .band-inner { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; padding: 2.8rem 1.25rem; max-width: var(--maxw); margin-inline: auto; }
+  .band .label { color: var(--bg); margin: 0; }
+  .band .sec-en { color: var(--bg); opacity: 0.55; }
+  .band h2 { margin: 0.6rem 0 0; }
+  .band-text { margin: 0.6rem 0 0; opacity: 0.75; max-width: 44rem; font-size: 1rem; }
+  .band-figures { margin: 0.8rem 0 0; font-size: 0.95rem; opacity: 0.9; }
+  .band .band-btn { border-color: var(--bg); color: var(--bg); background: none; }
+  .band .band-btn:hover { background: var(--bg); color: var(--ink); }
+
+  .now-list { margin: 1rem 0 0; padding-left: 1.3rem; color: var(--text-muted); }
+  .now-list li { margin: 0.2rem 0; }
+  .now-list li::marker { color: var(--accent); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 2.4rem; padding: 3rem 0; }
+    .featured-grid { grid-template-columns: 1fr; }
+    .band-inner { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .hero { padding: 2.5rem 0; }
+  }
 </style>

@@ -9,10 +9,17 @@ const { href, meta, title, description } = Astro.props;
   <p class="desc">{description}</p>
 </article>
 <style>
-  .entry-card { padding: 1.1rem 0; border-top: 1px solid var(--border); }
+  /* 列表行：左侧 hover 指示小方块（灰变蓝），与博客列表行同语言 */
+  .entry-card { padding: 1rem 0 1rem 1.1rem; border-top: 1px solid var(--border); position: relative; }
+  .entry-card::before {
+    content: ''; position: absolute; left: 0; top: 1.55rem;
+    width: 7px; height: 7px; background: var(--border);
+    transition: background-color 0.15s ease;
+  }
+  .entry-card:hover::before { background: var(--accent); }
   .meta { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.3rem; }
-  h3 { margin: 0 0 0.35rem; font-size: 1.15rem; }
+  h3 { margin: 0 0 0.35rem; font-size: 1.15rem; font-weight: 700; }
   h3 a { color: var(--text); }
-  h3 a:hover { color: var(--accent); text-decoration: none; }
-  .desc { color: var(--text-muted); margin: 0; }
+  h3 a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--accent); }
+  .desc { color: var(--text-muted); margin: 0; font-size: 0.95rem; }
 </style>
