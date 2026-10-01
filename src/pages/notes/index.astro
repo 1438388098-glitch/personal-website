@@ -11,7 +11,6 @@ const categories = ['课程论文', '文献研读', '读书笔记'] as const;
 ---
 <BaseLayout title="论文与研读" description="课程论文的存档索引与文献研读清单：论文全文不上站，条目记录研究问题、论点与关键材料。">
   <h1>论文与研读</h1>
-  <p class="desc intro">论文全文不上站，这里存档每篇的问题、论点与支撑材料；研读清单持续更新。</p>
   {categories.map((c) => {
     const items = notes.filter((n) => n.data.category === c);
     return items.length > 0 && (
@@ -31,5 +30,4 @@ const categories = ['课程论文', '文献研读', '读书笔记'] as const;
 </BaseLayout>
 <style>
   section { margin: 2rem 0; }
-  .intro { margin: 0 0 1.5rem; }
 </style>
