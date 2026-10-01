@@ -2,6 +2,25 @@
 import { SITE } from '../lib/site';
 import { ClientRouter } from 'astro:transitions';
 import fontsCssUrl from '../styles/fonts.css?url';
+/* 首屏 preload：下面 9 个 woff2 是首页 hero 文案命中且仅命中的分片。
+   选片依据：衬线栈（--font-serif）只作用于标题与 .tagline，导航/正文是系统无衬线不依赖 webfont；
+   首屏衬线文本 = 站名「胡圣炜」+ 副标题「法学在读，业余造工具。法条检索、法考判分、司法评测，
+   全部开源，数字可查。」共 32 个去重字符，逐一比对其码点与 700.css 各 @font-face 的 unicode-range，
+   落在 57/112-119 这 9 个分片（合计约 351KB）。其余上百个分片不 preload，仍按需加载。
+   维护提示：换首页 hero 站名或副标题文案时，必须同步重新计算并更新这组分片（步骤：读
+   node_modules/@fontsource/noto-serif-sc/700.css 的 unicode-range，对新文案逐字求命中分片），
+   否则新字符会退化为「等字体 CSS 生效后再按需下载」，preload 收益失效。 */
+import fontNotoSc57 from '@fontsource/noto-serif-sc/files/noto-serif-sc-57-700-normal.woff2?url';
+import fontNotoSc112 from '@fontsource/noto-serif-sc/files/noto-serif-sc-112-700-normal.woff2?url';
+import fontNotoSc113 from '@fontsource/noto-serif-sc/files/noto-serif-sc-113-700-normal.woff2?url';
+import fontNotoSc114 from '@fontsource/noto-serif-sc/files/noto-serif-sc-114-700-normal.woff2?url';
+import fontNotoSc115 from '@fontsource/noto-serif-sc/files/noto-serif-sc-115-700-normal.woff2?url';
+import fontNotoSc116 from '@fontsource/noto-serif-sc/files/noto-serif-sc-116-700-normal.woff2?url';
+import fontNotoSc117 from '@fontsource/noto-serif-sc/files/noto-serif-sc-117-700-normal.woff2?url';
+import fontNotoSc118 from '@fontsource/noto-serif-sc/files/noto-serif-sc-118-700-normal.woff2?url';
+import fontNotoSc119 from '@fontsource/noto-serif-sc/files/noto-serif-sc-119-700-normal.woff2?url';
+/* hero 文案覆盖的分片清单（与上方 import 一一对应，供下方 preload 循环使用） */
+const fontNotoHeroShards = [fontNotoSc57, fontNotoSc112, fontNotoSc113, fontNotoSc114, fontNotoSc115, fontNotoSc116, fontNotoSc117, fontNotoSc118, fontNotoSc119];
 interface Props { title: string; description?: string; type?: 'website' | 'article'; image?: string; noindex?: boolean; }
 const { title, description = SITE.description, type = 'website', image = '/og-default.png', noindex = false } = Astro.props;
 const pageTitle = title.includes(SITE.author) ? title : `${title} · ${SITE.title}`;
@@ -27,6 +46,12 @@ const ogImage = new URL(image, siteUrl);
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#151413" media="(prefers-color-scheme: dark)" />
 <meta name="twitter:card" content="summary_large_image" />
+{/* 首屏字体分片 preload：preload 的是 woff2 文件本身（不是 CSS），高优先级与 HTML 解析并行取回，
+    字体 CSS 异步生效后立即可用，省去「CSS 生效后才按需发现分片」的串行等待。
+    crossorigin 必须带：字体一律以 CORS 模式请求，缺了会二次下载。分片选择依据见 frontmatter 注释 */}
+{fontNotoHeroShards.map((href) => (
+  <link rel="preload" as="font" type="font/woff2" crossorigin href={href} />
+))}
 {/* 字体声明非阻塞加载：print 样式不拦首绘，加载完翻转为 all；无 JS 环境由 noscript 兜底 */}
 <link rel="stylesheet" href={fontsCssUrl} media="print" onload="this.media='all'" />
 <noscript><link rel="stylesheet" href={fontsCssUrl} /></noscript>
