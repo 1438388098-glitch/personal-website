@@ -32,6 +32,25 @@ const countOf = (c: string) => posts.filter((p) => p.data.category === c).length
 
   <p class="essay-note" data-note>法学向的长文收录在<a href="/notes/">论文与研读</a>栏：竞业限制的实证研究、布雷克顿与罗马法，都在那里。</p>
   <p class="empty-note" data-empty-note hidden>这个分类还没攒出稿子，先看看别的。</p>
+<style>
+  /* 分类 tab：直角小方框，选中态墨底反白（v3 语言） */
+  .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.4rem 0 2rem; }
+  .tab {
+    font: inherit; font-size: 0.9rem; cursor: pointer;
+    color: var(--text); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 0;
+    padding: 0.3rem 0.85rem;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .tab:hover { border-color: var(--accent); color: var(--accent); }
+  .tab[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .tab[aria-pressed='true'] .count { color: var(--bg); opacity: 0.75; }
+  .count { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); }
+  section { margin: 3rem 0; }
+  section > h2 { font-size: 1.3rem; }
+  .essay-note, .empty-note { color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+  .empty-note { border-top: none; padding-top: 0; }
+</style>
 <script>
   /* astro:page-load 首次加载与每次换页后都触发：ClientRouter 换页会替换 DOM，
      打包脚本整个会话只执行一次，绑定放顶层会让返回本页后的筛选全部失灵 */

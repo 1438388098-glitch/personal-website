@@ -115,4 +115,31 @@ const docs = [
   });
   });
 </script>
+<style>
+  .intro { color: var(--text-muted); margin: 1.4rem 0 1.5rem; }
+  .noscript { color: var(--text-muted); }
+  .searchbox { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+  /* 搜索框直角化：v3 描边语言，聚焦转强调蓝 */
+  .searchbox input {
+    flex: 1 1 20rem; font: inherit; color: var(--text);
+    background: var(--surface); border: 1.5px solid var(--border-strong); border-radius: 0;
+    padding: 0.55rem 0.9rem;
+  }
+  .searchbox input:focus-visible { outline-offset: 0; }
+  .searchbox .count { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+  /* 结果列表行：与 EntryCard 同语言（顶部分隔线 + hover 指示方块）。
+     结果行由搜索脚本动态注入，Astro scoped 样式不会命中，须走 :global() */
+  #results { list-style: none; margin: 1.5rem 0 0; padding: 0; }
+  #results :global(li) { padding: 1rem 0 1rem 1.1rem; border-top: 1px solid var(--border); position: relative; }
+  #results :global(li::before) {
+    content: ''; position: absolute; left: 0; top: 1.55rem;
+    width: 7px; height: 7px; background: var(--border);
+  }
+  #results :global(li:hover::before) { background: var(--accent); }
+  #results :global(li a) { color: var(--text); font-weight: 700; font-size: 1.05rem; }
+  #results :global(li a:hover) { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--accent); }
+  #results :global(.snippet) { margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.95rem; }
+  /* 命中词高亮：强调蓝低饱和底，明暗两模式都够对比 */
+  #results :global(mark) { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--text); padding: 0 0.15em; }
+</style>
 </BaseLayout>

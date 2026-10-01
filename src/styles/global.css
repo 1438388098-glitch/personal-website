@@ -37,6 +37,8 @@ html[data-theme='dark'] {
 * { box-sizing: border-box; }
 html { color-scheme: light; }
 html[data-theme='dark'] { color-scheme: dark; }
+/* 通栏反色块用 50vw 负 margin 撑出容器，会在根上产生横向溢出；clip 不产生滚动容器，sticky 页头不受影响 */
+html { overflow-x: clip; }
 body {
   margin: 0;
   background: var(--bg);

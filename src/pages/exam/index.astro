@@ -73,22 +73,28 @@ const stages = [
     下面六个环节按备考的先后排，页尾两篇实录展开其中两个。
   </p>
   <section aria-label="备考环节与自建工具">
-    <h2>六个环节，按备考顺序</h2>
+    <div class="sec-head">
+      <span class="sec-no">01</span>
+      <h2>六个环节，按备考顺序<span class="sec-en">Workflow</span></h2>
+    </div>
     <div class="stage-grid">
       {stages.map((s) => (
         <div class="card stage-card">
-          <p class="step" aria-hidden="true">{s.step}</p>
+          <p class="step mono" aria-hidden="true">{s.step}</p>
           <p class="stage-name">{s.stage}</p>
           <a class="tool" href={s.href} target={s.href.startsWith('http') ? '_blank' : undefined} rel={s.href.startsWith('http') ? 'noopener' : undefined}>{s.tool}</a>
           <p class="ai">{s.ai}</p>
-          <p class="output">{s.output}</p>
+          <p class="output mono">{s.output}</p>
         </div>
       ))}
     </div>
   </section>
   {articles.length > 0 && (
     <section>
-      <h2>实录文章</h2>
+      <div class="sec-head">
+        <span class="sec-no">02</span>
+        <h2>实录文章<span class="sec-en">Field Notes</span></h2>
+      </div>
       {articles.map((a) => (
         <EntryCard
           href={`/exam/${a.id}/`}
@@ -101,27 +107,24 @@ const stages = [
   )}
 </BaseLayout>
 <style>
-  .intro { color: var(--text-muted); max-width: 46rem; }
-  section { margin: 2rem 0; }
-  .stage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
-  .stage-card { padding: 1.15rem 1.3rem; display: flex; flex-direction: column; gap: 0.35rem; }
-  .step { margin: 0; font-family: var(--font-serif); font-weight: 700; color: var(--accent); font-size: 0.95rem; font-variant-numeric: tabular-nums; }
-  .stage-name { margin: 0; font-family: var(--font-serif); font-weight: 700; }
+  .intro { color: var(--text-muted); max-width: 46rem; margin-top: 1.4rem; }
+  section { margin: 3rem 0; }
+  .stage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
+  .stage-card { padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.35rem; }
+  /* 环节编号：等宽蓝字（v3 区块编号语言） */
+  .step { margin: 0; font-weight: 700; color: var(--accent); font-size: 0.85rem; }
+  .stage-name { margin: 0; font-weight: 800; font-size: 1.1rem; }
+  /* 工具名小方框：直角描边，hover 转强调蓝 */
   .tool {
     align-self: flex-start; font-size: 0.82rem; line-height: 1.7;
-    border: 1px solid var(--border-strong); border-radius: 999px; padding: 0.15rem 0.6rem;
+    border: 1px solid var(--border); padding: 0.15rem 0.6rem;
     min-height: 24px; display: inline-flex; align-items: center;
-    color: var(--accent);
-    transition: border-color 0.15s ease;
+    color: var(--text);
+    transition: border-color 0.15s ease, color 0.15s ease;
   }
-  .tool:hover { border-color: var(--accent); text-decoration: none; }
+  .tool:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
   .ai { margin: 0; color: var(--text); font-size: 0.95rem; }
-  .output { margin: 0; color: var(--text-muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
-  .meta { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.3rem; }
-  h3 { margin: 0 0 0.35rem; font-size: 1.15rem; }
-  h3 a { color: var(--text); }
-  h3 a:hover { color: var(--accent); text-decoration: none; }
-  .desc { color: var(--text-muted); margin: 0; }
+  .output { margin: 0; color: var(--text-muted); font-size: 0.82rem; }
   @media (max-width: 720px) {
     .stage-grid { grid-template-columns: 1fr; }
   }

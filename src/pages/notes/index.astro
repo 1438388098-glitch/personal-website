@@ -8,26 +8,31 @@ import EntryCard from '../../components/EntryCard.astro';
 const notes = (await getCollection('notes', (n) => !n.data.draft))
   .sort(byDateDesc((n) => n.data.date));
 const categories = ['课程论文', '文献研读', '读书笔记'] as const;
+/* 分区按页面顺序重编号（sec-head 的 01 递增只数非空分组），仅展示层推导 */
+const sections = categories
+  .map((c) => ({ name: c, items: notes.filter((n) => n.data.category === c) }))
+  .filter((s) => s.items.length > 0)
+  .map((s, i) => ({ ...s, no: String(i + 1).padStart(2, '0') }));
 ---
 <BaseLayout title="论文与研读" description="课程论文的存档索引与文献研读清单：论文全文不上站，条目记录研究问题、论点与关键材料。">
   <h1>论文与研读</h1>
-  {categories.map((c) => {
-    const items = notes.filter((n) => n.data.category === c);
-    return items.length > 0 && (
-      <section>
-        <h2>{c}</h2>
-        {items.map((n) => (
-          <EntryCard
-            href={`/notes/${n.id}/`}
-            meta={`${n.data.status} · ${formatDate(n.data.date)}`}
-            title={n.data.title}
-            description={n.data.description}
-          />
-        ))}
-      </section>
-    );
-  })}
+  {sections.map((s) => (
+    <section>
+      <div class="sec-head">
+        <span class="sec-no">{s.no}</span>
+        <h2>{s.name}</h2>
+      </div>
+      {s.items.map((n) => (
+        <EntryCard
+          href={`/notes/${n.id}/`}
+          meta={`${n.data.status} · ${formatDate(n.data.date)}`}
+          title={n.data.title}
+          description={n.data.description}
+        />
+      ))}
+    </section>
+  ))}
 </BaseLayout>
 <style>
-  section { margin: 2rem 0; }
+  section { margin: 2.5rem 0; }
 </style>
