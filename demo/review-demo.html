@@ -1,0 +1,799 @@
+<!doctype html>
+<!--
+  审查 demo：2026-10-02 美术/前端审查里六项 + 小项清单的「现状 / 建议」对照。
+  这不是改版稿，是审查稿：每一节左边是站点当前实现的忠实复刻，右边是建议改法，两边共用同一套
+  令牌、字体与内容，只差被审的那一条规则，方便直接比。
+  内容全部取自站点真实数据（首页 hero、项目卡 cn-judbench、笔记《布雷克顿的「罗马法密码」》、
+  文章《涉房纠纷……》、标签云、搜索页文案）。
+  字体走 Google Fonts CDN，仅演示用；落地仍走站点自托管的 @fontsource 切片。
+-->
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>审查 demo · 现状 / 建议对照</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  /* ============ 站点令牌（与 src/styles/global.css 一致，未改动） ============ */
+  :root {
+    --bg: #faf9f6; --bg-soft: #f1efe8; --surface: #ffffff;
+    --ink: #17160f; --text: #23221b; --text-muted: #5f5e55;
+    --accent: #2745f0; --border: #e5e3db; --border-strong: var(--ink);
+    --code-bg: #f1efe8;
+    --shadow-card: 0 14px 30px -22px rgba(23, 22, 15, 0.35);
+    --maxw: 72rem;
+    --font-display: 'Archivo', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    --font-mono: 'Space Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+  }
+  html[data-theme='dark'] {
+    --bg: #151513; --bg-soft: #1d1d1a; --surface: #1c1c19;
+    --ink: #f2f1ea; --text: #e6e5de; --text-muted: #a3a29a;
+    --accent: #8b9dff; --border: #2c2b28; --code-bg: #201f1c;
+    --shadow-card: 0 14px 30px -20px rgba(0, 0, 0, 0.65);
+  }
+  * { box-sizing: border-box; }
+  html { color-scheme: light; }
+  html[data-theme='dark'] { color-scheme: dark; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--font-display); font-size: 16px; line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  h1, h2, h3, p, ul { margin: 0; }
+  .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ============ 站点基元（照抄 global.css，两边共用） ============ */
+  .container { max-width: var(--maxw); margin-inline: auto; padding-inline: 1.5rem; }
+  h1 { font-size: clamp(2.3rem, 4.6vw, 3.4rem); font-weight: 900; line-height: 1.18; letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { font-weight: 800; }
+  h3 { font-weight: 800; }
+  .card {
+    border: 1.5px solid var(--border); border-radius: 0; background: var(--surface);
+    transition: transform 0.22s cubic-bezier(0.16,1,0.3,1), border-color 0.22s, box-shadow 0.22s;
+  }
+  .card:hover { transform: translateY(-2px); border-color: var(--border-strong); box-shadow: var(--shadow-card); }
+  .btn {
+    display: inline-block; border: 1.5px solid var(--border-strong); border-radius: 0;
+    padding: 0.6rem 1.4rem; color: var(--text); font-weight: 700;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .btn:hover { background: var(--ink); color: var(--bg); text-decoration: none; }
+  .btn.primary { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .btn .arr { font-family: var(--font-mono); }
+  /* ⚠ 现状：.sec-head 没有 justify-content，右侧「更多 →」贴在英文对照后面就停了 */
+  .sec-head {
+    display: flex; align-items: baseline; gap: 1rem;
+    border-bottom: 2px solid var(--border-strong); padding-bottom: 0.7rem; margin-bottom: 0.4rem;
+  }
+  .sec-no { font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+  .sec-en { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-left: 0.4em; white-space: nowrap; }
+  .sec-head h2 { margin: 0; font-size: 1.3rem; }
+  .sec-head a { white-space: nowrap; }
+  /* ✅ 建议：把「更多」推到右端（旧 .section-head 本来就是 space-between，v3 丢了） */
+  .sec-head.fixed { justify-content: space-between; }
+  .sec-head.fixed a { margin-left: auto; }
+
+  /* ============ demo 外壳（审查稿自己的界面，不属于站点） ============ */
+  .demo-bar {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+  }
+  .demo-bar-inner { display: flex; align-items: center; gap: 1rem; height: 56px; }
+  .demo-brand { font-weight: 800; font-size: 0.95rem; }
+  .demo-brand span { color: var(--text-muted); font-weight: 500; }
+  .demo-bar .spacer { flex: 1; }
+  .demo-btn {
+    font: inherit; font-size: 0.86rem; cursor: pointer; border-radius: 0;
+    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    padding: 0.3rem 0.8rem;
+  }
+  .demo-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .demo-btn[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .demo-wrap { max-width: 78rem; margin-inline: auto; padding: 2.5rem 1.5rem 6rem; }
+
+  .demo-intro { border-left: 3px solid var(--accent); padding: 0.2rem 0 0.2rem 1.2rem; margin-bottom: 3rem; }
+  .demo-intro h1 { font-size: 1.8rem; font-weight: 900; text-wrap: balance; }
+  .demo-intro p { color: var(--text-muted); margin-top: 0.6rem; max-width: 62ch; }
+  .toc-list { list-style: none; padding: 0; margin: 1.2rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .toc-list a {
+    display: inline-block; border: 1px solid var(--border); color: var(--text);
+    font-size: 0.85rem; padding: 0.22rem 0.7rem;
+  }
+  .toc-list a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+  .demo-item { margin: 4.5rem 0; scroll-margin-top: 5rem; }
+  .demo-item > header { border-bottom: 2px solid var(--border-strong); padding-bottom: 0.8rem; margin-bottom: 1.2rem; }
+  .demo-item .no { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; color: var(--accent); }
+  .demo-item h2 { display: inline; font-size: 1.25rem; margin-left: 0.6rem; }
+  .demo-item h2 .pri { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; color: var(--bg); background: var(--accent); padding: 0.1rem 0.4rem; vertical-align: 0.15em; margin-left: 0.5rem; }
+  .demo-item .why { color: var(--text-muted); margin-top: 0.7rem; max-width: 76ch; }
+  .demo-item .why b { color: var(--text); font-weight: 700; }
+
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; }
+  .compare.stack { grid-template-columns: 1fr; }
+  @media (max-width: 1080px) { .compare { grid-template-columns: 1fr; } }
+
+  .frame { border: 1px solid var(--border); background: var(--bg); position: relative; }
+  .frame-tag {
+    display: block; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.04em;
+    padding: 0.35rem 0.75rem; border-bottom: 1px solid var(--border);
+    background: var(--bg-soft); color: var(--text-muted);
+  }
+  .frame-tag.is-now { color: #a4432f; }
+  html[data-theme='dark'] .frame-tag.is-now { color: #e8927c; }
+  .frame-tag.is-fix { color: #1f7a48; }
+  html[data-theme='dark'] .frame-tag.is-fix { color: #7fd6a4; }
+  .frame-body { padding: 1.6rem 1.5rem; overflow: hidden; }
+  .frame-body.tight { padding: 1.2rem 1.2rem; }
+  .frame-body.flush { padding: 0; }
+  .caption { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.6rem; padding-left: 0.1rem; }
+  .caption b { color: var(--text); font-weight: 700; }
+  .caption .m { font-family: var(--font-mono); }
+
+  /* 标注：把「看不见的问题」画出来 */
+  .anno {
+    position: absolute; border: 1px dashed var(--accent); pointer-events: none;
+  }
+  .anno span {
+    position: absolute; top: -0.72rem; left: -1px;
+    background: var(--accent); color: var(--bg);
+    font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700;
+    padding: 0.05rem 0.35rem; white-space: nowrap;
+  }
+
+  /* ============ 被复刻的站点组件（与真实实现逐条对应） ============ */
+  /* 首页 hero：现状实现照抄 index.astro —— 点阵底纹 + 同一个 mask 遮到内容上 */
+  .hero {
+    display: grid; grid-template-columns: 1fr; gap: 0;
+    padding: 2.2rem 0 2.2rem; align-items: start;
+    background-image: radial-gradient(color-mix(in srgb, var(--ink) 14%, transparent) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: center top;
+    -webkit-mask-image: linear-gradient(#000 60%, transparent);
+            mask-image: linear-gradient(#000 60%, transparent);
+  }
+  /* ✅ 建议：底纹与遮罩挪到 ::before，遮罩只作用于底纹层，内容不再被兑淡 */
+  .hero.fixmask { background-image: none; -webkit-mask-image: none; mask-image: none; position: relative; }
+  .hero.fixmask::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(color-mix(in srgb, var(--ink) 14%, transparent) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: center top;
+    -webkit-mask-image: linear-gradient(#000 60%, transparent);
+            mask-image: linear-gradient(#000 60%, transparent);
+  }
+  .hero .label { display: inline-flex; align-items: center; gap: 0.55rem; font-size: 0.86rem; font-weight: 700; }
+  .hero .label::before { content: ''; width: 8px; height: 8px; background: var(--accent); flex: none; }
+  .hero .hl { box-shadow: inset 0 -0.32em color-mix(in srgb, var(--accent) 26%, transparent); }
+  .lede { margin: 1.3rem 0 0; max-width: 30rem; color: var(--text-muted); font-size: 1.06rem; }
+  .pills { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 1.5rem 0 0; padding: 0; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 0.34rem 0.9rem; font-size: 0.88rem; font-weight: 500; color: var(--text);
+  }
+  .pill::before { content: ''; width: 7px; height: 7px; background: var(--ink); flex: none; }
+  .pill.alt::before { background: var(--accent); border-radius: 50%; }
+  .ctas { display: flex; gap: 0.9rem; margin: 2.1rem 0 0; align-items: center; }
+  .link-plain { font-size: 0.95rem; font-weight: 600; color: var(--text); box-shadow: inset 0 -1.5px var(--accent); padding-bottom: 1px; }
+  .link-plain:hover { color: var(--text); box-shadow: inset 0 -2.5px var(--accent); text-decoration: none; }
+
+  /* 正文栏：现状 max-width 68ch 且左对齐 */
+  .prose { max-width: 68ch; }
+  .prose p { margin: 1.1em 0; text-wrap: pretty; }
+  .prose h2 { margin-top: 2em; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border-strong); font-size: 1.3rem; }
+  .prose h3 { margin-top: 1.6em; }
+  .prose blockquote { margin: 1.4em 0; padding: 0.2em 1.1em; border-left: 3px solid var(--accent); background: var(--bg-soft); color: var(--text-muted); }
+  .prose code { background: var(--code-bg); border: 1px solid var(--border); padding: 0.1em 0.35em; font-size: 0.9em; font-family: var(--font-mono); }
+  /* ✅ 建议 A：正文栏居中 */
+  .prose.centered { margin-inline: auto; }
+  /* ✅ 建议 B：右侧空位交给目录 */
+  .doc { display: grid; grid-template-columns: minmax(0, 1fr) 13rem; gap: 3rem; align-items: start; }
+  @media (max-width: 900px) { .doc { grid-template-columns: 1fr; } .doc .toc { display: none; } }
+  .doc .prose { margin-inline: auto; }
+  .toc { position: sticky; top: 5.5rem; font-size: 0.86rem; }
+  .toc p { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); padding-bottom: 0.5rem; border-bottom: 2px solid var(--border-strong); margin: 0; }
+  .toc ul { list-style: none; padding: 0; margin: 0.7rem 0 0; }
+  .toc li { padding: 0.32rem 0; }
+  .toc a { color: var(--text-muted); }
+  .toc li.on a { color: var(--text); font-weight: 700; box-shadow: inset 3px 0 var(--accent); padding-left: 0.6rem; margin-left: -0.6rem; }
+
+  /* 文章标题：现状全局 h1 上限 3.4rem（1440 下 54.4px） */
+  .title-now { font-size: 54.4px; line-height: 1.18; font-weight: 900; letter-spacing: -0.01em; text-wrap: balance; }
+  /* ✅ 建议：详情页 h1 单开一档 */
+  .title-fix { font-size: clamp(1.9rem, 3vw, 2.4rem); line-height: 1.3; font-weight: 900; letter-spacing: -0.005em; text-wrap: pretty; }
+
+  /* 区块头下的内容，给 sec-head 对照用 */
+  .mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 1.1rem; }
+  .mini-card { padding: 0.85rem 1rem; }
+  .mini-card h3 { font-size: 0.98rem; }
+
+  /* 项目卡：现状照抄 ProjectCard.astro */
+  .project-card { padding: 1.4rem 1.6rem; }
+  .idx {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 2rem; height: 1.5rem; padding: 0 0.4rem;
+    font-size: 0.82rem; font-weight: 700;
+    border: 1.5px solid var(--border-strong); margin-bottom: 0.8rem;
+  }
+  .project-card:hover .idx { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .project-card .meta { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.4rem; }
+  .project-card h3 { margin: 0 0 0.5rem; font-size: 1.22rem; }
+  .project-card h3 a { color: var(--text); }
+  .project-card .summary { color: var(--text-muted); margin: 0 0 0.75rem; }
+  .metrics { list-style: none; display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 0; padding: 0.75rem 0 0; border-top: 1px solid var(--border); }
+  .metrics li { font-size: 0.88rem; color: var(--text-muted); }
+  .metrics strong { color: var(--text); font-weight: 700; font-size: 0.95rem; }
+  /* ✅ 建议：指标行改成「标签在上、值在下」，两条之间明确拉开，并贴卡底 */
+  .card.fixflex { display: flex; flex-direction: column; }
+  /* 卡片变 flex 列后，行内元素默认会被拉满宽度，序号框要自己顶住左端 */
+  .card.fixflex > .idx { align-self: flex-start; }
+  .metrics-pairs { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem 2.2rem; margin: 0; padding: 0.8rem 0 0; border-top: 1px solid var(--border); }
+  .metrics-pairs li { display: flex; flex-direction: column; gap: 0.05rem; margin-top: auto; }
+  .metrics-pairs .k { font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.02em; }
+  .metrics-pairs .v { font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: var(--text); }
+  .card.fixflex .metrics-pairs { margin-top: auto; }
+
+  /* 三种序号长相并排（现状） */
+  .numrow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; }
+  .numcell { padding: 0.9rem 1rem; }
+  .numcell h3 { font-size: 1rem; margin: 0.5rem 0 0; }
+  .idx-boxed { display: inline-flex; align-items: center; justify-content: center; min-width: 2rem; height: 1.5rem; font-size: 0.82rem; font-weight: 700; border: 1.5px solid var(--border-strong); }
+  .idx-blue { font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+  .idx-none { font-size: 0.82rem; color: var(--text-muted); font-style: normal; }
+  .chip { display: inline-block; border: 1px solid var(--border); font-size: 0.82rem; font-weight: 700; padding: 0.12rem 0.5rem; }
+
+  /* 暗色反色通栏块 */
+  .band-scope { background: var(--bg); }
+  .band { background: var(--ink); color: var(--bg); position: relative; padding: 2.2rem 1.5rem; }
+  .band::before, .band::after { content: '+'; position: absolute; font-family: var(--font-mono); font-size: 1.1rem; color: var(--bg); opacity: 0.5; top: 8px; }
+  .band::before { left: 12px; }
+  .band::after { right: 12px; }
+  .band h3 { margin: 0.4rem 0 0; font-size: 1.4rem; font-weight: 800; }
+  .band p { margin: 0.5rem 0 0; opacity: 0.78; font-size: 0.95rem; }
+  .band .figs { font-family: var(--font-mono); margin-top: 0.7rem; font-size: 0.92rem; }
+  .band .band-btn { border: 1.5px solid var(--bg); color: var(--bg); padding: 0.5rem 1.1rem; font-weight: 700; display: inline-block; margin-top: 1rem; }
+  /* 现状（暗色）：降级成 --bg-soft 平面板 */
+  .band-cur { background: var(--bg-soft); color: var(--text); border-block: 1px solid var(--border); }
+  .band-cur::before, .band-cur::after { color: var(--text-muted); opacity: 0.6; }
+  .band-cur .band-btn { border-color: var(--border-strong); color: var(--text); }
+  /* ✅ 建议：保留一块真正的重色（比页底更深），accent 记号回来 */
+  .band-fix { background: #0c0c0b; color: #f2f1ea; border-block: 1px solid #2a2a26; }
+  .band-fix::before, .band-fix::after { color: #8b9dff; opacity: 0.85; }
+  .band-fix .band-btn { border-color: #f2f1ea; color: #f2f1ea; }
+
+  /* 标签云 / 计数 */
+  .cloud { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0; margin: 0; }
+  .cloud a { display: inline-block; border: 1px solid var(--border); padding: 0.25rem 0.8rem; color: var(--text); font-size: 0.9rem; }
+  .cloud a:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
+  .count { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); }
+  /* ✅ 建议：计数与中文之间统一节奏 */
+  .cloud.fixcount .count { margin-left: 0.34em; }
+
+  /* 搜索框 */
+  .searchbar {
+    font: inherit; font-size: 0.95rem; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 0;
+    padding: 0.6rem 0.9rem; width: 100%;
+  }
+  .searchbar::placeholder { color: var(--text-muted); }
+  /* ✅ 建议：限宽到阅读节奏、与容器左缘对齐 */
+  .searchbar.limited { max-width: 32rem; }
+
+  /* 行内术语：现状用 code 样式 */
+  .term-code { background: var(--code-bg); border: 1px solid var(--border); padding: 0.1em 0.35em; font-size: 0.9em; font-family: var(--font-mono); }
+  /* ✅ 建议：无色底 + 细下划线 */
+  .term-fix { border-bottom: 1px solid color-mix(in srgb, var(--text) 45%, transparent); padding-bottom: 0.5px; }
+
+  .legend { font-size: 0.82rem; color: var(--text-muted); margin-top: 1.2rem; }
+  .legend code { font-family: var(--font-mono); font-size: 0.92em; background: var(--code-bg); border: 1px solid var(--border); padding: 0.05em 0.3em; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <div class="demo-wrap demo-bar-inner" style="padding-block:0">
+    <span class="demo-brand">审查 demo <span>· 现状 / 建议对照 · 2026-10-02</span></span>
+    <span class="spacer"></span>
+    <button class="demo-btn" id="theme-toggle" type="button">切到暗色</button>
+  </div>
+</div>
+
+<div class="demo-wrap">
+  <div class="demo-intro">
+    <h1>六项建议，逐项对照</h1>
+    <p>每一节：左边是站点<b>当前实现的忠实复刻</b>，右边是建议改法。两边共用同一套令牌、字体、真实内容，只差被审的那一条规则。红色标签＝现状，绿色标签＝建议。</p>
+    <ul class="toc-list">
+      <li><a href="#i1">① 遮罩兑淡首页主按钮</a></li>
+      <li><a href="#i2">② 长文栏位空一半</a></li>
+      <li><a href="#i3">③ h1 尺度对长标题失控</a></li>
+      <li><a href="#i4">④ 区块头右半截空着</a></li>
+      <li><a href="#i5">⑤ 卡片序号与指标行</a></li>
+      <li><a href="#i6">⑥ 暗色反色块被降级</a></li>
+      <li><a href="#i7">⑦ 五个小项</a></li>
+      <li><a href="#i8">叠加效果</a></li>
+    </ul>
+  </div>
+
+  <!-- ==================== ① 遮罩 ==================== -->
+  <section class="demo-item" id="i1">
+    <header><span class="no">①</span><h2>首页主按钮被自己的底纹遮罩兑淡<span class="pri">必修</span></h2></header>
+    <p class="why">`.hero` 的点阵底纹用 <code>mask-image</code> 做向下渐隐，而 mask 作用于<b>元素及其全部子内容</b>，不只作用于 background-image。hero 里位于 60% 以下的元素被一起淡化了：主按钮实测 alpha 0.595（<span class="mono">#17160f</span> 兑成约 <span class="mono">#737373</span>），胶囊行 0.899，右侧数字面板在 60% 以上所以是干净的。</p>
+
+    <div class="compare">
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-now">现状 · index.astro 的 .hero</span>
+          <div class="frame-body flush">
+            <div class="hero">
+              <p class="label">法律 × 工程<span class="sec-en">Law × Engineering</span></p>
+              <h1 style="margin-top:1.3rem">法学在读，<br />业余<span class="hl">造工具</span>。</h1>
+              <p class="lede">法条检索、法考判分、司法评测，全部开源，数字可查。</p>
+              <div class="pills">
+                <span class="pill">备考法考中</span>
+                <span class="pill alt">武汉</span>
+                <span class="pill">全部开源</span>
+              </div>
+              <p class="ctas"><a class="btn primary" href="#">看项目 <span class="arr">→</span></a><a class="link-plain" href="#">关于我</a></p>
+            </div>
+            <div class="anno" style="left:10%;right:6%;top:64%;height:34%"><span>60% 渐隐线以下 · 内容被兑淡</span></div>
+          </div>
+        </div>
+        <p class="caption">亮色下按钮渲染 <b class="mono">#737373</b>、胶囊 <b class="mono">#3f3e39</b>；暗色下同一遮罩把近白兑成灰，「关于我」同样偏灰。</p>
+      </div>
+
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-fix">建议 · 遮罩移到 ::before</span>
+          <div class="frame-body flush">
+            <div class="hero fixmask">
+              <p class="label">法律 × 工程<span class="sec-en">Law × Engineering</span></p>
+              <h1 style="margin-top:1.3rem">法学在读，<br />业余<span class="hl">造工具</span>。</h1>
+              <p class="lede">法条检索、法考判分、司法评测，全部开源，数字可查。</p>
+              <div class="pills">
+                <span class="pill">备考法考中</span>
+                <span class="pill alt">武汉</span>
+                <span class="pill">全部开源</span>
+              </div>
+              <p class="ctas"><a class="btn primary" href="#">看项目 <span class="arr">→</span></a><a class="link-plain" href="#">关于我</a></p>
+            </div>
+          </div>
+        </div>
+        <p class="caption">按钮渲染 <b class="mono">#17160f</b>（纯黑，与 404 页同款按钮一致），底纹的渐隐照旧。</p>
+      </div>
+    </div>
+
+    <p class="legend">改法就三行：<code>.hero{position:relative}</code> + <code>.hero::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:…;mask-image:linear-gradient(#000 60%,transparent)}</code> + 把 <code>.hero</code> 自己的 <code>background-image</code> 与 <code>mask-image</code> 删掉。顺带一提，hero 底部那 234px 本来就是半透明的，视觉上把下方 72px 间距一起吞掉了，修完这块的呼吸感也会回来。</p>
+  </section>
+
+  <!-- ==================== ② 长文栏位 ==================== -->
+  <section class="demo-item" id="i2">
+    <header><span class="no">②</span><h2>长文栏位：626px 的正文漂在 1152px 的容器里</h2></header>
+    <p class="why">1440 视口实测：<code>.container</code> 宽 1152px（左右各 144px 外边距），<code>.prose</code> 宽 <b>626px</b> 且左对齐 —— 容器里有 <b>526px 常年空着</b>，占视口宽度 37%。文章、项目详情、笔记详情、Now 四个页面同形。下面是同一条真实文案（文章《涉房纠纷……》）的三种排布。</p>
+
+    <div class="compare stack">
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-now">现状 · .prose{max-width:68ch}，左对齐</span>
+          <div class="frame-body flush">
+            <div class="container" style="padding-block:1.6rem; position:relative">
+              <div class="prose">
+                <h1 style="font-size:2.6rem">涉房纠纷，不一定要去不动产所在地打官司</h1>
+                <p>管辖权争议这个环节，实务里最容易踩的坑之一，是把「不动产纠纷」四个字理解得太宽。</p>
+                <p>房子在 A 地，买卖双方分别在 B 地和 C 地，有人就主张：涉及不动产，只能去 A 地法院起诉。这话听着顺理成章，其实站不住。</p>
+                <h2>先把法条看明白：定义是封闭的</h2>
+                <p>专属管辖是法定管辖里最硬的一类，它排除当事人约定，也排除一般地域管辖的适用。正因为硬，解释上必须收窄：最高人民法院五则裁定把边界划得很清楚，下面这些纠纷，统统不属于不动产纠纷。</p>
+              </div>
+              <div class="anno" style="left:calc(144px + 626px + 8px);right:24px;top:24px;bottom:24px"><span>空置 526px</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="caption">右侧 526px 没有任何内容承担阅读功能，纯空。</p>
+      </div>
+
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-fix">建议 A · 正文栏居中（最小改动）</span>
+          <div class="frame-body flush">
+            <div class="container" style="padding-block:1.6rem">
+              <div class="prose centered">
+                <h1 style="font-size:2.6rem">涉房纠纷，不一定要去不动产所在地打官司</h1>
+                <p>管辖权争议这个环节，实务里最容易踩的坑之一，是把「不动产纠纷」四个字理解得太宽。</p>
+                <p>房子在 A 地，买卖双方分别在 B 地和 C 地，有人就主张：涉及不动产，只能去 A 地法院起诉。这话听着顺理成章，其实站不住。</p>
+                <h2>先把法条看明白：定义是封闭的</h2>
+                <p>专属管辖是法定管辖里最硬的一类，它排除当事人约定，也排除一般地域管辖的适用。正因为硬，解释上必须收窄：最高人民法院五则裁定把边界划得很清楚，下面这些纠纷，统统不属于不动产纠纷。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="caption">版面立刻稳了，但读长文的体验没变 —— 只是把空白对半分了。</p>
+      </div>
+
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-fix">建议 B · 右侧空位交给目录（推荐）</span>
+          <div class="frame-body flush">
+            <div class="container" style="padding-block:1.6rem">
+              <div class="doc">
+                <div class="prose">
+                  <h1 style="font-size:2.6rem">涉房纠纷，不一定要去不动产所在地打官司</h1>
+                  <p>管辖权争议这个环节，实务里最容易踩的坑之一，是把「不动产纠纷」四个字理解得太宽。</p>
+                  <p>房子在 A 地，买卖双方分别在 B 地和 C 地，有人就主张：涉及不动产，只能去 A 地法院起诉。这话听着顺理成章，其实站不住。</p>
+                  <h2>先把法条看明白：定义是封闭的</h2>
+                  <p>专属管辖是法定管辖里最硬的一类，它排除当事人约定，也排除一般地域管辖的适用。正因为硬，解释上必须收窄：最高人民法院五则裁定把边界划得很清楚，下面这些纠纷，统统不属于不动产纠纷。</p>
+                </div>
+                <nav class="toc">
+                  <p>On this page</p>
+                  <ul>
+                    <li class="on"><a href="#i2">先把法条看明白</a></li>
+                    <li><a href="#i2">顺带纠正一处沿用了多年的编号</a></li>
+                    <li><a href="#i2">五则裁定，五类不适用</a></li>
+                    <li><a href="#i2">五则裁定其实在讲同一个道理</a></li>
+                    <li><a href="#i2">写在后面</a></li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="caption">同一块空白承担了导航。站点其实已经有构建期注入的标题锚链（<span class="mono">§</span>），只差这个目录。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ③ h1 尺度 ==================== -->
+  <section class="demo-item" id="i3">
+    <header><span class="no">③</span><h2>h1 的尺度是按首页调的，落到长标题就失控</h2></header>
+    <p class="why"><code>clamp(2.3rem, 4.6vw, 3.4rem)</code> 在 1440 下是 <b>54.4px</b>，这是按首页「法学在读，业余造工具。」那种两行短标题调的，但全站共用。落到真实长标题上：笔记页标题排成 <b>4 行</b>还从「复兴」中间断开；项目页出现 <span class="mono">statute-rag: 法 / 条混合检索底座</span> 这种单字孤行。<code>text-wrap:balance</code> 只在两行时好看，行数一多它反而把断行点推进词里。</p>
+
+    <div class="compare">
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-now">现状 · 全局 h1 = 54.4px + text-wrap:balance</span>
+          <div class="frame-body">
+            <h1 class="title-now">布雷克顿的「罗马法密码」：罗马法复兴如何悄然塑造了英国普通法的奠基文本</h1>
+          </div>
+        </div>
+        <p class="caption">4 行，且「罗马法复／兴」被拆开；项目页还会剩一个「法」字独占一行。</p>
+      </div>
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-fix">建议 · 详情页 h1 单开一档 ≈2.4rem + pretty</span>
+          <div class="frame-body">
+            <h1 class="title-fix">布雷克顿的「罗马法密码」：罗马法复兴如何悄然塑造了英国普通法的奠基文本</h1>
+          </div>
+        </div>
+        <p class="caption">同样宽度下 2 行，词不被拦腰截断，标题也不再压过正文。</p>
+      </div>
+    </div>
+
+    <div class="compare" style="margin-top:1.25rem">
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-now">现状 · 项目标题的单字孤行</span>
+          <div class="frame-body">
+            <h1 class="title-now" style="font-size:44px">statute-rag: 法条混合检索底座</h1>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-fix">建议 · 同标题</span>
+          <div class="frame-body">
+            <h1 class="title-fix">statute-rag: 法条混合检索底座</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="legend">首页 hero 的 h1 保留 3.4rem —— 那里只有两行、没有长标题，大是加分的。要动的只是详情页那一档。</p>
+  </section>
+
+  <!-- ==================== ④ 区块头 ==================== -->
+  <section class="demo-item" id="i4">
+    <header><span class="no">④</span><h2>区块头丢了右对齐，右半截黑线常年空着</h2></header>
+    <p class="why"><code>.sec-head</code> 是 <code>display:flex</code> 但没有 <code>justify-content</code>，所以「全部项目 →」紧贴着英文对照就停了，后面整条 2px 黑线约 <b>70% 是空的</b>（首页三处都这样）。设计指南写的是「更多 → 可选，<b>右对齐</b>」，而旧的 <code>.section-head</code> 也确实是 <code>space-between</code> —— 等于 v3 改版把这个右对齐丢了。</p>
+
+    <div class="compare">
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-now">现状 · 链接贴在英文对照后面</span>
+          <div class="frame-body">
+            <div class="sec-head">
+              <span class="sec-no">01</span>
+              <h2>精选项目<span class="sec-en">Selected Work</span></h2>
+              <a href="#">全部项目 →</a>
+            </div>
+            <div class="mini-grid">
+              <div class="card mini-card"><h3>statute-rag</h3></div>
+              <div class="card mini-card"><h3>cn-judbench</h3></div>
+            </div>
+          </div>
+        </div>
+        <p class="caption">链接看起来像英文对照的一部分，右边 70% 的黑线没有着落。</p>
+      </div>
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-fix">建议 · justify-content: space-between</span>
+          <div class="frame-body">
+            <div class="sec-head fixed">
+              <span class="sec-no">01</span>
+              <h2>精选项目<span class="sec-en">Selected Work</span></h2>
+              <a href="#">全部项目 →</a>
+            </div>
+            <div class="mini-grid">
+              <div class="card mini-card"><h3>statute-rag</h3></div>
+              <div class="card mini-card"><h3>cn-judbench</h3></div>
+            </div>
+          </div>
+        </div>
+        <p class="caption">黑线两端各有一个锚点，整行的重量平衡了。</p>
+      </div>
+    </div>
+    <p class="legend">顺带：旧类 <code>.section-head</code> 全站已无引用，是死代码，可以一并删掉。</p>
+  </section>
+
+  <!-- ==================== ⑤ 卡片 ==================== -->
+  <section class="demo-item" id="i5">
+    <header><span class="no">⑤</span><h2>卡片：同一个「序号」三种长相，指标行层级反了</h2></header>
+    <p class="why">左上：现状三种序号长相并列。右侧：项目卡指标行的现状与修正 —— 模板是 <code>&lt;strong&gt;{value}&lt;/strong&gt; {label}</code>，只有普通空格分隔，于是连读成「12 包 / 323 题<b>评测规模</b>」「规则 27.40<b>基线锚点</b>」，值和标签糊在一起；而两条指标之间隔了 1.5rem。<b>层级正好反了</b>：该贴着的是值和它的标签，该拉开的是两条指标。</p>
+
+    <div class="frame" style="margin-bottom:1.25rem">
+      <span class="frame-tag is-now">现状 · 三种序号</span>
+      <div class="frame-body">
+        <div class="numrow">
+          <div class="card numcell">
+            <span class="idx-boxed mono">01</span>
+            <h3>项目卡：墨色描边方框</h3>
+            <p class="caption" style="margin-top:0.2rem">ProjectCard.astro</p>
+          </div>
+          <div class="card numcell">
+            <span class="idx-blue">01</span>
+            <h3>法考卡：纯蓝无框</h3>
+            <p class="caption" style="margin-top:0.2rem">exam/index.astro</p>
+          </div>
+          <div class="card numcell">
+            <span class="idx-none mono">—</span>
+            <h3>工具箱卡：没有序号</h3>
+            <p class="caption" style="margin-top:0.2rem">toolbox/index.astro</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="compare">
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-now">现状 · 指标行</span>
+          <div class="frame-body tight">
+            <article class="card project-card">
+              <span class="idx mono">02</span>
+              <p class="meta">法律主线 · 2026 年 9 月 28 日</p>
+              <h3><a href="#">cn-judbench（法衡）：中国司法 LLM 评测基准</a></h3>
+              <p class="summary">用 12 个任务包、323 道公开题测中国司法工作流：判分全程机检、统计协议预注册，回答模型哪个能力行、哪里危险、跨跑稳不稳、代价多大。</p>
+              <ul class="metrics">
+                <li><strong class="mono">12 包 / 323 题</strong> 评测规模</li>
+                <li><strong class="mono">随机 7.96 / 规则 27.40</strong> 基线锚点</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+        <p class="caption">读起来是「12 包 / 323 题<code>评测规模</code>」——标签被当成值的尾巴。</p>
+      </div>
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-fix">建议 · 标签在上、值在下，指标贴卡底</span>
+          <div class="frame-body tight">
+            <article class="card project-card fixflex">
+              <span class="idx mono">02</span>
+              <p class="meta">法律主线 · 2026 年 9 月 28 日</p>
+              <h3><a href="#">cn-judbench（法衡）：中国司法 LLM 评测基准</a></h3>
+              <p class="summary">用 12 个任务包、323 道公开题测中国司法工作流：判分全程机检、统计协议预注册，回答模型哪个能力行、哪里危险、跨跑稳不稳、代价多大。</p>
+              <ul class="metrics-pairs">
+                <li><span class="k">评测规模</span><span class="v">12 包 / 323 题</span></li>
+                <li><span class="k">基线锚点</span><span class="v">随机 7.96 / 规则 27.40</span></li>
+              </ul>
+            </article>
+          </div>
+        </div>
+        <p class="caption">值与标签成对，两条指标之间拉开 2.2rem；<code>margin-top:auto</code> 让同排卡片的指标行齐底。</p>
+      </div>
+    </div>
+    <p class="legend">序号建议统一成项目卡那套墨色描边方框（法考卡的「环节号」语义不同，可以保留纯蓝，但至少工具箱卡该补上序号、meta 行也对齐）。另外区块头的英文对照也不是每页都有：首页／关于／项目／法考有，笔记／工具箱没有 —— 要么都补，要么都去掉。</p>
+  </section>
+
+  <!-- ==================== ⑥ 暗色反色块 ==================== -->
+  <section class="demo-item" id="i6">
+    <header><span class="no">⑥</span><h2>暗色下反色块被降级，首页丢了唯一的视觉锚点</h2></header>
+    <p class="why">亮色下「法考 × AI」那条通栏是整页最重的高对比色块；暗色下它被换成了 <code>--bg-soft</code> 平面板，只靠上下 1px 描边区分 —— 首页因此失去了唯一的视觉重心。代码注释写了这是刻意的（避免奶油底刺眼），我认同「不做反白」，但可以换一块真正的重色，而不是退到几乎看不见。</p>
+
+    <div class="compare">
+      <div class="frame" style="background:#151513">
+        <span class="frame-tag is-now">现状（暗色）· --bg-soft 面板</span>
+        <div class="frame-body flush band-scope" style="background:#151513">
+          <div class="band band-cur">
+            <p class="label" style="font-size:0.86rem;font-weight:700">法考 × AI <span class="sec-en">Exam Workflow</span></p>
+            <h3>把 AI 缝进备考流程</h3>
+            <p>错题变笔记、主观题机器初判、法条检索必带引用，每个环节一个自建工具。</p>
+            <p class="figs">18 科目 / 1655 错题</p>
+            <span class="band-btn">看备考工作流 →</span>
+          </div>
+        </div>
+      </div>
+      <div class="frame" style="background:#151513">
+        <span class="frame-tag is-fix">建议（暗色）· 更深的实色 + accent 记号</span>
+        <div class="frame-body flush band-scope" style="background:#151513">
+          <div class="band band-fix">
+            <p class="label" style="font-size:0.86rem;font-weight:700">法考 × AI <span class="sec-en">Exam Workflow</span></p>
+            <h3>把 AI 缝进备考流程</h3>
+            <p>错题变笔记、主观题机器初判、法条检索必带引用，每个环节一个自建工具。</p>
+            <p class="figs">18 科目 / 1655 错题</p>
+            <span class="band-btn">看备考工作流 →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="legend">关键在于「比页底更深」：暗色页底是 <code>#151513</code>，块用 <code>#0c0c0b</code> 才压得住；两角的 <code>+</code> 记号可以借 accent 蓝找回识别度。</p>
+  </section>
+
+  <!-- ==================== ⑦ 小项 ==================== -->
+  <section class="demo-item" id="i7">
+    <header><span class="no">⑦</span><h2>五个小项</h2></header>
+
+    <div class="compare" style="margin-bottom:1.25rem">
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-now">现状 · 计数与中文的间隙偏松</span>
+          <div class="frame-body">
+            <ul class="cloud">
+              <li><a href="#">判例 <span class="count">5</span></a></li>
+              <li><a href="#">Agent <span class="count">4</span></a></li>
+              <li><a href="#">法考 <span class="count">3</span></a></li>
+              <li><a href="#">AI幻觉 <span class="count">3</span></a></li>
+              <li><a href="#">大模型 <span class="count">2</span></a></li>
+            </ul>
+          </div>
+        </div>
+        <p class="caption">Space Mono 的侧边距宽，数字看着像浮起来。</p>
+      </div>
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-fix">建议 · 统一 <span class="mono">margin-left:.34em</span></span>
+          <div class="frame-body">
+            <ul class="cloud fixcount">
+              <li><a href="#">判例 <span class="count">5</span></a></li>
+              <li><a href="#">Agent <span class="count">4</span></a></li>
+              <li><a href="#">法考 <span class="count">3</span></a></li>
+              <li><a href="#">AI幻觉 <span class="count">3</span></a></li>
+              <li><a href="#">大模型 <span class="count">2</span></a></li>
+            </ul>
+          </div>
+        </div>
+        <p class="caption">节奏一致，数字不再游离。</p>
+      </div>
+    </div>
+
+    <div class="compare" style="margin-bottom:1.25rem">
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-now">现状 · 搜索框拉满 1110px 通栏</span>
+          <div class="frame-body">
+            <input class="searchbar" placeholder="试试：幻觉、错题、竞业限制…" />
+          </div>
+        </div>
+        <p class="caption">和全站「窄栏阅读」的节奏不搭。</p>
+      </div>
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-fix">建议 · 限宽 32rem、左缘对齐</span>
+          <div class="frame-body">
+            <input class="searchbar limited" placeholder="试试：幻觉、错题、竞业限制…" />
+          </div>
+        </div>
+        <p class="caption">输入框回到「一行可读完」的尺度。</p>
+      </div>
+    </div>
+
+    <div class="compare">
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-now">现状 · 行内 code 承载拉丁术语</span>
+          <div class="frame-body">
+            <p>绪论移植了 <span class="term-code">lex</span>、<span class="term-code">consuetudo</span>、<span class="term-code">iustitia</span> 等概念，但罗马法的绝对所有权（<span class="term-code">dominium</span>）装不进英格兰的封建保有制。</p>
+          </div>
+        </div>
+        <p class="caption">在法史论文里读起来像代码，不像术语。</p>
+      </div>
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-fix">建议 · 细下划线，不带色底</span>
+          <div class="frame-body">
+            <p>绪论移植了 <span class="term-fix">lex</span>、<span class="term-fix">consuetudo</span>、<span class="term-fix">iustitia</span> 等概念，但罗马法的绝对所有权（<span class="term-fix">dominium</span>）装不进英格兰的封建保有制。</p>
+          </div>
+        </div>
+        <p class="caption">站点没有斜体字形（只装了 400/700/900 正体），所以用下划线而不是斜体更稳。</p>
+      </div>
+    </div>
+
+    <p class="legend" style="margin-top:1.6rem">另外两项不占篇幅：<b>标题锚链 <code>§</code> 键盘够不到</b>（<code>tabindex="-1"</code> + <code>aria-hidden</code>，鼠标 hover 和触屏常显都有，只有键盘缺入口）；<b>工具箱卡没有 meta 行</b>（缺栏目·日期，和项目卡并排时结构感弱一截）。</p>
+  </section>
+
+  <!-- ==================== ⑧ 叠加 ==================== -->
+  <section class="demo-item" id="i8">
+    <header><span class="no">⑧</span><h2>叠加效果：首页首屏</h2></header>
+    <p class="why">把 ①②③④⑤ 一起放进真实的首页首屏，左边现状、右边全部建议生效。可以对着看「灰按钮 + 标题压过 + 区块头右空 + 指标粘连」四件事叠起来的样子。</p>
+
+    <div class="compare">
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-now">现状</span>
+          <div class="frame-body flush" style="padding:0">
+            <div class="container" style="padding-block:1.4rem">
+              <div class="hero">
+                <p class="label">法律 × 工程<span class="sec-en">Law × Engineering</span></p>
+                <h1 style="margin-top:1.1rem">法学在读，<br />业余<span class="hl">造工具</span>。</h1>
+                <p class="lede">法条检索、法考判分、司法评测，全部开源，数字可查。</p>
+                <div class="pills"><span class="pill">备考法考中</span><span class="pill alt">武汉</span><span class="pill">全部开源</span></div>
+                <p class="ctas"><a class="btn primary" href="#">看项目 <span class="arr">→</span></a><a class="link-plain" href="#">关于我</a></p>
+              </div>
+              <div class="sec-head" style="margin-top:2.4rem">
+                <span class="sec-no">01</span><h2>精选项目<span class="sec-en">Selected Work</span></h2><a href="#">全部项目 →</a>
+              </div>
+              <article class="card project-card" style="margin-top:1.1rem">
+                <span class="idx mono">02</span>
+                <p class="meta">法律主线 · 2026 年 9 月 28 日</p>
+                <h3><a href="#">cn-judbench（法衡）：中国司法 LLM 评测基准</a></h3>
+                <p class="summary">用 12 个任务包、323 道公开题测中国司法工作流。</p>
+                <ul class="metrics"><li><strong class="mono">12 包 / 323 题</strong> 评测规模</li></ul>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="frame">
+          <span class="frame-tag is-fix">全部建议生效</span>
+          <div class="frame-body flush" style="padding:0">
+            <div class="container" style="padding-block:1.4rem">
+              <div class="hero fixmask">
+                <p class="label">法律 × 工程<span class="sec-en">Law × Engineering</span></p>
+                <h1 style="margin-top:1.1rem">法学在读，<br />业余<span class="hl">造工具</span>。</h1>
+                <p class="lede">法条检索、法考判分、司法评测，全部开源，数字可查。</p>
+                <div class="pills"><span class="pill">备考法考中</span><span class="pill alt">武汉</span><span class="pill">全部开源</span></div>
+                <p class="ctas"><a class="btn primary" href="#">看项目 <span class="arr">→</span></a><a class="link-plain" href="#">关于我</a></p>
+              </div>
+              <div class="sec-head fixed" style="margin-top:2.4rem">
+                <span class="sec-no">01</span><h2>精选项目<span class="sec-en">Selected Work</span></h2><a href="#">全部项目 →</a>
+              </div>
+              <article class="card project-card fixflex" style="margin-top:1.1rem">
+                <span class="idx mono">02</span>
+                <p class="meta">法律主线 · 2026 年 9 月 28 日</p>
+                <h3><a href="#">cn-judbench（法衡）：中国司法 LLM 评测基准</a></h3>
+                <p class="summary">用 12 个任务包、323 道公开题测中国司法工作流。</p>
+                <ul class="metrics-pairs"><li><span class="k">评测规模</span><span class="v">12 包 / 323 题</span></li></ul>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="legend">落地时按文件分：<code>src/styles/global.css</code>（h1 档位、.sec-head 右对齐、.prose 栏位与目录、删死代码 .section-head）、<code>src/pages/index.astro</code>（hero 遮罩）、<code>src/components/ProjectCard.astro</code>（指标行）、<code>src/pages/index.astro</code> 的暗色 band 覆盖、以及逐页的序号与英文对照对齐。</p>
+  </section>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const btn = document.getElementById('theme-toggle');
+  const sync = () => { btn.textContent = root.dataset.theme === 'dark' ? '切到亮色' : '切到暗色'; };
+  btn.addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    sync();
+  });
+  if (matchMedia('(prefers-color-scheme: dark)').matches) root.dataset.theme = 'dark';
+  sync();
+</script>
+</body>
+</html>
