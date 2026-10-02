@@ -117,17 +117,34 @@ const panelRows = [
   })} />
 </BaseLayout>
 <style>
-  /* ---- 首屏：左侧文案 + 右侧几何构成与数字面板（v3 demo 定稿语言） ---- */
+  /* ---- 首屏：纸面网格 / 网格线 / 文案 / 数字面板 四层，从后往前压 ----
+     底纹原本直接挂在 .hero 上并带 mask，遮罩会连子内容一起淡化：主按钮实测 alpha 0.595，
+     #17160f 被兑成 #737373。现在底纹下沉到 ::before，遮罩只作用于点阵本身。 */
   .hero {
+    position: relative;
     display: grid; grid-template-columns: 1.12fr 1fr; gap: 3.5rem;
     padding: 4.5rem 0; align-items: start;
-    /* 图纸感点阵底纹：极淡、向下渐隐，不干扰阅读 */
-    background-image: radial-gradient(color-mix(in srgb, var(--ink) 14%, transparent) 1px, transparent 1px);
-    background-size: 28px 28px;
-    background-position: center top;
-    -webkit-mask-image: linear-gradient(#000 60%, transparent);
-            mask-image: linear-gradient(#000 60%, transparent);
   }
+  /* 底纹层：主格 112px / 次格 28px 两级点阵，向下渐隐到块底，像一张收边的图纸 */
+  .hero::before {
+    content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      radial-gradient(color-mix(in srgb, var(--ink) 22%, transparent) 1px, transparent 1px),
+      radial-gradient(color-mix(in srgb, var(--ink) 10%, transparent) 1px, transparent 1px);
+    background-size: 112px 112px, 28px 28px;
+    background-position: center top, center top;
+    -webkit-mask-image: linear-gradient(#000 55%, transparent);
+            mask-image: linear-gradient(#000 55%, transparent);
+  }
+  /* 结构层：两栏分界的通高竖线（落在这两栏真正的栏界线上，不是空隙中腰，否则读起来像面板的左边框），
+     首屏因此被切成两块板，内容不再是浮在空处 */
+  .hero::after {
+    content: ''; position: absolute; z-index: 0; pointer-events: none;
+    top: 0; bottom: 0;
+    left: calc((100% - 3.5rem) * (1.12 / 2.12));
+    width: 1px; background: var(--border);
+  }
+  .hero > * { position: relative; z-index: 1; }
   .hero .label { display: inline-flex; align-items: center; gap: 0.55rem; font-size: 0.86rem; font-weight: 700; margin: 0 0 1.3rem; }
   .hero .label::before { content: ''; width: 8px; height: 8px; background: var(--accent); flex: none; }
   .hero .hl { box-shadow: inset 0 -0.32em color-mix(in srgb, var(--accent) 26%, transparent); }
@@ -146,8 +163,20 @@ const panelRows = [
   .link-plain { font-size: 0.95rem; font-weight: 600; color: var(--text); box-shadow: inset 0 -1.5px var(--accent); padding-bottom: 1px; }
   .link-plain:hover { color: var(--text); box-shadow: inset 0 -2.5px var(--accent); text-decoration: none; }
 
-  /* 数字面板：白底描边盒，几何构成（呼应设计参考的黑块构成）+ 等宽指标行 */
+  /* 数字面板：白底描边盒，几何构成（呼应设计参考的黑块构成）+ 等宽指标行。
+     两层：右下错开 12px 的描边板垫在下面，底纹从板中间透出来，面板就落在纸叠上；
+     左上角一枚蓝方块压在网格线顶端，与导语的方块同一记号。 */
   .numbers { background: var(--surface); border: 1.5px solid var(--border-strong); }
+  .numbers::after {
+    content: ''; position: absolute; z-index: -1; pointer-events: none;
+    inset: 12px -12px -12px 12px;
+    border: 1px solid var(--border);
+  }
+  /* 竖线顶端的蓝方块：与导语那枚 8px 方块同一记号，压在栏界线上（3.5rem + 自身半宽） */
+  .numbers::before {
+    content: ''; position: absolute; left: calc(-3.5rem - 4px); top: 0;
+    width: 8px; height: 8px; background: var(--accent);
+  }
   .comp { display: flex; align-items: flex-end; gap: 10px; padding: 1.6rem 1.8rem 0; height: 180px; }
   .comp i { display: block; border: 1.5px solid var(--ink); }
   .comp .c1 { width: 96px; height: 150px; }
@@ -170,35 +199,31 @@ const panelRows = [
   .cell.wide :global(.project-card h3) { font-size: 1.45rem; }
   .cell.wide :global(.project-card .summary) { font-size: 1.02rem; max-width: 58ch; }
 
-  /* 法考 × AI 通栏反色块：全页最重的高对比色块，两角 + 记号呼应图纸底纹 */
-  .band { background: var(--ink); color: var(--bg); position: relative; }
+  /* 法考 × AI 通栏反色块：全页最重的高对比色块，两角 + 记号呼应图纸底纹。
+     颜色全走 --band-* 令牌（见 global.css）：亮色墨底反白，暗色不是降级成浅灰面板，
+     而是换成比页底更深一层的实色，区块重量与两角的 accent 记号都留着。 */
+  .band { background: var(--band-bg); color: var(--band-fg); position: relative; border-block: 1px solid var(--band-line); }
   .band::before, .band::after {
     content: '+'; position: absolute; font-family: var(--font-mono);
-    font-size: 1.1rem; color: var(--bg); opacity: 0.5; top: 8px;
+    font-size: 1.1rem; color: var(--band-mark); top: 8px;
   }
   .band::before { left: 12px; }
   .band::after { right: 12px; }
   .band-inner { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; padding: 2.8rem 1.25rem; max-width: var(--maxw); margin-inline: auto; }
-  .band .label { color: var(--bg); margin: 0; }
-  .band .sec-en { color: var(--bg); opacity: 0.55; }
+  .band .label { color: var(--band-fg); margin: 0; }
+  .band .sec-en { color: inherit; opacity: 0.55; }
   .band h2 { margin: 0.6rem 0 0; }
   .band-text { margin: 0.6rem 0 0; opacity: 0.75; max-width: 44rem; font-size: 1rem; }
   .band-figures { margin: 0.8rem 0 0; font-size: 0.95rem; opacity: 0.9; }
-  .band .band-btn { border-color: var(--bg); color: var(--bg); background: none; }
-  .band .band-btn:hover { background: var(--bg); color: var(--ink); }
-  /* 暗色不做反白：整块奶油底在深页面里过于刺眼，降为深灰面板 + 上下描边，保持区块重量 */
-  :global(html[data-theme='dark']) .band { background: var(--bg-soft); color: var(--text); border-block: 1px solid var(--border); }
-  :global(html[data-theme='dark']) .band .label { color: var(--text); }
-  :global(html[data-theme='dark']) .band .sec-en { color: var(--text-muted); opacity: 1; }
-  :global(html[data-theme='dark']) .band::before,
-  :global(html[data-theme='dark']) .band::after { color: var(--text-muted); opacity: 0.6; }
-  :global(html[data-theme='dark']) .band .band-btn { border-color: var(--border-strong); color: var(--text); background: none; }
-  :global(html[data-theme='dark']) .band .band-btn:hover { background: var(--ink); color: var(--bg); }
+  .band .band-btn { border-color: var(--band-fg); color: var(--band-fg); background: none; }
+  .band .band-btn:hover { background: var(--band-fg); color: var(--band-bg); }
 
   .now-chips { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.2rem; }
 
   @media (max-width: 900px) {
     .hero { grid-template-columns: 1fr; gap: 2.4rem; padding: 3rem 0; }
+    /* 单栏后两栏之间那条竖线没有意义，连同压在它顶端的蓝方块一起收起 */
+    .hero::after, .numbers::before { display: none; }
     .featured-grid { grid-template-columns: 1fr; }
     .band-inner { grid-template-columns: 1fr; }
   }

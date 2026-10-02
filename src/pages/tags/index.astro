@@ -14,7 +14,7 @@ const tags = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeComp
   <p class="intro">{tags.length} 个标签，来自 {posts.length} 篇文章；点进去看同主题的文章。</p>
   <ul class="cloud">
     {tags.map(([t, n]) => (
-      <li><a href={`/tags/${t}/`}>{t} <span class="count">{n}</span></a></li>
+      <li><a href={`/tags/${t}/`}>{t}<span class="count">{n}</span></a></li>
     ))}
   </ul>
 </BaseLayout>
@@ -28,5 +28,7 @@ const tags = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeComp
     transition: color 0.15s ease, border-color 0.15s ease;
   }
   .cloud a:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
-  .count { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); }
+  /* 计数：等宽数字与中文标签之间改用固定间距，不再靠字面空格。
+     等宽字的侧边距比正文宽，靠空格撑出来的缝会随字数浮动，同一行几枚 pill 节奏不一 */
+  .count { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); margin-left: 0.35em; }
 </style>

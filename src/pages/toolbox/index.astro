@@ -3,10 +3,13 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const tools = (await getCollection('toolbox')).sort((a, b) => a.data.name.localeCompare(b.data.name));
-const categories = ['法律工具', '工程小件'] as const;
+const categories = [
+  { name: '法律工具', en: 'Legal Tools' },
+  { name: '工程小件', en: 'Utilities' }
+] as const;
 /* 分区按页面顺序重编号（sec-head 的 01 递增只数非空分组），仅展示层推导 */
 const sections = categories
-  .map((c) => ({ name: c, items: tools.filter((t) => t.data.category === c) }))
+  .map((c) => ({ ...c, items: tools.filter((t) => t.data.category === c.name) }))
   .filter((s) => s.items.length > 0)
   .map((s, i) => ({ ...s, no: String(i + 1).padStart(2, '0') }));
 ---
@@ -16,7 +19,7 @@ const sections = categories
     <section>
       <div class="sec-head">
         <span class="sec-no">{s.no}</span>
-        <h2>{s.name}</h2>
+        <h2>{s.name}<span class="sec-en">{s.en}</span></h2>
       </div>
       <div class="grid">
         {s.items.map((t) => (

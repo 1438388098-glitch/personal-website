@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Toc from '../../components/Toc.astro';
 import { formatDate } from '../../lib/format';
 import { byDateDesc } from '../../lib/sort';
 import { isPublished } from '../../lib/publish';
@@ -12,7 +13,7 @@ export async function getStaticPaths() {
   return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }));
 }
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 const { title, description, category, pubDate, tags, image } = post.data;
 const shareImage = new URL(image ?? '/og-default.png', SITE.url).toString();
 /* 相邻文章按发布日期排序：新一篇 / 旧一篇（含定时发布过滤） */
@@ -37,21 +38,26 @@ const jsonLd = JSON.stringify({
 });
 ---
 <BaseLayout title={title} description={description} type="article" image={image}>
-  <article class="prose">
-    <p class="meta">
-      {category} · {formatDate(pubDate)}
-      {tags.length > 0 && <span class="tag-row"> · {tags.map((t) => <a class="tag-link" href={`/tags/${t}/`}>#{t}</a>)}</span>}
-    </p>
-    <h1>{title}</h1>
-    <Content />
-    <p><a href="/blog/">← 全部文章</a></p>
-  </article>
-  {(newer || older) && (
-    <nav class="adjacent" aria-label="相邻文章">
-      {newer && <a class="adj-link" href={`/blog/${newer.id}/`}>← 较新：{newer.data.title}</a>}
-      {older && <a class="adj-link adj-next" href={`/blog/${older.id}/`}>较旧：{older.data.title} →</a>}
-    </nav>
-  )}
+  <div class="doc">
+    <div class="col">
+      <article class="prose">
+        <p class="meta">
+          {category} · {formatDate(pubDate)}
+          {tags.length > 0 && <span class="tag-row"> · {tags.map((t) => <a class="tag-link" href={`/tags/${t}/`}>#{t}</a>)}</span>}
+        </p>
+        <h1>{title}</h1>
+        <Content />
+        <p><a href="/blog/">← 全部文章</a></p>
+      </article>
+      {(newer || older) && (
+        <nav class="adjacent" aria-label="相邻文章">
+          {newer && <a class="adj-link" href={`/blog/${newer.id}/`}>← 较新：{newer.data.title}</a>}
+          {older && <a class="adj-link adj-next" href={`/blog/${older.id}/`}>较旧：{older.data.title} →</a>}
+        </nav>
+      )}
+    </div>
+    <Toc headings={headings} />
+  </div>
   <script is:inline type="application/ld+json" set:html={jsonLd} />
 </BaseLayout>
 <style>

@@ -1,0 +1,63 @@
+---
+/* 长文右侧目录：详情页正文右侧常年空着 526px，把这块空位交给节导航。
+   标题直接取 render() 返回的 headings，与 astro.config 构建期注入的 § 锚链共用同一批 id。 */
+interface Props { headings: { depth: number; slug: string; text: string }[]; }
+const { headings } = Astro.props;
+/* 只列二级标题：带上三级会变成第二份正文，反而找不到位置；两节以下不值得占一栏 */
+const items = headings.filter((h) => h.depth === 2);
+---
+{items.length >= 2 && (
+  <nav class="toc" aria-label="本篇目录">
+    <p class="toc-title">On this page</p>
+    <ul>
+      {items.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+    </ul>
+  </nav>
+)}
+<script>
+  /* 滚动高亮：取「当前视口内最靠上的二级标题」。与博客页 tabs 同理挂在 astro:page-load，
+     ClientRouter 换页会替换 DOM，顶层绑定在返回本页后就会失灵 */
+  document.addEventListener('astro:page-load', () => {
+    const toc = document.querySelector('.toc');
+    if (!toc) return;
+    const pairs = Array.from(toc.querySelectorAll<HTMLAnchorElement>('a'))
+      .map((a) => ({ a, el: document.getElementById(decodeURIComponent(a.hash.slice(1))) }))
+      .filter((p): p is { a: HTMLAnchorElement; el: HTMLElement } => p.el !== null);
+    if (pairs.length === 0) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        const hit = entries
+          .filter((e) => e.isIntersecting)
+          .sort((x, y) => x.boundingClientRect.top - y.boundingClientRect.top)[0];
+        if (!hit) return;
+        for (const p of pairs) p.a.parentElement?.classList.toggle('on', p.el === hit.target);
+      },
+      { rootMargin: '-12% 0px -72% 0px' }
+    );
+    for (const p of pairs) io.observe(p.el);
+  });
+</script>
+<style>
+  .toc {
+    position: sticky; top: 5.5rem; max-height: calc(100vh - 8rem); overflow-y: auto;
+    font-size: 0.86rem;
+  }
+  /* 栏头沿用 .sec-en 的英文对照样式，下面压 2px 墨线，与全站区块头同语言 */
+  .toc-title {
+    margin: 0 0 0.7rem; padding-bottom: 0.5rem;
+    font-size: 0.66rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--text-muted); border-bottom: 2px solid var(--border-strong);
+  }
+  .toc ul { list-style: none; margin: 0; padding: 0; }
+  /* 行首 7px 小方块：与 PostCard/EntryCard 的列表行同一套指示语言 */
+  .toc li { position: relative; padding: 0.34rem 0 0.34rem 1.1rem; }
+  .toc li::before {
+    content: ''; position: absolute; left: 0; top: 0.85rem;
+    width: 7px; height: 7px; background: var(--border);
+    transition: background-color 0.15s ease;
+  }
+  .toc li.on::before { background: var(--accent); }
+  .toc a { color: var(--text-muted); }
+  .toc a:hover { color: var(--text); text-decoration: none; }
+  .toc li.on a { color: var(--text); font-weight: 700; }
+</style>

@@ -7,7 +7,8 @@ import { fileURLToPath } from 'node:url';
 import { SITE } from './src/lib/site';
 
 /* 构建完成钩子：给产物 HTML 里带 id 的标题尾部注入 § 锚链。
-   法律长文按节引用是高频动作；5.18 的 content layer 渲染不走 markdown.rehypePlugins（实测工厂零调用），故落在产物层做。 */
+   法律长文按节引用是高频动作；5.18 的 content layer 渲染不走 markdown.rehypePlugins（实测工厂零调用），故落在产物层做。
+   § 进 tab 序：只靠 hover 等于把「引用某一节」留给鼠标用户，键盘用户够不到。 */
 function anchorLinks() {
   return {
     name: 'anchor-links',
@@ -28,7 +29,7 @@ function anchorLinks() {
           const html = readFileSync(f, 'utf8');
           const next = html.replace(re, (m, open, close) => {
             const id = /id="([^"]+)"/.exec(open)[1];
-            return open + '<a class="anchor" href="#' + id + '" aria-hidden="true" tabindex="-1">§</a>' + close;
+            return open + '<a class="anchor" href="#' + id + '" aria-label="本节锚点">§</a>' + close;
           });
           if (next !== html) { writeFileSync(f, next); touched++; }
         }

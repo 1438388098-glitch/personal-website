@@ -16,6 +16,13 @@
   --code-bg: #f1efe8;
   /* 投影：跟纸面同族的中性灰，比通用纯黑更贴暖底 */
   --shadow-card: 0 14px 30px -22px rgba(23, 22, 15, 0.35);
+  /* 反色通栏块（首页「法考 × AI」那条）：亮色沿用墨底反白；
+     暗色不能照搬（奶油底在深页面里刺眼），改用比页底更深一层的实色把区块重量留回来 */
+  --band-bg: #17160f;
+  --band-fg: #faf9f6;
+  --band-mark: rgba(250, 249, 246, 0.5);
+  /* 亮色块自带对比，收边线透明；暗色块与页底相近，靠上下细线立住边界 */
+  --band-line: transparent;
   --maxw: 72rem;
   /* 展示字族：Archivo 管西文与数字展示位，思源黑体管中文；正文同族小字重 */
   --font-display: 'Archivo', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
@@ -32,6 +39,11 @@ html[data-theme='dark'] {
   --border: #2c2b28;
   --code-bg: #201f1c;
   --shadow-card: 0 14px 30px -20px rgba(0, 0, 0, 0.65);
+  /* 比 --bg（#151513）更深一层：暗色下区块靠「比纸面更黑」立住，不靠反白 */
+  --band-bg: #0c0c0b;
+  --band-fg: #f2f1ea;
+  --band-mark: #8b9dff;
+  --band-line: #2a2a26;
 }
 
 * { box-sizing: border-box; }
@@ -55,10 +67,16 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1.25; letter-spacing
 h1 { font-size: clamp(2.3rem, 4.6vw, 3.4rem); font-weight: 900; line-height: 1.18; letter-spacing: -0.01em; text-wrap: balance; }
 h2 { font-size: clamp(1.4rem, 2.4vw, 1.8rem); font-weight: 800; }
 h3 { font-weight: 800; }
+/* 长文详情的标题单开一档：3.4rem 是按首页两行短标题调的，套到长标题上会排成四行并拦腰断词
+   （笔记页出现「罗马法复／兴」，项目页出现「statute-rag: 法／条混合检索底座」的单字孤行）。
+   balance 只在两行时好看，行数一多它会把断行点推进词中间，故长文换 pretty。 */
+.prose h1 { font-size: clamp(1.9rem, 3vw, 2.4rem); line-height: 1.3; letter-spacing: -0.005em; text-wrap: pretty; }
 
-/* 标题锚链：默认隐形，悬停/聚焦浮现，不进 tab 序也不进读屏 */
+/* 标题锚链：默认隐形，悬停/聚焦浮现。键盘可达（不进 aria-hidden），
+   长文里「复制某一节的链接」是高频动作，只靠鼠标等于把键盘用户挡在外面。 */
 .prose .anchor { opacity: 0; margin-left: 0.35em; text-decoration: none; }
-.prose h2:hover .anchor, .prose h2:focus-within .anchor { opacity: 1; }
+.prose :is(h1, h2, h3, h4, h5, h6):hover .anchor,
+.prose :is(h1, h2, h3, h4, h5, h6):focus-within .anchor { opacity: 1; }
 @media (hover: none) {
   .prose .anchor { opacity: 1; }
 }
@@ -95,19 +113,14 @@ h3 { font-weight: 800; }
 .sec-no { font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--accent); }
 .sec-en { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-left: 0.4em; white-space: nowrap; }
 .sec-head h2 { margin: 0; font-size: 1.3rem; }
-/* 右侧「更多」链接禁止内部断行（移动端曾出现「全部项目 / →」两行） */
-.sec-head a { white-space: nowrap; }
+/* 右侧「更多」推到通栏黑线的另一端：区块头的黑线是通栏的，链接若紧贴英文对照就停住，右半截会悬空。
+   用 margin-left:auto 而不是 justify-content:space-between —— 后者会把编号和标题也一起摊开 */
+.sec-head a { white-space: nowrap; margin-left: auto; }
 /* 窄屏收起英文对照：区块头保持单行节奏 */
 @media (max-width: 560px) {
   .sec-en { display: none; }
 }
 .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-
-/* 兼容旧标记：既有的 .section-head 布局升级为黑线通栏（编号由各页自行加 .sec-no） */
-.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; border-bottom: 2px solid var(--border-strong); padding-bottom: 0.7rem; margin-bottom: 0.75rem; }
-.section-head h2 { margin: 0; }
-.section-head a { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
-.section-head a:hover { color: var(--accent); }
 
 /* 入场动效：仅在未开启「减少动态效果」时生效，一次性 transform/opacity，GPU 友好 */
 @media (prefers-reduced-motion: no-preference) {
@@ -139,6 +152,24 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   background: var(--ink); color: var(--bg); padding: 0.5rem 1rem; z-index: 100;
 }
 .skip-link:focus { left: 0; }
+
+/* 标题锚点落位：页头是 sticky（64px），不留顶部偏移时点目录或 § 会把标题顶到页头底下 */
+:is(h1, h2, h3, h4, h5, h6)[id] { scroll-margin-top: 5rem; }
+
+/* 长文详情页版式：正文栏 68ch 单独居中时，容器里会常年空掉一半（1440 视口实测空 526px），
+   把这部分空位交给右侧目录（components/Toc.astro）。整块一居中，左右留白对称。
+   窄到装不下时退回单栏并收起目录，正文仍按 68ch 居中。 */
+.doc {
+  display: grid;
+  grid-template-columns: minmax(0, 68ch) 12rem;
+  justify-content: center;
+  gap: 3.5rem;
+  align-items: start;
+}
+@media (max-width: 960px) {
+  .doc { grid-template-columns: minmax(0, 68ch); }
+  .doc .toc { display: none; }
+}
 
 /* 文章正文 */
 .prose { max-width: 68ch; }

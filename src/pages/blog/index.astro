@@ -14,9 +14,9 @@ const countOf = (c: string) => posts.filter((p) => p.data.category === c).length
   <h1>博客</h1>
 
   <div class="tabs">
-    <button class="tab" type="button" data-cat="全部" aria-pressed="true">全部 <span class="count">{posts.length}</span></button>
+    <button class="tab" type="button" data-cat="全部" aria-pressed="true">全部<span class="count">{posts.length}</span></button>
     {categories.map((c) => (
-      <button class="tab" type="button" data-cat={c} aria-pressed="false">{c} <span class="count">{countOf(c)}</span></button>
+      <button class="tab" type="button" data-cat={c} aria-pressed="false">{c}<span class="count">{countOf(c)}</span></button>
     ))}
   </div>
 
@@ -45,7 +45,8 @@ const countOf = (c: string) => posts.filter((p) => p.data.category === c).length
   .tab:hover { border-color: var(--accent); color: var(--accent); }
   .tab[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
   .tab[aria-pressed='true'] .count { color: var(--bg); opacity: 0.75; }
-  .count { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); }
+  /* 计数与中文分类之间用固定间距，不靠字面空格（等宽字侧边距宽，缝会随字数浮动） */
+  .count { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); margin-left: 0.35em; }
   section { margin: 3rem 0; }
   section > h2 { font-size: 1.3rem; }
   .essay-note, .empty-note { color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }

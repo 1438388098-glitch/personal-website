@@ -105,8 +105,18 @@ const stages = [
   section { margin: 3rem 0; }
   .stage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
   .stage-card { padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.35rem; }
-  /* 环节编号：等宽蓝字（v3 区块编号语言） */
-  .step { margin: 0; font-weight: 700; color: var(--accent); font-size: 0.85rem; }
+  /* 环节编号：与 ProjectCard 的卡片序号同一套墨色描边方框；蓝色留给区块编号 .sec-no，
+     同一个「卡片序号」概念不再有方框 / 纯蓝两种长相 */
+  .step {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 2rem; height: 1.5rem; padding: 0 0.4rem; margin: 0;
+    font-weight: 700; color: var(--text); font-size: 0.82rem;
+    border: 1.5px solid var(--border-strong);
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  }
+  /* 反色用 --bg 而非白：暗色下强调蓝变浅蓝，白字对比不足 */
+  .stage-card:hover .step { background: var(--accent); border-color: var(--accent); color: var(--bg); }
   .stage-name { margin: 0; font-weight: 800; font-size: 1.1rem; }
   /* 工具名小方框：直角描边，hover 转强调蓝 */
   .tool {

@@ -13,15 +13,18 @@ const { title, summary, metrics, date, group } = project.data;
   {showMetrics && metrics.length > 0 && (
     <ul class="metrics">
       {metrics.slice(0, 2).map((m) => (
-        <li><strong class="mono">{m.value}</strong> {m.label}</li>
+        <li><span class="k">{m.label}</span><span class="v mono">{m.value}</span></li>
       ))}
     </ul>
   )}
 </article>
 <style>
-  .project-card { padding: 1.4rem 1.6rem; }
-  /* 编号框：等宽数字描边小方框，卡片 hover 时反色为强调蓝 */
+  /* 卡片排成 flex 列：指标行才能用 margin-top:auto 贴住同排卡片的底边 */
+  .project-card { padding: 1.4rem 1.6rem; display: flex; flex-direction: column; }
+  /* 编号框：等宽数字描边小方框，卡片 hover 时反色为强调蓝。
+     align-self 顶住左端：卡变 flex 列后行内元素默认会被拉满整行 */
   .idx {
+    align-self: flex-start;
     display: inline-flex; align-items: center; justify-content: center;
     min-width: 2rem; height: 1.5rem; padding: 0 0.4rem;
     font-size: 0.82rem; font-weight: 700;
@@ -35,7 +38,13 @@ const { title, summary, metrics, date, group } = project.data;
   h3 a { color: var(--text); }
   h3 a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; text-decoration-color: var(--accent); }
   .summary { color: var(--text-muted); margin: 0 0 0.75rem; }
-  .metrics { list-style: none; display: flex; gap: 1.5rem; margin: 0; padding: 0.75rem 0 0; border-top: 1px solid var(--border); }
-  .metrics li { font-size: 0.88rem; color: var(--text-muted); }
-  .metrics strong { color: var(--text); font-weight: 700; font-size: 0.95rem; }
+  /* 指标成对：标签在上、值在下。原先写「值 + 空格 + 标签」，会读成「12 包 / 323 题评测规模」
+     「规则 27.40基线锚点」；两条指标之间隔 1.5rem，反而比值与它的标签更宽，层级是反的。 */
+  .metrics {
+    list-style: none; display: flex; flex-wrap: wrap; gap: 0.6rem 2.2rem;
+    margin: auto 0 0; padding: 0.8rem 0 0; border-top: 1px solid var(--border);
+  }
+  .metrics li { display: flex; flex-direction: column; gap: 0.05rem; }
+  .metrics .k { font-size: 0.72rem; color: var(--text-muted); }
+  .metrics .v { color: var(--text); font-weight: 700; font-size: 1rem; }
 </style>
