@@ -17,6 +17,10 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
         </a>
       ))}
     </nav>
+    {/* 轻量搜索：GET 表单直达 /search/?q=，结果由搜索页客户端渲染；窄屏收起（页脚仍保留入口） */}
+    <form class="header-search" action="/search/" method="get" role="search">
+      <input type="search" name="q" placeholder="搜索" aria-label="站内搜索" autocomplete="off" />
+    </form>
     <button id="theme-toggle" type="button" aria-label="切换明暗主题">◐</button>
   </div>
 </header>
@@ -55,12 +59,25 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
   .nav-link { color: var(--text-muted); font-size: 0.95rem; white-space: nowrap; }
   .nav-link:hover { color: var(--text); text-decoration: none; }
   .nav-link.active { color: var(--text); font-weight: 700; box-shadow: inset 0 -2px var(--accent); padding-bottom: 2px; }
+  /* 迷你搜索框：直角细描边，聚焦转强调蓝；跟随导航右侧排布（nav 的 auto 外边距负责收拢） */
+  .header-search input {
+    font: inherit; font-size: 0.88rem; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 0;
+    padding: 0.3rem 0.7rem; width: 9.5rem;
+    transition: border-color 0.15s ease;
+  }
+  .header-search input::placeholder { color: var(--text-muted); }
+  .header-search input:hover { border-color: var(--border-strong); }
+  .header-search input:focus { outline: none; border-color: var(--accent); }
   #theme-toggle {
     background: none; border: 1.5px solid var(--border-strong); border-radius: 0; color: var(--text);
     cursor: pointer; padding: 0.25rem 0.6rem; transition: background-color 0.15s ease, color 0.15s ease;
   }
   #theme-toggle:hover { background: var(--ink); color: var(--bg); }
-  /* 移动端：六项导航允许换行（隐形横向滚动条对触屏不可发现），高度放开自适应 */
+  /* 移动端：六项导航允许换行（隐形横向滚动条对触屏不可发现），高度放开自适应；迷你搜索框收起 */
+  @media (max-width: 860px) {
+    .header-search { display: none; }
+  }
   @media (max-width: 720px) {
     .header-inner { gap: 0.75rem; height: auto; min-height: 56px; flex-wrap: wrap; padding-block: 0.5rem; }
     .brand { font-size: 1rem; }

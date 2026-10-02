@@ -143,8 +143,15 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 /* 文章正文 */
 .prose { max-width: 68ch; }
 .prose p { margin: 1.1em 0; text-wrap: pretty; }
-.prose h2 { margin-top: 2em; }
+/* 正文 h2 升级为区块头语言：2px 墨色通栏底线（Now/关于/博客/笔记全站一致） */
+.prose h2 {
+  margin-top: 2em; padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border-strong);
+  font-size: 1.3rem;
+}
 .prose h3 { margin-top: 1.6em; }
+/* 列表标记转强调蓝：小图形语言延伸进正文 */
+.prose ul li::marker { color: var(--accent); }
 .prose blockquote {
   margin: 1.4em 0; padding: 0.2em 1.1em;
   border-left: 3px solid var(--accent);

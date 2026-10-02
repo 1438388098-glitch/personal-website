@@ -14,7 +14,6 @@ const sections = groups
 ---
 <BaseLayout title="项目" description="法律 AI 与工程小件的全量项目清单：每个项目都有边界、机制与可验证的事实。">
   <h1>项目</h1>
-  <p class="intro">每个项目讲机制、边界与可验证的数字；全部公开仓库的速览目录在<a href="/toolbox/">工具箱</a>。</p>
 
   <div class="tabs">
     <button class="tab" type="button" data-group="全部" aria-pressed="true">全部 <span class="count">{projects.length}</span></button>
@@ -73,9 +72,8 @@ const sections = groups
   });
 </script>
 <style>
-  .intro { color: var(--text-muted); margin: 1.4rem 0 1.5rem; }
   /* 分组子 tab：与博客页分类 tab 同语言（直角方框，选中墨底反白） */
-  .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 2rem; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.4rem 0 2rem; }
   .tab {
     font: inherit; font-size: 0.9rem; cursor: pointer;
     color: var(--text); background: var(--surface);

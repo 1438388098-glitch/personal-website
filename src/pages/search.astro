@@ -113,6 +113,13 @@ const docs = [
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { clearTimeout(timer); run(); }
   });
+
+  /* 页头迷你搜索框以 GET /search/?q= 提交：落地后带词出结果 */
+  const initial = new URLSearchParams(location.search).get('q');
+  if (initial) {
+    input.value = initial;
+    run();
+  }
   });
 </script>
 <style>
