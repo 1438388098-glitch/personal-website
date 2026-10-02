@@ -51,6 +51,12 @@ html { color-scheme: light; }
 html[data-theme='dark'] { color-scheme: dark; }
 /* 通栏反色块用 50vw 负 margin 撑出容器，会在根上产生横向溢出；clip 不产生滚动容器，sticky 页头不受影响 */
 html { overflow-x: clip; }
+/* 站内锚点（长文目录、§ 锚链、跳转链接）走平滑滚动。
+   默认值 auto 是一次性跳到目标：长文里点目录画面会「整块换掉」，既没有过渡，
+   也很容易被读成卡顿。跟随系统「减少动态效果」设置关闭。 */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
 body {
   margin: 0;
   background: var(--bg);
@@ -72,9 +78,9 @@ h3 { font-weight: 800; }
    balance 只在两行时好看，行数一多它会把断行点推进词中间，故长文换 pretty。 */
 .prose h1 { font-size: clamp(1.9rem, 3vw, 2.4rem); line-height: 1.3; letter-spacing: -0.005em; text-wrap: pretty; }
 
-/* 标题锚链：默认隐形，悬停/聚焦浮现。键盘可达（不进 aria-hidden），
-   长文里「复制某一节的链接」是高频动作，只靠鼠标等于把键盘用户挡在外面。 */
-.prose .anchor { opacity: 0; margin-left: 0.35em; text-decoration: none; }
+/* 标题锚链：默认隐形，悬停/聚焦浮现，0.15s 淡入（其余小图形都是 0.15s，这里不跟上就会硬闪）。
+   键盘可达（不进 aria-hidden），长文里「复制某一节的链接」是高频动作，只靠鼠标等于把键盘用户挡在外面。 */
+.prose .anchor { opacity: 0; margin-left: 0.35em; text-decoration: none; transition: opacity 0.15s ease; }
 .prose :is(h1, h2, h3, h4, h5, h6):hover .anchor,
 .prose :is(h1, h2, h3, h4, h5, h6):focus-within .anchor { opacity: 1; }
 @media (hover: none) {
@@ -95,10 +101,11 @@ h3 { font-weight: 800; }
   box-shadow: var(--shadow-card);
 }
 
-/* 按钮公共类：直角矩形，1.5px 墨色描边；主按钮墨底反白 */
+/* 按钮公共类：直角矩形，1.5px 墨色描边；主按钮墨底反白。
+   opacity 也要进过渡表：主按钮 hover 靠压 0.88 透明度，漏了它这一档就是硬切，和次按钮的渐变 hover 不一致 */
 .btn {
   display: inline-block; border: 1.5px solid var(--border-strong); border-radius: 0; padding: 0.6rem 1.4rem; color: var(--text); font-weight: 700;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
 }
 .btn:hover { background: var(--ink); color: var(--bg); text-decoration: none; }
 .btn:active { transform: translateY(1px); }

@@ -141,6 +141,7 @@ const docs = [
   #results :global(li::before) {
     content: ''; position: absolute; left: 0; top: 1.55rem;
     width: 7px; height: 7px; background: var(--border);
+    transition: background-color 0.15s ease;
   }
   #results :global(li:hover::before) { background: var(--accent); }
   #results :global(li a) { color: var(--text); font-weight: 700; font-size: 1.05rem; }

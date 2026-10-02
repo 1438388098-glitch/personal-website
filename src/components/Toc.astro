@@ -15,26 +15,49 @@ const items = headings.filter((h) => h.depth === 2);
   </nav>
 )}
 <script>
-  /* 滚动高亮：取「当前视口内最靠上的二级标题」。与博客页 tabs 同理挂在 astro:page-load，
-     ClientRouter 换页会替换 DOM，顶层绑定在返回本页后就会失灵 */
+  /* 滚动高亮：取「最后一个越过判定线的标题」。
+     为什么不用 IntersectionObserver 的进出事件（原实现）：最后一节滚到页面底部时再也不会「进入」
+     观察带，事件判定会永远停在倒数第二节。实测点「制度建议」高亮落在「案例与数据」。
+     位置判定永远有确定答案，且滚到页底时直接兜到最后一节。
+     与博客页 tabs 同理挂在 astro:page-load；监听挂在 window 上，ClientRouter 换页不会随 DOM 一起消失，
+     所以每次换页前必须自己摘掉上一份。 */
+  type TocCleanup = () => void;
+  const w = window as Window & { __tocCleanup?: TocCleanup };
   document.addEventListener('astro:page-load', () => {
+    w.__tocCleanup?.();
     const toc = document.querySelector('.toc');
     if (!toc) return;
     const pairs = Array.from(toc.querySelectorAll<HTMLAnchorElement>('a'))
-      .map((a) => ({ a, el: document.getElementById(decodeURIComponent(a.hash.slice(1))) }))
-      .filter((p): p is { a: HTMLAnchorElement; el: HTMLElement } => p.el !== null);
+      .map((a) => ({ a, li: a.parentElement, el: document.getElementById(decodeURIComponent(a.hash.slice(1))) }))
+      .filter((p): p is { a: HTMLAnchorElement; li: HTMLElement | null; el: HTMLElement } => p.el !== null);
     if (pairs.length === 0) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        const hit = entries
-          .filter((e) => e.isIntersecting)
-          .sort((x, y) => x.boundingClientRect.top - y.boundingClientRect.top)[0];
-        if (!hit) return;
-        for (const p of pairs) p.a.parentElement?.classList.toggle('on', p.el === hit.target);
-      },
-      { rootMargin: '-12% 0px -72% 0px' }
-    );
-    for (const p of pairs) io.observe(p.el);
+    /* 判定线压在 sticky 页头下方一点，与标题的 scroll-margin-top 对齐 */
+    const line = (document.querySelector('.site-header')?.getBoundingClientRect().height ?? 64) + 40;
+    let raf = 0;
+    let last = -1;
+    const pick = () => {
+      raf = 0;
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      let idx = atBottom ? pairs.length - 1 : 0;
+      if (!atBottom) {
+        for (let i = 0; i < pairs.length; i++) {
+          if (pairs[i].el.getBoundingClientRect().top <= line) idx = i;
+        }
+      }
+      if (idx === last) return;
+      last = idx;
+      pairs.forEach((p, i) => p.li?.classList.toggle('on', i === idx));
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(pick); };
+    pick();
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll, { passive: true });
+    w.__tocCleanup = () => {
+      removeEventListener('scroll', onScroll);
+      removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+      w.__tocCleanup = undefined;
+    };
   });
 </script>
 <style>
@@ -57,7 +80,9 @@ const items = headings.filter((h) => h.depth === 2);
     transition: background-color 0.15s ease;
   }
   .toc li.on::before { background: var(--accent); }
-  .toc a { color: var(--text-muted); }
+  /* 文字色跟着小方块一起 0.15s 过渡：方块在渐入、文字硬切，同一个条目的两半各走各的会很突兀。
+     字重过渡不了（非可变字体），但中日韩字形宽度不随字重变，加粗不会引起条目回流。 */
+  .toc a { color: var(--text-muted); transition: color 0.15s ease; }
   .toc a:hover { color: var(--text); text-decoration: none; }
   .toc li.on a { color: var(--text); font-weight: 700; }
 </style>
