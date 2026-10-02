@@ -3,6 +3,7 @@
 //      《书名号》整段剥除后再扫（论文标题等引用自带原文用词，如标题含「赋能」）。
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, extname } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const roots = ['src/content', 'src/pages', 'src/components', 'src/layouts'];
 const exts = new Set(['.md', '.mdx', '.astro']);
@@ -48,24 +49,28 @@ export function scanStyle(rawContent, isMd) {
   return issues;
 }
 
-const files = [];
-function walk(dir) {
-  if (exemptDirs.has(dir.replace(/\\/g, '/'))) return;
-  for (const name of readdirSync(dir)) {
-    const p = join(dir, name);
-    if (statSync(p).isDirectory()) walk(p);
-    else if (exts.has(extname(name))) files.push(p);
+function main() {
+  const files = [];
+  function walk(dir) {
+    if (exemptDirs.has(dir.replace(/\\/g, '/'))) return;
+    for (const name of readdirSync(dir)) {
+      const p = join(dir, name);
+      if (statSync(p).isDirectory()) walk(p);
+      else if (exts.has(extname(name))) files.push(p);
+    }
   }
-}
-roots.forEach((r) => walk(r));
+  roots.forEach((r) => walk(r));
 
-let hits = 0;
-for (const file of files) {
-  const raw = readFileSync(file, 'utf8');
-  for (const issue of scanStyle(raw, extname(file) === '.md')) {
-    console.error(`${issue.label}: ${file}:${issue.line}${issue.snippet ? `（${issue.snippet}…）` : ''}`);
-    hits++;
+  let hits = 0;
+  for (const file of files) {
+    const raw = readFileSync(file, 'utf8');
+    for (const issue of scanStyle(raw, extname(file) === '.md')) {
+      console.error(`${issue.label}: ${file}:${issue.line}${issue.snippet ? `（${issue.snippet}…）` : ''}`);
+      hits++;
+    }
   }
+  if (hits > 0) { process.exit(1); }
+  console.log(`文风红线扫描通过：${files.length} 个文件无命中。`);
 }
-if (hits > 0) { process.exit(1); }
-console.log(`文风红线扫描通过：${files.length} 个文件无命中。`);
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();

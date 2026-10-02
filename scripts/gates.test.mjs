@@ -2,11 +2,32 @@
 // 注意：测试内的假密钥一律运行期拼接构造，源码字面量不得匹配任何扫描正则。
 import { describe, it, expect } from 'vitest';
 import { mkdtempSync, writeFileSync, mkdirSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseLinks, decodeLink, linkTargetExists } from './check-links.mjs';
 import { scanSecrets } from './check-secrets.mjs';
 import { scanStyle } from './check-style.mjs';
+
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+describe('门禁脚本导入安全', () => {
+  /* 少了 import 守卫，import 本身就会跑一遍 CLI：仓库恰好干净时静默通过，
+     一旦有红线就 process.exit 把测试文件的加载带崩。这里在子进程里只做 import，
+     退出码与 stderr 都必须干净，才证明扫描没有在导入时发生。 */
+  for (const name of ['check-style.mjs', 'check-links.mjs', 'check-secrets.mjs']) {
+    it(`${name} 被 import 时不执行扫描`, () => {
+      const target = pathToFileURL(join(repoRoot, 'scripts', name)).href;
+      const r = spawnSync(process.execPath, ['--input-type=module', '-e', `await import(${JSON.stringify(target)})`], {
+        cwd: repoRoot,
+        encoding: 'utf8'
+      });
+      expect(r.status, `${name} 导入时退出码非 0，stderr：${r.stderr}`).toBe(0);
+      expect(r.stderr).toBe('');
+    });
+  }
+});
 
 describe('parseLinks 站内链接提取', () => {
   it('提取 href/src 的站内绝对路径，剔掉锚点与查询串', () => {
