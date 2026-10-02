@@ -102,9 +102,9 @@ const panelRows = [
         <h2>Now<span class="sec-en">{currentNow.data.period}</span></h2>
         <a href="/now/">看本期动态 →</a>
       </div>
-      <ul class="now-list">
-        {nowTopics.map((t) => <li>{t}</li>)}
-      </ul>
+      <div class="now-chips">
+        {nowTopics.map((t) => <span class="pill">{t}</span>)}
+      </div>
     </section>
   )}
   <script is:inline type="application/ld+json" set:html={JSON.stringify({
@@ -187,9 +187,7 @@ const panelRows = [
   .band .band-btn { border-color: var(--bg); color: var(--bg); background: none; }
   .band .band-btn:hover { background: var(--bg); color: var(--ink); }
 
-  .now-list { margin: 1rem 0 0; padding-left: 1.3rem; color: var(--text-muted); }
-  .now-list li { margin: 0.2rem 0; }
-  .now-list li::marker { color: var(--accent); }
+  .now-chips { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.2rem; }
 
   @media (max-width: 900px) {
     .hero { grid-template-columns: 1fr; gap: 2.4rem; padding: 3rem 0; }
@@ -198,5 +196,14 @@ const panelRows = [
   }
   @media (max-width: 720px) {
     .hero { padding: 2.5rem 0; }
+  }
+  /* 窄屏：几何构成缩比，避免固定尺寸撑破数字面板（曾溢出 ~20px 被裁掉右边框） */
+  @media (max-width: 480px) {
+    .comp { height: 140px; }
+    .comp .c1 { width: 72px; height: 112px; }
+    .comp .c2 { width: 34px; height: 72px; }
+    .comp .c3 { width: 34px; height: 48px; }
+    .comp .c4 { width: 72px; height: 80px; }
+    .num-list { padding-inline: 1.2rem; }
   }
 </style>

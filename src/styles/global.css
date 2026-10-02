@@ -93,8 +93,14 @@ h3 { font-weight: 800; }
   border-bottom: 2px solid var(--border-strong); padding-bottom: 0.7rem; margin-bottom: 0.4rem;
 }
 .sec-no { font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--accent); }
-.sec-en { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-left: 0.4em; }
+.sec-en { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-left: 0.4em; white-space: nowrap; }
 .sec-head h2 { margin: 0; font-size: 1.3rem; }
+/* 右侧「更多」链接禁止内部断行（移动端曾出现「全部项目 / →」两行） */
+.sec-head a { white-space: nowrap; }
+/* 窄屏收起英文对照：区块头保持单行节奏 */
+@media (max-width: 560px) {
+  .sec-en { display: none; }
+}
 .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 
 /* 兼容旧标记：既有的 .section-head 布局升级为黑线通栏（编号由各页自行加 .sec-no） */
