@@ -50,6 +50,7 @@ export const TAG_VOCAB = [
   '游戏AI',
   '爬虫',
   '端侧',
+  'RSI',
   '考试',
   '自动化',
   '著作权',
