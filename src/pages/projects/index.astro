@@ -15,19 +15,83 @@ const sections = groups
 <BaseLayout title="项目" description="法律 AI 与工程小件的全量项目清单：每个项目都有边界、机制与可验证的事实。">
   <h1>项目</h1>
   <p class="intro">每个项目讲机制、边界与可验证的数字；全部公开仓库的速览目录在<a href="/toolbox/">工具箱</a>。</p>
+
+  <div class="tabs">
+    <button class="tab" type="button" data-group="全部" aria-pressed="true">全部 <span class="count">{projects.length}</span></button>
+    {sections.map((s) => (
+      <button class="tab" type="button" data-group={s.name} aria-pressed="false">{s.name} <span class="count">{s.items.length}</span></button>
+    ))}
+  </div>
+
   {sections.map((s) => (
-    <section>
+    <section data-group={s.name}>
       <div class="sec-head">
         <span class="sec-no">{s.no}</span>
-        <h2>{s.name}</h2>
+        <h2>{s.name}<span class="sec-en">Projects</span></h2>
       </div>
       <div class="grid">{s.items.map((p, i) => <ProjectCard project={p} index={i + 1} />)}</div>
     </section>
   ))}
-</BaseLayout>
+
+<script>
+  /* astro:page-load 首次加载与每次换页后都触发：与博客页分类 tab 同理，顶层绑定会在返回本页后失灵 */
+  document.addEventListener('astro:page-load', () => {
+    const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.tab'));
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('section[data-group]'));
+
+    const select = (group: string) => {
+      tabs.forEach((t) => t.setAttribute('aria-pressed', String(t.dataset.group === group)));
+      /* 可见分区动态重排编号（01 递增），并用全站同款缓动重放淡入；reduced-motion 下 CSS 层直接不播 */
+      let visibleIndex = 0;
+      sections.forEach((s) => {
+        const show = group === '全部' || s.dataset.group === group;
+        s.hidden = !show;
+        if (show) {
+          visibleIndex += 1;
+          const no = s.querySelector<HTMLElement>('.sec-no');
+          if (no) no.textContent = String(visibleIndex).padStart(2, '0');
+          s.classList.remove('section-enter');
+          void s.offsetWidth;
+          s.style.animationDelay = `${(visibleIndex - 1) * 60}ms`;
+          s.classList.add('section-enter');
+        }
+      });
+      /* 浏览器会把非 ASCII fragment 百分号编码，写入用原中文，读取先解码（与博客页一致） */
+      history.replaceState(null, '', group === '全部' ? location.pathname : `#${group}`);
+    };
+
+    tabs.forEach((t) => t.addEventListener('click', () => select(t.dataset.group ?? '全部')));
+
+    let hash = location.hash;
+    try {
+      hash = decodeURIComponent(hash);
+    } catch {
+      /* 畸形百分号序列保持原值，不影响页面其余交互 */
+    }
+    const fromHash = tabs.map((t) => t.dataset.group).find((g) => g && hash === `#${g}`);
+    if (fromHash) select(fromHash);
+  });
+</script>
 <style>
-  .intro { color: var(--text-muted); margin: 0 0 1.5rem; }
+  .intro { color: var(--text-muted); margin: 1.4rem 0 1.5rem; }
+  /* 分组子 tab：与博客页分类 tab 同语言（直角方框，选中墨底反白） */
+  .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 2rem; }
+  .tab {
+    font: inherit; font-size: 0.9rem; cursor: pointer;
+    color: var(--text); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 0;
+    padding: 0.3rem 0.85rem;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .tab:hover { border-color: var(--accent); color: var(--accent); }
+  .tab[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .tab[aria-pressed='true'] .count { color: var(--bg); opacity: 0.75; }
+  .count { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); }
   section { margin: 2.5rem 0; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
+  /* tab 切换重放入场：一次性 transform/opacity，与全站 fade-up 同曲线；reduce 时不播 */
+  @media (prefers-reduced-motion: no-preference) {
+    .section-enter { animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  }
   @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
 </style>

@@ -21,5 +21,6 @@ export const NAV = [
   { label: '笔记', href: '/notes/' },
   { label: 'Now', href: '/now/' },
   { label: '工具箱', href: '/toolbox/' },
+  { label: '搜索', href: '/search/' },
   { label: '关于', href: '/about/' }
 ] as const;
