@@ -186,6 +186,14 @@ const panelRows = [
   .band-figures { margin: 0.8rem 0 0; font-size: 0.95rem; opacity: 0.9; }
   .band .band-btn { border-color: var(--bg); color: var(--bg); background: none; }
   .band .band-btn:hover { background: var(--bg); color: var(--ink); }
+  /* 暗色不做反白：整块奶油底在深页面里过于刺眼，降为深灰面板 + 上下描边，保持区块重量 */
+  :global(html[data-theme='dark']) .band { background: var(--bg-soft); color: var(--text); border-block: 1px solid var(--border); }
+  :global(html[data-theme='dark']) .band .label { color: var(--text); }
+  :global(html[data-theme='dark']) .band .sec-en { color: var(--text-muted); opacity: 1; }
+  :global(html[data-theme='dark']) .band::before,
+  :global(html[data-theme='dark']) .band::after { color: var(--text-muted); opacity: 0.6; }
+  :global(html[data-theme='dark']) .band .band-btn { border-color: var(--border-strong); color: var(--text); background: none; }
+  :global(html[data-theme='dark']) .band .band-btn:hover { background: var(--ink); color: var(--bg); }
 
   .now-chips { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.2rem; }
 
