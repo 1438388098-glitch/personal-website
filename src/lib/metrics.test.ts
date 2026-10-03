@@ -46,11 +46,11 @@ describe('EXAM_AGG', () => {
 
 describe('figure 结构化取数', () => {
   it('命中返回值', () => {
-    expect(figure('statute-rag', 'hitRate')).toBe('86.4%');
+    expect(figure('statute-rag', 'hitRate')).toBe('70.0%');
     expect(figure('cn-judbench', 'packs')).toBe('12 个评测包');
   });
   it('同 source 多条时取带该 key 的那条（法条语料在前但无 figures，不得误中）', () => {
-    expect(figure('statute-rag', 'questions')).toBe('177 道模拟测试题');
+    expect(figure('statute-rag', 'questions')).toBe('100 道盲写隔离题');
   });
   it('缺失抛错而非静默降级', () => {
     expect(() => figure('statute-rag', 'nope')).toThrow();
