@@ -61,4 +61,5 @@ export const TAG_VOCAB = [
   '随笔',
   '平衡性',
   '二创',
+  'Android',
 ] as const;
