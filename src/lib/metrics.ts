@@ -10,11 +10,11 @@ export interface Metric {
 /** 站内数字来源（法考页引用）：每个数字必须能在对应项目案例页溯源。
     detail 写人话，不写指标行话（pt/MRR 这类词只在案例页与博文里出现）。 */
 export const HOME_METRICS: Metric[] = [
-  { label: '法条语料', value: '25,626', detail: '条，438 部法，以条为检索单元', source: 'statute-rag' },
+  { label: '法条语料', value: '25,987', detail: '条，444 部法，以条为检索单元', source: 'statute-rag' },
   { label: '评测金标', value: '323', detail: '题，12 个评测包，机检判分', source: 'cn-judbench',
     figures: { packs: '12 个评测包', questions: '323 道公开题' } },
-  { label: '检索 Recall@5', value: '64.2%', detail: '第二轮隔离题库 95 道可测实测（出题方与系统完全隔离、从未参与调参）', source: 'statute-rag',
-    figures: { questions: '95 道留出盲写题', hitRate: '64.2%' } }
+  { label: '检索 Recall@5', value: '66.0%', detail: '第二轮隔离题库 100 道实测（出题方与系统完全隔离、从未参与调参）', source: 'statute-rag',
+    figures: { questions: '100 道留出盲写题', hitRate: '66.0%' } }
 ];
 
 
