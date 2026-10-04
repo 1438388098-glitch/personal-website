@@ -13,7 +13,7 @@ export const HOME_METRICS: Metric[] = [
   { label: '法条语料', value: '25,987', detail: '条，444 部法，以条为检索单元', source: 'statute-rag' },
   { label: '评测金标', value: '323', detail: '题，12 个评测包，机检判分', source: 'cn-judbench',
     figures: { packs: '12 个评测包', questions: '323 道公开题' } },
-  { label: '检索 Recall@5', value: '92.0%', detail: '100 道留出盲写题实测（与系统完全隔离）：本地管线 66.0%，加大模型重排层（免费模型）后 92.0%，恰为候选深度上限', source: 'statute-rag',
+  { label: '检索 Recall@5', value: '92.0%', detail: '100 道留出盲写题实测（与系统完全隔离）：本地完整管线 66.0%，接大模型精排后 92.0%，恰为候选深度上限；线上演示版受服务器内存限制只跑词法与精排两层，同题集 57.0%', source: 'statute-rag',
     figures: { questions: '100 道留出盲写题', hitRate: '92.0%' } }
 ];
 
