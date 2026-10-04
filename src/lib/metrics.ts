@@ -13,8 +13,8 @@ export const HOME_METRICS: Metric[] = [
   { label: '法条语料', value: '25,987', detail: '条，444 部法，以条为检索单元', source: 'statute-rag' },
   { label: '评测金标', value: '323', detail: '题，12 个评测包，机检判分', source: 'cn-judbench',
     figures: { packs: '12 个评测包', questions: '323 道公开题' } },
-  { label: '检索 Recall@5', value: '66.0%', detail: '第二轮隔离题库 100 道实测（出题方与系统完全隔离、从未参与调参）', source: 'statute-rag',
-    figures: { questions: '100 道留出盲写题', hitRate: '66.0%' } }
+  { label: '检索 Recall@5', value: '92.0%', detail: '100 道留出盲写题实测（与系统完全隔离）：本地管线 66.0%，加大模型重排层（免费模型）后 92.0%，恰为候选深度上限', source: 'statute-rag',
+    figures: { questions: '100 道留出盲写题', hitRate: '92.0%' } }
 ];
 
 
