@@ -27,6 +27,13 @@ function countAnchors() {
   return n;
 }
 
+/* 首页数字面板不得有空格：面板取数靠「项目 frontmatter 里的指标标签精确匹配」，
+   标签一旦改写而页面没跟着改，那一行会静默渲染成空 span——构建照样成功、页面看不出来。 */
+function emptyNumberRows() {
+  const html = readFileSync(join(dist, 'index.html'), 'utf8');
+  return (html.match(/class="v mono"[^>]*>\s*<\/span>/g) || []).length;
+}
+
 function main() {
   let errors = 0;
   for (const f of required) {
@@ -38,6 +45,11 @@ function main() {
   const anchors = countAnchors();
   if (anchors === 0) {
     console.error('标题锚链注入数为 0：anchor-links 集成未生效');
+    errors++;
+  }
+  const empty = emptyNumberRows();
+  if (empty > 0) {
+    console.error(`首页数字面板有 ${empty} 行取值为空：检查 index.astro 的 metricOf 标签与项目 frontmatter 是否还对得上`);
     errors++;
   }
   if (errors > 0) process.exit(1);

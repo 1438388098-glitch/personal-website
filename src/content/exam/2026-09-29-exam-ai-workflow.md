@@ -14,7 +14,8 @@ draft: false
 
 一圈从错题开始。客观题的错题交给 [zhuma-fakao-review](/projects/zhuma-fakao-review/)，
 自动抓全、逐条审查，装订成按科目分册的背诵笔记；背了还忘的法条问
-[statute-rag](/projects/statute-rag/)，它只回带条号的原文，检索不到就明说。
+[statute-rag](/projects/statute-rag/)，它只回带条号的原文，检索不到就明说，
+现在已经上线，[不用安装直接查](https://iweistoicqc5.top/law/)，要更准可以在检索框旁勾上深度精排。
 到了主观题，练习放在自托管的
 [fakao-shuati](https://github.com/1438388098-glitch/fakao-shuati) 上，
 判分交给 [fakao-grader](/projects/fakao-grader/)：按官方采分点逐点判，

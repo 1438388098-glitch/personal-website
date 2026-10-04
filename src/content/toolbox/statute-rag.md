@@ -1,7 +1,7 @@
 ---
 name: statute-rag
 url: https://github.com/1438388098-glitch/statute-rag
-description: 法条混合检索底座：真实问句 Recall@5 44.7%（合成 98.9%），全程可复现
+description: 法条混合检索底座：25,987 条 / 444 部，盲写留出题 Recall@5 本地管线 66.0%、接免费大模型精排层 92.0%，数字全程可复现
 category: 法律工具
 related:
   - label: 详情：项目案例
