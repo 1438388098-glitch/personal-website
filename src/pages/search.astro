@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { isPublished } from '../lib/publish';
+import { jsonForScript } from '../lib/search';
 
 /* 正文压成纯文本：剥代码块、图片、链接语法与行内标记，限长避免索引虚胖 */
 const toText = (md: string | undefined) =>
@@ -20,73 +21,53 @@ const toText = (md: string | undefined) =>
 
 const docs = [
   ...(await getCollection('posts', isPublished)).map((p) => ({
-    url: `/blog/${p.id}/`, title: p.data.title, description: p.data.description, tags: p.data.tags, text: toText(p.body),
+    url: `/blog/${p.id}/`, title: p.data.title, description: p.data.description, tags: p.data.tags, text: toText(p.body), kind: '博客',
   })),
   ...(await getCollection('exam', (e) => !e.data.draft)).map((e) => ({
-    url: `/exam/${e.id}/`, title: e.data.title, description: e.data.description, tags: [] as string[], text: toText(e.body),
+    url: `/exam/${e.id}/`, title: e.data.title, description: e.data.description, tags: [] as string[], text: toText(e.body), kind: '法考',
   })),
   ...(await getCollection('notes', (n) => !n.data.draft)).map((n) => ({
-    url: `/notes/${n.id}/`, title: n.data.title, description: n.data.description, tags: [] as string[], text: toText(n.body),
+    url: `/notes/${n.id}/`, title: n.data.title, description: n.data.description, tags: [] as string[], text: toText(n.body), kind: '笔记',
+  })),
+  ...((await getCollection('projects')).sort((a, b) => a.data.order - b.data.order)).map((p) => ({
+    url: `/projects/${p.id}/`, title: p.data.title, description: p.data.summary, tags: [p.data.group], text: p.data.summary, kind: '项目',
+  })),
+  ...(await getCollection('toolbox')).map((t) => ({
+    url: `/toolbox/#${t.id}`, title: t.data.name, description: t.data.description, tags: [t.data.category], text: t.data.description, kind: '工具',
   })),
 ];
 ---
-<BaseLayout title="搜索" description="站内搜索：在已发布的博客、法考实录与研读笔记里找关键词。">
+<BaseLayout title="搜索" description="站内搜索：在已发布的博客、法考实录、研读笔记、项目案例与工具箱里找关键词。" noindex>
   <h1>搜索</h1>
-  <p class="intro">{docs.length} 篇已发布内容，找关键词直达。</p>
+  <p class="intro">{docs.length} 条内容，找关键词直达。</p>
   <noscript><p class="noscript">搜索需要启用 JavaScript；也可以改用无需脚本的<a href="/tags/">标签索引</a>。</p></noscript>
   <div class="searchbox">
     <input id="q" type="search" placeholder="试试：幻觉、错题、竞业限制…" autocomplete="off" aria-label="搜索关键词" />
     <p class="count" id="count" aria-live="polite"></p>
   </div>
   <ul id="results"></ul>
-  <script type="application/json" id="search-data" set:html={JSON.stringify(docs).replace(/</g, '\u003c')} />
+  <script type="application/json" id="search-data" set:html={jsonForScript(docs)} />
 <script>
+  import { escapeHtml, highlight, makeSnippet, scoreDoc } from '../lib/search';
+
   /* astro:page-load 首次加载与每次换页后都触发：与博客页 tabs 同理，顶层绑定会在返回本页后失灵 */
   document.addEventListener('astro:page-load', () => {
-  const DATA: { url: string; title: string; description: string; tags: string[]; text: string }[] = JSON.parse(
+  const DATA: { url: string; title: string; description: string; tags: string[]; text: string; kind: string }[] = JSON.parse(
     document.getElementById('search-data')!.textContent!
   );
   const input = document.getElementById('q') as HTMLInputElement;
   const list = document.getElementById('results')!;
   const count = document.getElementById('count')!;
 
-  const escapeHtml = (s: string) =>
-    s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
-
-  /* 命中词高亮：先转义原文再包 mark，正则转义搜索词防注入 */
-  const highlight = (text: string, terms: string[]) => {
-    let out = escapeHtml(text);
-    for (const t of terms) {
-      const re = new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-      out = out.replace(re, (m) => `<mark>${m}</mark>`);
-    }
-    return out;
-  };
-
   const run = () => {
     const raw = input.value.trim();
     list.innerHTML = '';
     if (!raw) { count.textContent = ''; return; }
-    const terms = raw.split(/\s+/).map((w) => w.toLowerCase());
+    const terms = raw.split(/\s+/);
     const hits = DATA
       .map((d) => {
-        const title = d.title.toLowerCase();
-        const desc = (d.description ?? '').toLowerCase();
-        const tags = (d.tags ?? []).join(' ').toLowerCase();
-        const text = d.text.toLowerCase();
-        let score = 0;
-        for (const t of terms) {
-          const inTitle = title.includes(t);
-          const inDesc = desc.includes(t);
-          const inTags = tags.includes(t);
-          const inText = text.includes(t);
-          if (!inTitle && !inDesc && !inTags && !inText) return null; /* 全部词都得命中（AND） */
-          if (inTitle) score += 10;
-          if (inDesc) score += 3;
-          if (inTags) score += 5;
-          if (inText) score += 1;
-        }
-        return { ...d, score };
+        const score = scoreDoc(d, terms);
+        return score === null ? null : { ...d, score };
       })
       .filter((h): h is NonNullable<typeof h> => h !== null)
       .sort((a, b) => b.score - a.score)
@@ -96,12 +77,9 @@ const docs = [
       ? `${hits.length} 条结果${hits.length >= 20 ? '（只显示前 20 条，换个更具体的词）' : ''}`
       : '没有匹配的内容，换个词试试。';
 
-    const first = terms[0];
     list.innerHTML = hits.map((h) => {
-      const i = h.text.toLowerCase().indexOf(first);
-      const start = Math.max(0, (i < 0 ? 0 : i) - 40);
-      const snippet = (start > 0 ? '…' : '') + h.text.slice(start, start + 160) + (start + 160 < h.text.length ? '…' : '');
-      return `<li><a href="${h.url}">${escapeHtml(h.title)}</a><p class="snippet">${highlight(snippet, terms)}</p></li>`;
+      const snippet = makeSnippet(h.text, terms);
+      return `<li><span class="kind">${escapeHtml(h.kind)}</span><a href="${h.url}">${escapeHtml(h.title)}</a><p class="snippet">${highlight(snippet, terms)}</p></li>`;
     }).join('');
   };
 
@@ -144,6 +122,13 @@ const docs = [
     transition: background-color 0.15s ease;
   }
   #results :global(li:hover::before) { background: var(--accent); }
+  /* 来源类型标签（博客/法考/笔记/项目/工具）：直角描边小签，与全站 .idx 同语言。
+     结果项由脚本注入，Astro scoped 样式不命中，须走 :global() */
+  #results :global(.kind) {
+    display: inline-block; margin-right: 0.6rem; vertical-align: 0.12em;
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);
+    border: 1px solid var(--border-strong); padding: 0 0.4rem;
+  }
   #results :global(li a) { color: var(--text); font-weight: 700; font-size: 1.05rem; }
   #results :global(li a:hover) { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--accent); }
   #results :global(.snippet) { margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.95rem; }

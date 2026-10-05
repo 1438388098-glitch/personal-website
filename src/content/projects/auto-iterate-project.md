@@ -5,6 +5,8 @@ group: 工程侧证
 date: 2026-09-29
 featured: false
 order: 1
+relatedPosts:
+  - 2026-09-29-auto-iterate-project
 metrics:
   - label: 测试规模
     value: '~190 例'

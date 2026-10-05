@@ -6,16 +6,31 @@ import { formatDate } from '../../lib/format';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
-  /* 工具箱与项目库同名互链：详情页给出「工具箱收录」回链，两栏不互为孤岛 */
-  const toolboxIds = new Set((await getCollection('toolbox')).map((t) => t.id));
+  /* 工具箱与项目库同名互链：详情页给出「工具箱：一键到仓库」外链，两栏不互为孤岛 */
+  const toolboxUrlById = new Map((await getCollection('toolbox')).map((t) => [t.id, t.data.url]));
   return projects.map((p) => ({
     params: { slug: p.id },
-    props: { project: p, inToolbox: toolboxIds.has(p.id) },
+    props: {
+      project: p,
+      toolboxUrl: toolboxUrlById.get(p.id) ?? null,
+      /* 同组其他项目：按 order 取前 3 个 */
+      sameGroup: projects
+        .filter((q) => q.data.group === p.data.group && q.id !== p.id)
+        .sort((a, b) => a.data.order - b.data.order)
+        .slice(0, 3)
+        .map((q) => ({ id: q.id, title: q.data.title })),
+    },
   }));
 }
-const { project, inToolbox } = Astro.props;
+const { project, toolboxUrl, sameGroup } = Astro.props;
 const { Content, headings } = await render(project);
-const { title, summary, group, date, metrics, links, disclaimer } = project.data;
+const { title, summary, group, date, metrics, links, relatedPosts, disclaimer } = project.data;
+/* 相关博文：frontmatter 的 relatedPosts 存 post id，映射为 /blog/${id}/。
+   渲染前核对 id 确实存在于 posts 集合，写错的 id 直接跳过，避免生成死链。 */
+const postTitleById = new Map((await getCollection('posts')).map((p) => [p.id, p.data.title]));
+const relatedBlog = relatedPosts
+  .filter((id) => postTitleById.has(id))
+  .map((id) => ({ id, title: postTitleById.get(id)! }));
 ---
 <BaseLayout title={title} description={summary} type="article">
   <div class="doc">
@@ -43,11 +58,26 @@ const { title, summary, group, date, metrics, links, disclaimer } = project.data
         </p>
       )}
       <p class="disclaimer">{disclaimer}</p>
-      {inToolbox && (
-        <p class="toolbox-link">
-          本项目收录在<a href={`/toolbox/#${project.id}`}>工具箱</a>目录，仓库入口在卡片标题处。
-        </p>
+
+      {(sameGroup.length > 0 || toolboxUrl || relatedBlog.length > 0) && (
+        <div class="related">
+          <div class="sec-head"><h2>相关推荐</h2></div>
+          {sameGroup.length > 0 && (
+            <p>同组项目：{sameGroup.map((p, i) => (
+              <>{i > 0 && '、'}<a href={`/projects/${p.id}/`}>{p.title}</a></>
+            ))}</p>
+          )}
+          {toolboxUrl && (
+            <p>工具箱：<a href={toolboxUrl} target="_blank" rel="noopener noreferrer">一键到仓库</a></p>
+          )}
+          {relatedBlog.length > 0 && (
+            <p>相关博文：{relatedBlog.map((p, i) => (
+              <>{i > 0 && '、'}<a href={`/blog/${p.id}/`}>{p.title}</a></>
+            ))}</p>
+          )}
+        </div>
       )}
+
       <p><a href="/projects/">← 全部项目</a></p>
     </article>
     <Toc headings={headings} />
@@ -57,5 +87,7 @@ const { title, summary, group, date, metrics, links, disclaimer } = project.data
   .meta { color: var(--text-muted); }
   .links { display: flex; gap: 1rem; }
   .disclaimer { color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 1rem; }
-  .toolbox-link { color: var(--text-muted); font-size: 0.9rem; }
+  /* 相关推荐：沿用区块头语言，正文用普通段落 + 顿号分隔的链接列表 */
+  .related { margin-top: 2.5rem; }
+  .related p { margin: 0.7rem 0 0; }
 </style>

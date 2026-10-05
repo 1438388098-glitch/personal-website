@@ -5,6 +5,8 @@ group: 法律主线
 date: 2026-09-14
 featured: true
 order: 3
+relatedPosts:
+  - 2026-09-20-fakao-grader-agent
 metrics:
   - label: 判定口径
     value: '✓ / △ / ✗'

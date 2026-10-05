@@ -5,6 +5,8 @@ group: 法律主线
 date: 2026-09-10
 featured: false
 order: 4
+relatedPosts:
+  - 2026-09-29-zhuma-fakao-review
 metrics:
   - label: 错题规模
     value: '1,655 道'

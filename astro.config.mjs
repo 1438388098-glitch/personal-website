@@ -42,7 +42,11 @@ function anchorLinks() {
 export default defineConfig({
   /* 域名唯一事实源：src/lib/site.ts 的 SITE.url */
   site: SITE.url,
-  integrations: [sitemap(), anchorLinks()],
+  /* sitemap：/search/ 是客户端渲染的薄内容页，无独立检索价值，排除出收录（404/500 由插件默认排除） */
+  integrations: [
+    sitemap({ filter: (page) => !page.includes('/search/') }),
+    anchorLinks(),
+  ],
   markdown: {
     // 关闭 smartypants：防止把正文里的 CLI 旗标（如 node --test）转成排版破折号
     smartypants: false,

@@ -5,6 +5,8 @@ group: 法律工具
 date: 2026-09-29
 featured: false
 order: 1
+relatedPosts:
+  - 2026-09-29-legal-job-tracker-33-sources
 metrics:
   - label: 数据源
     value: '33 个'

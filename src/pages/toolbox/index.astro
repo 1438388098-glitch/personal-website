@@ -13,8 +13,9 @@ const sections = categories
   .filter((s) => s.items.length > 0)
   .map((s, i) => ({ ...s, no: String(i + 1).padStart(2, '0') }));
 ---
-<BaseLayout title="工具箱" description="我公开在 GitHub 上的法律工具与工程小件：每条都逐一验证过仓库公开可见，功能描述取自仓库自述。">
+<BaseLayout title="工具箱" description="工具箱是项目的可安装入口（仓库均公开可见）：点标题直达 GitHub 仓库；想看每个工具怎么做的、哪里失败过，去对应的项目案例页。">
   <h1>工具箱</h1>
+  <p class="intro">这些是项目的可安装入口：点标题直达 GitHub 仓库；想看每个工具怎么做的、哪里失败过，去它的<a href="/projects/">项目案例</a>。</p>
   {sections.map((s) => (
     <section>
       <div class="sec-head">
@@ -38,6 +39,7 @@ const sections = categories
   ))}
 </BaseLayout>
 <style>
+  .intro { color: var(--text-muted); margin: 1rem 0 1.6rem; }
   section { margin: 2.5rem 0; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
   .tool-card { padding: 1.1rem 1.3rem; }

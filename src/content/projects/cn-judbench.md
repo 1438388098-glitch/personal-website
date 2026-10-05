@@ -5,6 +5,8 @@ group: 法律主线
 date: 2026-09-28
 featured: true
 order: 2
+relatedPosts:
+  - 2026-09-29-cn-judbench
 metrics:
   - label: 评测规模
     value: '12 包 / 323 题'

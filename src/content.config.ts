@@ -15,6 +15,9 @@ const projects = defineCollection({
       .array(z.object({ label: z.string(), value: z.string(), detail: z.string().optional() }))
       .default([]),
     links: z.array(z.object({ label: z.string(), url: z.string().url() })).default([]),
+    /* 相关博文：存 post 的 id（去掉 .md 的文件名），由详情页映射为 /blog/${id}/。
+       不用 links 存相对路径：links.url 是 z.string().url()，站内相对路径过不了校验。 */
+    relatedPosts: z.array(z.string()).default([]),
     disclaimer: z.string().default('本项目仅用于技术研究，输出不构成法律意见。')
   })
 });
