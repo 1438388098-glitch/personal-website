@@ -9,6 +9,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseLinks, decodeLink, linkTargetExists } from './check-links.mjs';
 import { scanSecrets } from './check-secrets.mjs';
 import { scanStyle } from './check-style.mjs';
+import { slugDate, frontDate, checkEntries } from './check-content.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -27,6 +28,54 @@ describe('门禁脚本导入安全', () => {
       expect(r.stderr).toBe('');
     });
   }
+});
+
+describe('frontDate 日期解析', () => {
+  it('不带引号的日期解析成功', () => {
+    expect(frontDate('---\npubDate: 2026-01-01\n---', 'pubDate')).toBe('2026-01-01');
+  });
+  it('双引号与单引号包裹的日期解析成功（假阳性回归）', () => {
+    expect(frontDate('pubDate: "2026-01-01"', 'pubDate')).toBe('2026-01-01');
+    expect(frontDate("pubDate: '2026-01-01'", 'pubDate')).toBe('2026-01-01');
+  });
+  it('字段缺失返回 null', () => {
+    expect(frontDate('title: x', 'pubDate')).toBeNull();
+  });
+});
+
+describe('slugDate 文件名前缀', () => {
+  it('带 YYYY-MM-DD- 前缀提取成功', () => {
+    expect(slugDate('2026-01-01-slug.md')).toBe('2026-01-01');
+  });
+  it('无前缀返回 null', () => {
+    expect(slugDate('plain.md')).toBeNull();
+    expect(slugDate('.gitkeep')).toBeNull();
+  });
+});
+
+describe('checkEntries 内容日期一致性', () => {
+  it('前缀与 frontmatter 日期一致时无违规（带引号日期也算通过）', () => {
+    const entries = [{ name: '2026-01-01-ok.md', content: 'pubDate: "2026-01-01"' }];
+    expect(checkEntries(entries, 'pubDate')).toEqual([]);
+  });
+  it('前缀与日期不一致时违规', () => {
+    const entries = [{ name: '2026-01-01-bad.md', content: 'pubDate: 2026-02-02' }];
+    expect(checkEntries(entries, 'pubDate').join()).toContain('≠');
+  });
+  it('无日期前缀的 .md 判定为不合规而非静默跳过', () => {
+    const bad = checkEntries([{ name: 'plain.md', content: 'date: 2026-01-01' }], 'date');
+    expect(bad.length).toBe(1);
+    expect(bad[0]).toContain('YYYY-MM-DD-');
+  });
+  it('.gitkeep 等非 .md 文件被忽略', () => {
+    expect(checkEntries([{ name: '.gitkeep', content: '' }], 'date')).toEqual([]);
+    expect(checkEntries([{ name: 'notes.txt', content: '' }], 'date')).toEqual([]);
+  });
+  it('requirePrefix=false 时不强制前缀（notes 约定），带前缀仍须与日期一致', () => {
+    expect(checkEntries([{ name: 'plain.md', content: 'date: 2026-01-01' }], 'date', false)).toEqual([]);
+    const bad = checkEntries([{ name: '2026-01-01-bad.md', content: 'date: 2026-02-02' }], 'date', false);
+    expect(bad.join()).toContain('≠');
+  });
 });
 
 describe('parseLinks 站内链接提取', () => {

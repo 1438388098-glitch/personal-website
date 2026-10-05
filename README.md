@@ -4,7 +4,7 @@
 设计文档见 docs/superpowers/specs/，实施计划见 docs/superpowers/plans/。
 
 ## 如何运行
-Node ≥ 18.17（开发环境 22 LTS，见 .nvmrc）。
+Node ≥ 20.3（开发环境 22 LTS，见 .nvmrc）。
     npm install
     npm run dev      # 本地开发 http://localhost:4321
     npm run build    # 产出 dist/
@@ -14,9 +14,11 @@ Node ≥ 18.17（开发环境 22 LTS，见 .nvmrc）。
     npm test               # Vitest 单测（纯函数）
     npm run check          # astro check 类型检查
     npm run build          # 构建（构建后自动跑 trim-dist 清理字体产物）
+    npm run check:dist     # 产物冒烟（必需资产齐全、后处理生效；需先 npm run build）
     npm run check:links    # 全站死链检查（需先 npm run build）
     npm run check:secrets  # 密钥泄漏扫描
     npm run check:style    # 文风红线扫描（破折号/黑话禁词/句式堆叠）
+    npm run check:content  # 内容日期一致性（文件名前缀须等于 frontmatter 日期）
     npm run check:audit    # 依赖漏洞雷达（固定官方 registry；定期手动跑，暂不入 CI）
     npm run check:extlinks # 站外链接探活（网络门禁易抖动，建议每月或发布前手动跑，暂不入 CI）
 

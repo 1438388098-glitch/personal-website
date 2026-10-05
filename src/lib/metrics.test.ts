@@ -8,20 +8,24 @@ const projectFile = (source: string) =>
   new URL(`../content/projects/${source}.md`, import.meta.url);
 
 describe('HOME_METRICS', () => {
-  it('每条指标都可溯源且不含 em-dash', () => {
-    expect(HOME_METRICS.length).toBeGreaterThanOrEqual(3);
+  it('每条都有 source 与非空 figures，且值不含 em-dash', () => {
+    expect(HOME_METRICS.length).toBeGreaterThanOrEqual(2);
     for (const m of HOME_METRICS) {
       expect(m.source.length).toBeGreaterThan(0);
-      expect(m.value).not.toMatch(/[—–]/);
-      expect(m.detail).not.toMatch(/[—–]/);
+      const values = Object.values(m.figures);
+      expect(values.length).toBeGreaterThan(0);
+      for (const v of values) expect(v).not.toMatch(/[—–]/);
     }
   });
-  it('数字条每个 value 都能在对应案例页内容中溯源', () => {
+  it('每个 figures 数字的数字核心都能在对应案例页内容中溯源', () => {
     for (const m of HOME_METRICS) {
       const raw = readFileSync(projectFile(m.source), 'utf8');
-      expect(raw).toContain(m.value);
-      // detail 允许与案例页措辞不同，只断言含数字或斜杠等实质内容
-      expect(/[0-9/]/.test(m.detail)).toBe(true);
+      for (const v of Object.values(m.figures)) {
+        /* 页面散文允许措辞不同，只断言其中的数字核心（含 % 与千分位）出现 */
+        const core = v.match(/[0-9][0-9.,]*%?/)?.[0] ?? '';
+        expect(core, `${m.source} 的 ${v} 无可比对数字`).not.toBe('');
+        expect(raw, `${m.source} 缺 ${core}`).toContain(core);
+      }
     }
   });
 });
@@ -49,7 +53,7 @@ describe('figure 结构化取数', () => {
     expect(figure('statute-rag', 'hitRate')).toBe('92.0%');
     expect(figure('cn-judbench', 'packs')).toBe('12 个评测包');
   });
-  it('同 source 多条时取带该 key 的那条（法条语料在前但无 figures，不得误中）', () => {
+  it('按 source+key 精确取数（同 source 不同 key 不串味）', () => {
     expect(figure('statute-rag', 'questions')).toBe('100 道留出盲写题');
   });
   it('缺失抛错而非静默降级', () => {

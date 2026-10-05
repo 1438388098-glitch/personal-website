@@ -1,27 +1,19 @@
 export interface Metric {
-  label: string;
-  value: string;
-  detail: string;
   source: string;
-  /** 页面拼装用的结构化数字：detail 是给人读的文案，页面禁止从文案里切割数字 */
-  figures?: Record<string, string>;
+  /** 页面拼装用的结构化数字：页面禁止从其他文案里切割数字 */
+  figures: Record<string, string>;
 }
 
-/** 站内数字来源（法考页引用）：每个数字必须能在对应项目案例页溯源。
-    detail 写人话，不写指标行话（pt/MRR 这类词只在案例页与博文里出现）。 */
+/** 站内数字来源（法考页引用）：每个数字必须能在对应项目案例页溯源。 */
 export const HOME_METRICS: Metric[] = [
-  { label: '法条语料', value: '25,987', detail: '条，444 部法，以条为检索单元', source: 'statute-rag' },
-  { label: '评测金标', value: '323', detail: '题，12 个评测包，机检判分', source: 'cn-judbench',
-    figures: { packs: '12 个评测包', questions: '323 道公开题' } },
-  { label: '检索 Recall@5', value: '92.0%', detail: '100 道留出盲写题实测（与系统完全隔离）：本地完整管线 66.0%，接大模型精排后 92.0%，恰为候选深度上限；线上演示版受服务器内存限制只跑词法与精排两层，同题集 57.0%', source: 'statute-rag',
-    figures: { questions: '100 道留出盲写题', hitRate: '92.0%' } }
+  { source: 'cn-judbench', figures: { packs: '12 个评测包', questions: '323 道公开题' } },
+  { source: 'statute-rag', figures: { questions: '100 道留出盲写题', hitRate: '92.0%' } }
 ];
 
 
-/** 按 source+key 取结构化数字；同 source 多条时取带该 key 的那条。
-    缺数据在构建期抛错，不静默降级（避免页面输出 undefined）。 */
+/** 按 source+key 取结构化数字。缺数据在构建期抛错，不静默降级（避免页面输出 undefined）。 */
 export function figure(source: string, key: string): string {
-  const v = HOME_METRICS.find((x) => x.source === source && x.figures?.[key])?.figures?.[key];
+  const v = HOME_METRICS.find((x) => x.source === source && x.figures[key])?.figures[key];
   if (!v) throw new Error(`metrics: 缺少 ${source} 的结构化数字 ${key}`);
   return v;
 }
