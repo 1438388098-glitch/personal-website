@@ -46,7 +46,12 @@ const items = headings.filter((h) => h.depth === 2);
       }
       if (idx === last) return;
       last = idx;
-      pairs.forEach((p, i) => p.li?.classList.toggle('on', i === idx));
+      pairs.forEach((p, i) => {
+        p.li?.classList.toggle('on', i === idx);
+        /* 当前节同时报给读屏：高亮只有视觉，aria-current 是等价的语义 */
+        if (i === idx) p.a.setAttribute('aria-current', 'true');
+        else p.a.removeAttribute('aria-current');
+      });
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(pick); };
     pick();

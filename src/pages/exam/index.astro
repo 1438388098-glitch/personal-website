@@ -117,7 +117,8 @@ const stages = [
   }
   /* 反色用 --bg 而非白：暗色下强调蓝变浅蓝，白字对比不足 */
   .stage-card:hover .step { background: var(--accent); border-color: var(--accent); color: var(--bg); }
-  .stage-name { margin: 0; font-weight: 800; font-size: 1.1rem; }
+  /* 700：Noto Sans SC 无 800 面，显式 800 会回落 900，与全站小标题口径不一致 */
+  .stage-name { margin: 0; font-weight: 700; font-size: 1.1rem; }
   /* 工具名小方框：直角描边，hover 转强调蓝 */
   .tool {
     align-self: flex-start; font-size: 0.82rem; line-height: 1.7;

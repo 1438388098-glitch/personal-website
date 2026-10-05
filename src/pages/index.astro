@@ -45,6 +45,7 @@ const panelRows = [
       <p class="ctas fade-up d3">
         <a class="btn primary" href="/projects/">看项目 <span class="arr" aria-hidden="true">→</span></a>
         <a class="link-plain" href="/about/">关于我</a>
+        <a class="link-plain" href={`mailto:${SITE.email}`}>联系我</a>
       </p>
     </div>
     <aside class="numbers fade-up d2" aria-label="关键数字">
@@ -85,6 +86,23 @@ const panelRows = [
     </section>
   )}
 
+  <section data-reveal>
+    <div class="sec-head">
+      <span class="sec-no">03</span>
+      <h2>接着逛<span class="sec-en">Explore</span></h2>
+    </div>
+    <div class="featured-grid">
+      <article class="card explore-card">
+        <h3><a href="/notes/">笔记</a></h3>
+        <p>课程论文与文献研读</p>
+      </article>
+      <article class="card explore-card">
+        <h3><a href="/toolbox/">工具箱</a></h3>
+        <p>公开在 GitHub 的法律工具，一键到仓库</p>
+      </article>
+    </div>
+  </section>
+
   <section class="band" aria-label="近期动态" data-reveal>
     <div class="band-inner">
       <div>
@@ -100,7 +118,7 @@ const panelRows = [
   {currentNow && (
     <section class="now-strip" data-reveal>
       <div class="sec-head">
-        <span class="sec-no">03</span>
+        <span class="sec-no">04</span>
         <h2>Now<span class="sec-en">{currentNow.data.period}</span></h2>
         <a href="/now/">看本期动态 →</a>
       </div>
@@ -147,8 +165,8 @@ const panelRows = [
     width: 1px; background: var(--border);
   }
   .hero > * { position: relative; z-index: 1; }
-  .hero .label { display: inline-flex; align-items: center; gap: 0.55rem; font-size: 0.86rem; font-weight: 700; margin: 0 0 1.3rem; }
-  .hero .label::before { content: ''; width: 8px; height: 8px; background: var(--accent); flex: none; }
+  .label { display: inline-flex; align-items: center; gap: 0.55rem; font-size: 0.86rem; font-weight: 700; margin: 0 0 1.3rem; }
+  .label::before { content: ''; width: 8px; height: 8px; background: var(--accent); flex: none; }
   .hero .hl { box-shadow: inset 0 -0.32em color-mix(in srgb, var(--accent) 26%, transparent); }
   .lede { margin: 1.3rem 0 0; max-width: 30rem; color: var(--text-muted); font-size: 1.06rem; }
   .pills { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 1.5rem 0 0; padding: 0; }
@@ -158,7 +176,7 @@ const panelRows = [
     padding: 0.34rem 0.9rem; font-size: 0.88rem; font-weight: 500; color: var(--text);
   }
   .pill::before { content: ''; width: 7px; height: 7px; background: var(--ink); flex: none; }
-  .pill.alt::before { background: var(--accent); border-radius: 50%; }
+  .pill.alt::before { background: var(--accent); }
   .ctas { display: flex; gap: 0.9rem; margin: 2.1rem 0 0; align-items: center; }
   .btn .arr { font-family: var(--font-mono); transition: transform 0.2s ease; }
   .btn:hover .arr { transform: translateX(4px); }
@@ -197,6 +215,12 @@ const panelRows = [
   section.band { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
   .featured-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
   .cell.wide { grid-column: 1 / -1; }
+  /* 栏目入口卡：复用 .card 直角白面与工具箱页的「标题链接」语言，只补内边距与字号 */
+  .explore-card { padding: 1.2rem 1.4rem; }
+  .explore-card h3 { margin: 0 0 0.4rem; font-size: 1.15rem; }
+  .explore-card h3 a { color: var(--text); }
+  .explore-card h3 a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--accent); }
+  .explore-card p { margin: 0; color: var(--text-muted); font-size: 0.95rem; }
   /* 首位精选项目升级为大卡：更宽的呼吸、更大的标题与摘要 */
   .cell.wide :global(.project-card) { padding: 1.7rem 1.9rem; }
   .cell.wide :global(.project-card h3) { font-size: 1.45rem; }

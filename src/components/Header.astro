@@ -21,10 +21,23 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
     <form class="header-search" action="/search/" method="get" role="search">
       <input type="search" name="q" placeholder="搜索" aria-label="站内搜索" autocomplete="off" />
     </form>
-    <button id="theme-toggle" type="button" aria-label="切换明暗主题">◐</button>
+    <button id="theme-toggle" type="button" aria-label="切换明暗主题" aria-pressed="false">◐</button>
   </div>
 </header>
 <script>
+  /* 主题按钮状态同步：aria-pressed 表示「当前是否深色」，aria-label 顺带报出当前主题。
+     服务端渲染时 aria-pressed 是静态的，深色用户首屏会读到错状态，故在模块求值时先同步一次；
+     View Transitions 换页后按钮被替换，再挂 astro:page-load 同步。 */
+  const syncThemeButton = () => {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const dark = document.documentElement.dataset.theme === 'dark';
+    btn.setAttribute('aria-pressed', String(dark));
+    btn.setAttribute('aria-label', `切换明暗主题（当前：${dark ? '深色' : '浅色'}）`);
+  };
+  syncThemeButton();
+  document.addEventListener('astro:page-load', syncThemeButton);
+
   /* 事件委托：View Transitions 换页后按钮会被替换，挂在 document 上的监听不会丢 */
   document.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest?.('#theme-toggle');
@@ -36,6 +49,7 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
     const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
     html.dataset.theme = next;
     localStorage.setItem('theme', next);
+    syncThemeButton();
   });
 </script>
 <style>
@@ -68,7 +82,7 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
   }
   .header-search input::placeholder { color: var(--text-muted); }
   .header-search input:hover { border-color: var(--border-strong); }
-  .header-search input:focus { outline: none; border-color: var(--accent); }
+  .header-search input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--accent); }
   #theme-toggle {
     background: none; border: 1.5px solid var(--border-strong); border-radius: 0; color: var(--text);
     cursor: pointer; padding: 0.25rem 0.6rem; transition: background-color 0.15s ease, color 0.15s ease;

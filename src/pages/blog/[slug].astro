@@ -37,12 +37,12 @@ const jsonLd = JSON.stringify({
   keywords: tags.join(', ')
 });
 ---
-<BaseLayout title={title} description={description} type="article" image={image}>
+<BaseLayout title={title} description={description} type="article" image={image} publishedTime={post.data.pubDate}>
   <div class="doc">
     <div class="col">
       <article class="prose">
         <p class="meta">
-          {category} · {formatDate(pubDate)}
+          {category} · <span class="mono">{formatDate(pubDate)}</span>
           {tags.length > 0 && <span class="tag-row"> · {tags.map((t) => <a class="tag-link" href={`/tags/${t}/`}>#{t}</a>)}</span>}
         </p>
         <h1>{title}</h1>

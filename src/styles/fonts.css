@@ -1,7 +1,9 @@
 /* 自托管字体（OFL 协议）：v3 设计体系，全部无衬线。
-   正文与标题：Archivo（西文展示/标签）+ Noto Sans SC（中文，400 正文 / 700 加粗 / 900 展示标题）。
+   正文与标题：Archivo（西文展示/标签，400/500/600/700/800）+ Noto Sans SC（中文，400 正文 / 700 加粗 / 900 展示标题）。
    数字与日期：Space Mono（设计位专用，等宽数字；代码块仍走系统等宽栈保证可读性）。
    unicode-range 切片按需下载。本文件经 BaseHead 以非阻塞方式加载（media=print + onload 翻转）。 */
+@import '@fontsource/archivo/400.css';
+@import '@fontsource/archivo/500.css';
 @import '@fontsource/archivo/600.css';
 @import '@fontsource/archivo/700.css';
 @import '@fontsource/archivo/800.css';

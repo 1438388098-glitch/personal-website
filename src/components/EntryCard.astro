@@ -2,9 +2,14 @@
 /** 素引类卡片的公共骨架：meta 行 + 标题链接 + 一句摘要（法考实录/研读条目共用）。 */
 interface Props { href: string; meta: string; title: string; description: string; }
 const { href, meta, title, description } = Astro.props;
+/* 日期等宽（全站数字/日期规范）：调用方把 meta 拼成「类型 · 2025 年 1 月 2 日」，
+   这里只把末尾的日期段摘出来包 .mono，前缀与分隔符原样保留；匹配不上就整行照旧。 */
+const dateMatch = meta.match(/^(.*?)(\d{4}\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日)$/s);
+const metaPrefix = dateMatch ? dateMatch[1] : meta;
+const metaDate = dateMatch ? dateMatch[2] : '';
 ---
 <article class="entry-card">
-  <p class="meta">{meta}</p>
+  <p class="meta">{metaPrefix}{metaDate && <span class="mono">{metaDate}</span>}</p>
   <h3><a href={href}>{title}</a></h3>
   <p class="desc">{description}</p>
 </article>

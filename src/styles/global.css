@@ -71,8 +71,10 @@ img { max-width: 100%; height: auto; }
 h1, h2, h3 { font-family: var(--font-display); line-height: 1.25; letter-spacing: 0; }
 /* 展示标题：超大字重（900/800）撑层级，负字距只给 h1 */
 h1 { font-size: clamp(2.3rem, 4.6vw, 3.4rem); font-weight: 900; line-height: 1.18; letter-spacing: -0.01em; text-wrap: balance; }
-h2 { font-size: clamp(1.4rem, 2.4vw, 1.8rem); font-weight: 800; }
-h3 { font-weight: 800; }
+/* h2/h3 用 700 而非 800：Noto Sans SC 没有 800 面，请求 800 时中文会回落到 900，
+   与 h1 的 900 同重，中文侧层级被压平；改 700（Noto 有 700 面）让中英两侧字重一致。 */
+h2 { font-size: clamp(1.4rem, 2.4vw, 1.8rem); font-weight: 700; }
+h3 { font-weight: 700; }
 /* 长文详情的标题单开一档：3.4rem 是按首页两行短标题调的，套到长标题上会排成四行并拦腰断词
    （笔记页出现「罗马法复／兴」，项目页出现「statute-rag: 法／条混合检索底座」的单字孤行）。
    balance 只在两行时好看，行数一多它会把断行点推进词中间，故长文换 pretty。 */
@@ -88,7 +90,7 @@ h3 { font-weight: 800; }
 }
 
 /* 键盘焦点环：全站统一强调蓝描边，鼠标点击不触发（focus-visible） */
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* 卡片公共类：直角白面（暗色浅面），hover 抬升 + 边框加深 */
 .card {
@@ -178,6 +180,10 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   .doc .toc { display: none; }
 }
 
+/* 长 URL / 长英文标识在 68ch 正文栏里必须能断行：外层 html 是 overflow-x: clip，
+   不换行就会被直接裁掉且不可滚动 */
+.prose :is(p, li) { overflow-wrap: anywhere; }
+
 /* 文章正文 */
 .prose { max-width: 68ch; }
 .prose p { margin: 1.1em 0; text-wrap: pretty; }
@@ -206,6 +212,11 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 }
 .prose pre code { background: none; border: none; padding: 0; }
 .prose table { border-collapse: collapse; width: 100%; margin: 1.4em 0; }
+/* 窄屏宽表兜底：仅小屏把表格自身变成横向滚动容器，避免多列表格撑破 68ch 正文栏；
+   桌面保持 display:table 满宽，表头底色铺满整栏（display:block 会让表格收缩到内容宽） */
+@media (max-width: 720px) {
+  .prose table { display: block; overflow-x: auto; }
+}
 .prose th, .prose td { border: 1px solid var(--border); padding: 0.5em 0.8em; text-align: left; }
 .prose th { background: var(--bg-soft); }
 

@@ -9,9 +9,9 @@ const current = (await getCollection('now'))
 if (!current) throw new Error('now 集合为空：src/content/now/ 需至少保留一期 .md');
 const { Content } = await render(current);
 ---
-<BaseLayout title={`Now · ${current.data.period}`} description="此刻正在做的事：备考、构建、写作与待决，按月更新。" type="article">
+<BaseLayout title={`Now · ${current.data.period}`} description="此刻正在做的事：备考、构建、写作与待决，按月更新。" type="article" publishedTime={current.data.updated}>
   <article class="prose">
-    <p class="meta">更新于 {formatDate(current.data.updated)}</p>
+    <p class="meta">更新于 <span class="mono">{formatDate(current.data.updated)}</span></p>
     <h1>Now · {current.data.period}</h1>
     <Content />
     <p class="see-also">我的背景与联系方式见<a href="/about/">关于</a>页。</p>
