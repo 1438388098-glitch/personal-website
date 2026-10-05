@@ -20,10 +20,18 @@ const countOf = (c: string) => posts.filter((p) => p.data.category === c).length
     ))}
   </div>
 
+  {/*
+    两种视图：「全部」按发布时间平铺（默认），点分类 tab 才显示分板块视图。
+    section 服务端先藏、由脚本按选中分类展开；平铺列表的每张卡片自带分类角标，上下文不丢。
+  */}
+  <div data-view="all">
+    {posts.map((p) => <PostCard post={p} />)}
+  </div>
+
   {categories.map((c) => {
     const items = posts.filter((p) => p.data.category === c);
     return (
-      <section data-category={c} data-empty={items.length === 0 ? 'true' : undefined} hidden={items.length === 0}>
+      <section data-category={c} data-empty={items.length === 0 ? 'true' : undefined} hidden>
         <h2>{c}</h2>
         {items.map((p) => <PostCard post={p} />)}
       </section>
@@ -58,19 +66,22 @@ const countOf = (c: string) => posts.filter((p) => p.data.category === c).length
   document.addEventListener('astro:page-load', () => {
     const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.tab'));
     const sections = Array.from(document.querySelectorAll<HTMLElement>('section[data-category]'));
+    const allView = document.querySelector<HTMLElement>('[data-view="all"]');
     const essayNote = document.querySelector<HTMLElement>('[data-note]');
     const emptyNote = document.querySelector<HTMLElement>('[data-empty-note]');
 
     const select = (cat: string) => {
       tabs.forEach((t) => t.setAttribute('aria-pressed', String(t.dataset.cat === cat)));
+      const isAll = cat === '全部';
       /* 空分类在构建期就带上 data-empty，选中的若是空分类则藏起板块、只显示占位文案 */
-      const empty = cat !== '全部' && sections.some((s) => s.dataset.category === cat && s.dataset.empty === 'true');
+      const empty = !isAll && sections.some((s) => s.dataset.category === cat && s.dataset.empty === 'true');
+      if (allView) allView.hidden = !isAll;
       sections.forEach((s) => {
-        s.hidden = s.dataset.category !== cat || empty;
+        s.hidden = isAll || s.dataset.category !== cat || empty;
       });
       if (emptyNote) emptyNote.hidden = !empty;
-      if (essayNote) essayNote.hidden = cat !== '全部';
-      history.replaceState(null, '', cat === '全部' ? location.pathname : `#${cat}`);
+      if (essayNote) essayNote.hidden = !isAll;
+      history.replaceState(null, '', isAll ? location.pathname : `#${cat}`);
     };
 
     tabs.forEach((t) => t.addEventListener('click', () => select(t.dataset.cat ?? '全部')));
