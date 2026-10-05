@@ -142,7 +142,7 @@ import { SITE } from '../lib/site';
     </div>
     {/* 技能写具体事实，不做「精通/高级」自评分级：分级无信息量且是面试第一个被挑战的点 */}
     <div class="skills">
-      <div class="skill-row"><span class="k">法律检索</span><span class="v">北大法宝、中国裁判文书网、Westlaw；课程论文《竞业限制的滥用与规制》系统引证 556 份裁判文书公开统计等实证材料（见<a href="/notes/non-compete/">笔记栏</a>）</span></div>
+      <div class="skill-row"><span class="k">法律检索</span><span class="v">北大法宝、中国裁判文书网、Westlaw；课程论文《竞业限制的滥用与规制》引用熊晖、王瑞宏对 556 份裁判文书的统计等实证材料（见<a href="/notes/non-compete/">笔记栏</a>）</span></div>
       <div class="skill-row"><span class="k">工程</span><span class="v">Python、JavaScript/TypeScript、SQLite/FTS5、RAG 与评测管线、多 Agent 编排、Git/CI（全部有公开仓库背书，见<a href="/projects/">项目栏</a>）</span></div>
       <div class="skill-row"><span class="k">技能证书</span><span class="v">计算机二级（MS Office）、C1 驾驶证</span></div>
       <div class="skill-row"><span class="k">社媒活动</span><span class="v">小红书自媒体运营：浏览量累计 <strong class="mono">18 万+</strong>，获赞及收藏近 <strong class="mono">5000</strong></span></div>
@@ -184,7 +184,8 @@ import { SITE } from '../lib/site';
   .entry { padding: 1.4rem 0 1.5rem; border-top: 1px solid var(--border); }
   .entry-head { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
   .e-date { font-size: 0.82rem; color: var(--text-muted); flex: none; }
-  .entry h3 { font-size: 1.12rem; font-weight: 800; }
+  /* 页内小标题与加粗统一 700：Noto Sans SC 无 800 面，显式 800 会回落 900，与全站 h2/h3 口径不一致 */
+  .entry h3 { font-size: 1.12rem; font-weight: 700; }
   .entry .role { font-size: 0.88rem; color: var(--text-muted); }
   .entry .role::before { content: '· '; color: var(--text-muted); }
   .entry ul { list-style: none; margin: 0.7rem 0 0; padding: 0; }
@@ -194,7 +195,7 @@ import { SITE } from '../lib/site';
   /* ---- 教育背景：两条课程行 ---- */
   .edu { padding-top: 1.2rem; }
   .edu-line { margin: 0 0 0.9rem; font-size: 0.95rem; }
-  .edu-line strong { font-size: 1.05rem; font-weight: 800; margin-right: 1rem; }
+  .edu-line strong { font-size: 1.05rem; font-weight: 700; margin-right: 1rem; }
   .edu-note { color: var(--text-muted); }
 
   /* ---- 技能：k/v 行式清单 ---- */
