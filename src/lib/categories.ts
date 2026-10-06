@@ -62,4 +62,6 @@ export const TAG_VOCAB = [
   '平衡性',
   '二创',
   'Android',
+  '量化',
+  '数据工程',
 ] as const;
