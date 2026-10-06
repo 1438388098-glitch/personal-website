@@ -8,7 +8,8 @@ import { EXAM_AGG } from '../lib/exam-progress';
 import { byDateDesc } from '../lib/sort';
 import { isPublished } from '../lib/publish';
 
-const featuredProjects = (await getCollection('projects'))
+const allProjects = await getCollection('projects');
+const featuredProjects = allProjects
   .filter((p) => p.data.featured)
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 3);
@@ -19,16 +20,18 @@ const posts = (await getCollection('posts', isPublished))
 const currentNow = (await getCollection('now'))
   .sort((a, b) => b.data.period.localeCompare(a.data.period))[0];
 const nowTopics = currentNow?.data.topics ?? [];
-// 数字面板：取自精选项目 frontmatter 的 metrics（单一事实源在内容文件，此处只做展示挑选）
+// 数字面板：取自项目 frontmatter 的 metrics（单一事实源在内容文件，此处只做展示挑选）
+// 取数范围是全量项目而非精选集：量化行来自未精选的 stock-db，若只查精选集该行会渲染为空。
 // 标签用精确匹配而非前缀：前缀匹配在标签被改写后会静默取到空串（首页曾有一行指标渲染为空，
 // 正是「Recall@5」被改写成「盲写留出题 Recall@5」后前缀对不上）。改名即取不到，由 check:dist 拦下。
 const metricOf = (id: string, label: string) =>
-  featuredProjects.find((p) => p.id === id)?.data.metrics.find((m) => m.label === label)?.value ?? '';
+  allProjects.find((p) => p.id === id)?.data.metrics.find((m) => m.label === label)?.value ?? '';
 const panelRows = [
   { k: '法条检索 Recall@5', v: metricOf('statute-rag', '盲写留出题 Recall@5') },
   { k: '入库法条', v: metricOf('statute-rag', '语料规模') },
   { k: '评测规模 · 法衡', v: metricOf('cn-judbench', '评测规模') },
   { k: '判分口径 · 逐采分点', v: metricOf('fakao-grader', '判定口径') },
+  { k: '量化数据规模', v: metricOf('stock-db', '数据规模') },
 ];
 ---
 <BaseLayout title={SITE.title}>
