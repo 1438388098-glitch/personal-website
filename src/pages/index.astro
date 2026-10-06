@@ -222,6 +222,16 @@ const panelRows = [
      探索区固定两列，两类网格的列数需求不同，共用一类会顾此失彼。 */
   .work-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.2rem; }
   .work-grid .cell.wide { grid-column: 1 / -1; }
+  /* 同排卡片等高：.cell 作为网格项会被拉伸，但卡片描边挂在内部 .project-card 上，
+     它的高度按内容走，内容短的那张底边就会比同排缩进去一截。让 cell 做 flex 容器，
+     卡片就能被撑满，四张卡的上下边落在同两条横线上。 */
+  .work-grid .cell { display: flex; }
+  .work-grid .cell > :global(.project-card) { flex: 1; }
+  /* 标题预留两行：三张卡标题行数不同（stock-db 只有一行）时，摘要的起始行会错开 */
+  .work-grid .cell:not(.wide) :global(.project-card h3) { min-height: 2lh; }
+  /* 主卡横向内边距与同排卡片对齐，四张卡的正文左边缘才落在同一条竖线上；
+     纵向仍留 1.7rem，主卡靠字号与留白保持分量，而不是靠缩进错位 */
+  .work-grid .cell.wide :global(.project-card) { padding: 1.7rem 1.6rem; }
   /* ≤1024：主卡让位成等宽卡，四张排成 2×2。三列在 900~1024 区间会把摘要挤到五行以上、
      标题折两行，读起来费劲；四张等宽两列反而更整齐，也不留空位。 */
   @media (max-width: 1024px) {
