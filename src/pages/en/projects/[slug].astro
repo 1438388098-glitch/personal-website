@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import ProjectDetail from '../../../templates/ProjectDetail.astro';
+import { getProjects } from '../../../lib/projects';
+
+/* en 项目详情：集合、工具箱互链、同组推荐、相关博文全部取 en 口径；
+   相关博文只列有英文版的（避免把英文读者甩进读不了的中文页）。 */
+export async function getStaticPaths() {
+  const projects = await getProjects('en');
+  const toolboxUrlById = new Map((await getCollection('toolboxEn')).map((t) => [t.id, t.data.url]));
+  const postTitleById = new Map((await getCollection('postsEn')).map((p) => [p.id, p.data.title]));
+  return projects.map((p) => ({
+    params: { slug: p.id },
+    props: {
+      project: p,
+      lang: 'en' as const,
+      alternate: `/projects/${p.id}/`,
+      toolboxUrl: toolboxUrlById.get(p.id) ?? null,
+      sameGroup: projects
+        .filter((q) => q.data.group === p.data.group && q.id !== p.id)
+        .sort((a, b) => a.data.order - b.data.order)
+        .slice(0, 3)
+        .map((q) => ({ id: q.id, title: q.data.title })),
+      relatedBlog: p.data.relatedPosts
+        .filter((id) => postTitleById.has(id))
+        .map((id) => ({ id, title: postTitleById.get(id)! })),
+    },
+  }));
+}
+---
+<ProjectDetail {...Astro.props} />

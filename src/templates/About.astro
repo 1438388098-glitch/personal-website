@@ -1,0 +1,127 @@
+---
+/* 关于页模板：zh（/about/）与 en（/en/about/）共用。
+   简历类长文案在字典里按区块组织；skills/contact 两行含站内链接，以受控 HTML 字符串经 set:html 渲染。 */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import JsonLd from '../components/JsonLd.astro';
+import type { Lang } from '../lib/i18n';
+import { strings, href } from '../lib/i18n';
+import { SITE } from '../lib/site';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = strings(lang);
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE.author,
+  url: new URL(href(lang, '/about/'), SITE.url).toString(),
+  jobTitle: t.about.jsonLdJobTitle,
+  /* sameAs 用于把站内 Person 与外部身份对齐，当前唯一可公开的外部主页是 GitHub */
+  sameAs: [SITE.github]
+};
+---
+<BaseLayout title={t.about.title} description={t.about.metaDescription} alternate={lang === 'zh' ? '/en/about/' : '/about/'}>
+  <section class="about-hero">
+    <div>
+      <h1>{t.about.h1}</h1>
+      <div class="intro">
+        {t.about.intro.map((p) => <p>{p}</p>)}
+      </div>
+    </div>
+    <aside class="facts" aria-label={t.about.factsAria}>
+      {t.about.facts.map((f) => (
+        <div class="fact-row"><span class="k">{f.k}</span><span class="v" class:list={{ mono: f.mono }}>{f.v}</span></div>
+      ))}
+    </aside>
+  </section>
+
+  {t.about.sections.map((s, i) => (
+    <section>
+      <div class="sec-head">
+        <span class="sec-no">{String(i + 1).padStart(2, '0')}</span>
+        <h2>{s.title}{lang === 'zh' && s.en && <span class="sec-en">{s.en}</span>}</h2>
+      </div>
+      {s.edu && s.edu.length > 0 && (
+        <div class="edu">
+          {s.edu.map((line) => (
+            <p class="edu-line"><strong>{line.strong}</strong><span class="edu-note">{line.note}</span></p>
+          ))}
+        </div>
+      )}
+      {s.entries && s.entries.map((e) => (
+        <article class="entry">
+          <header class="entry-head">
+            <span class="e-date mono">{e.date}</span>
+            <h3>{e.org}</h3>
+            <span class="role">{e.role}</span>
+          </header>
+          <ul>
+            {e.bullets.map((b) => <li>{b}</li>)}
+          </ul>
+        </article>
+      ))}
+      {s.skills && (
+        <div class="skills">
+          {s.skills.map((row) => (
+            <div class="skill-row"><span class="k">{row.k}</span><span class="v" set:html={row.html} /></div>
+          ))}
+        </div>
+      )}
+      {s.contactHtml && (
+        <div class="contact">
+          <p set:html={s.contactHtml} />
+          <p set:html={s.resumeHtml} />
+        </div>
+      )}
+    </section>
+  ))}
+  <JsonLd data={person} />
+</BaseLayout>
+<style>
+  /* ---- 头部：左简介 + 右事实面板（与首页数字面板同语言） ---- */
+  .about-hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; padding: 3.5rem 0 0; align-items: start; }
+  h1 { margin: 0 0 1.2rem; }
+  .intro p { color: var(--text-muted); max-width: 40rem; }
+  .facts { background: var(--surface); border: 1.5px solid var(--border-strong); padding: 1.2rem 1.6rem; }
+  .fact-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+  .fact-row:last-child { border-bottom: none; }
+  .fact-row .k { font-size: 0.85rem; color: var(--text-muted); flex: none; }
+  .fact-row .v { font-weight: 600; font-size: 0.95rem; text-align: right; }
+  .facts .mono { font-size: 0.9rem; }
+
+  section { margin: var(--section-gap) 0; }
+
+  /* ---- 经历条目：等宽日期 + 机构 + 职位，蓝方块列表 ---- */
+  .entry { padding: 1.4rem 0 1.5rem; border-top: 1px solid var(--border); }
+  .entry-head { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+  .e-date { font-size: 0.82rem; color: var(--text-muted); flex: none; }
+  /* 页内小标题与加粗统一 700：Noto Sans SC 无 800 面，显式 800 会回落 900，与全站 h2/h3 口径不一致 */
+  .entry h3 { font-size: 1.12rem; font-weight: 700; }
+  .entry .role { font-size: 0.88rem; color: var(--text-muted); }
+  .entry .role::before { content: '· '; color: var(--text-muted); }
+  .entry ul { list-style: none; margin: 0.7rem 0 0; padding: 0; }
+  .entry li { position: relative; padding: 0.18rem 0 0.18rem 1.05rem; color: var(--text); font-size: 0.95rem; }
+  .entry li::before { content: ''; position: absolute; left: 0; top: 0.72em; width: 6px; height: 6px; background: var(--accent); }
+
+  /* ---- 教育背景：两条课程行 ---- */
+  .edu { padding-top: 1.2rem; }
+  .edu-line { margin: 0 0 0.9rem; font-size: 0.95rem; }
+  .edu-line strong { font-size: 1.05rem; font-weight: 700; margin-right: 1rem; }
+  .edu-note { color: var(--text-muted); }
+
+  /* ---- 技能：k/v 行式清单 ---- */
+  .skills { padding-top: 1.2rem; }
+  .skill-row { display: grid; grid-template-columns: 7rem 1fr; gap: 1.2rem; padding: 0.75rem 0; border-top: 1px solid var(--border); font-size: 0.95rem; }
+  .skill-row:first-child { border-top: none; }
+  .skill-row .k { color: var(--text-muted); font-weight: 600; font-size: 0.88rem; }
+  .skill-row .v { color: var(--text); }
+  .skills .mono { font-size: 0.92rem; }
+
+  .contact p { margin: 0.4rem 0; }
+  .contact { padding-top: 1.2rem; }
+
+  @media (max-width: 960px) {
+    .about-hero { grid-template-columns: 1fr; gap: 2rem; padding-top: 2.5rem; }
+    .skill-row { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+</style>

@@ -1,13 +1,15 @@
 ---
 /* 长文右侧目录：详情页正文右侧常年空着 526px，把这块空位交给节导航。
    标题直接取 render() 返回的 headings，与 astro.config 构建期注入的 § 锚链共用同一批 id。 */
+import { langOf, strings } from '../lib/i18n';
 interface Props { headings: { depth: number; slug: string; text: string }[]; }
 const { headings } = Astro.props;
 /* 只列二级标题：带上三级会变成第二份正文，反而找不到位置；两节以下不值得占一栏 */
 const items = headings.filter((h) => h.depth === 2);
+const t = strings(langOf(Astro.url.pathname));
 ---
 {items.length >= 2 && (
-  <nav class="toc" aria-label="本篇目录">
+  <nav class="toc" aria-label={t.tocAria}>
     <p class="toc-title">On this page</p>
     <ul>
       {items.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}

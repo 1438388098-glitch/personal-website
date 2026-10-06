@@ -1,0 +1,25 @@
+---
+/* 标签详情模板：zh（/tags/[tag]/）与 en（/en/tags/[tag]/）共用。
+   tag 参数是受控词表 ID（两语言一致），en 页标题/正文展示英文对照。 */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import type { Lang } from '../lib/i18n';
+import { strings, href, tagLabel } from '../lib/i18n';
+
+interface Props { tag: string; posts: import('../lib/posts').AnyPost[]; lang: Lang; alternate: string | null; }
+const { tag, posts, lang, alternate } = Astro.props;
+const t = strings(lang);
+const label = tagLabel(lang, tag);
+---
+<BaseLayout title={t.tags.detailTitle(label)} description={t.tags.detailDescription(label, posts.length)} alternate={alternate}>
+  <h1>#{label}</h1>
+  <p class="intro">{t.tags.detailIntro(posts.length)}<a href={href(lang, '/tags/')}>{t.tags.allTags}</a></p>
+  {/* 补 h2：PostCard 标题是 h3，h1 直连 h3 会跳级；沿用全站区块头语言 */}
+  <div class="sec-head">
+    <h2>{t.tags.postsHeading}{lang === 'zh' && <span class="sec-en">{t.tags.postsEn}</span>}</h2>
+  </div>
+  {posts.map((p) => <PostCard post={p} />)}
+</BaseLayout>
+<style>
+  .intro { color: var(--text-muted); margin: 0 0 1.5rem; }
+</style>

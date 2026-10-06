@@ -1,0 +1,127 @@
+---
+/* 博文详情模板：zh（/blog/[slug]/）与 en（/en/blog/[slug]/）共用。
+   getStaticPaths 在各薄壳页里按语言取集合；alternate 由壳页核实后传入（决定 hreflang 与切换器）。 */
+import { render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Toc from '../components/Toc.astro';
+import JsonLd from '../components/JsonLd.astro';
+import type { Lang } from '../lib/i18n';
+import { strings, href, tagLabel, categoryLabel } from '../lib/i18n';
+import { formatDate } from '../lib/format';
+import type { AnyPost } from '../lib/posts';
+import { getPublishedPosts, getAdjacent } from '../lib/posts';
+import { SITE, SITE_PATHS } from '../lib/site';
+
+interface Props { post: AnyPost; lang: Lang; alternate: string | null; }
+const { post, lang, alternate } = Astro.props;
+const t = strings(lang);
+const { Content, headings } = await render(post);
+const { title, description, category, pubDate, tags, image } = post.data;
+const shareImage = new URL(image ?? SITE_PATHS.ogImage, SITE.url).toString();
+/* 相邻文章按发布日期排序：新一篇 / 旧一篇（含定时发布过滤）；en 只在自己的子集里相邻 */
+const sorted = await getPublishedPosts(lang);
+const { newer, older } = getAdjacent(sorted, post.id);
+/* 相关文章：共同标签多的在前，其次同分类，再次按时间新；排除自身，最多 4 篇。
+   只在有共同标签或同分类时入选，避免为凑数推不相干的文章。 */
+const related = sorted
+  .filter((p) => p.id !== post.id)
+  .map((p) => ({
+    post: p,
+    shared: p.data.tags.filter((tg) => tags.includes(tg)).length,
+    sameCategory: p.data.category === category ? 1 : 0
+  }))
+  .filter((x) => x.shared > 0 || x.sameCategory > 0)
+  .sort(
+    (a, b) =>
+      b.shared - a.shared ||
+      b.sameCategory - a.sameCategory ||
+      b.post.data.pubDate.valueOf() - a.post.data.pubDate.valueOf()
+  )
+  .slice(0, 4)
+  .map((x) => x.post);
+const pageUrl = new URL(Astro.url.pathname, SITE.url).toString();
+const tagLabelOf = (tg: string) => tagLabel(lang, tg);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  /* Google 文章富结果要求 image 与 canonical url；分享图暂用全站默认 og 图 */
+  image: [shareImage],
+  url: pageUrl,
+  mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+  datePublished: pubDate.toISOString(),
+  dateModified: pubDate.toISOString(),
+  inLanguage: lang === 'en' ? 'en' : 'zh-CN',
+  /* 栏目写进 articleSection，供富结果与聚合器识别；站点分组即博客分类 */
+  articleSection: categoryLabel(lang, category),
+  author: { '@type': 'Person', name: SITE.author, url: new URL('/about/', SITE.url).toString() },
+  publisher: { '@type': 'Organization', name: SITE.title, url: SITE.url },
+  keywords: tags.map(tagLabelOf).join(', ')
+};
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: t.post.breadcrumbHome, item: new URL(lang === 'en' ? '/en/' : '/', SITE.url).toString() },
+    { '@type': 'ListItem', position: 2, name: t.post.breadcrumbBlog, item: new URL(href(lang, '/blog/'), SITE.url).toString() },
+    { '@type': 'ListItem', position: 3, name: title, item: pageUrl }
+  ]
+};
+---
+<BaseLayout title={title} description={description} type="article" image={image} publishedTime={pubDate} alternate={alternate}>
+  <div class="doc">
+    <div class="col">
+      <article class="prose">
+        <p class="meta">
+          {categoryLabel(lang, category)} · <span class="mono">{formatDate(pubDate, lang)}</span>
+          {tags.length > 0 && <span class="tag-row"> · {tags.map((tg) => <a class="tag-link" href={href(lang, `/tags/${tg}/`)}>#{tagLabelOf(tg)}</a>)}</span>}
+        </p>
+        <h1>{title}</h1>
+        <Content />
+        <p><a href={href(lang, '/blog/')}>{t.post.allPosts}</a></p>
+      </article>
+      {(newer || older) && (
+        <nav class="adjacent" aria-label={t.post.adjacentAria}>
+          {newer && <a class="adj-link" href={href(lang, `/blog/${newer.id}/`)}>{t.post.newer}{newer.data.title}</a>}
+          {older && <a class="adj-link adj-next" href={href(lang, `/blog/${older.id}/`)}>{t.post.older}{older.data.title} →</a>}
+        </nav>
+      )}
+      {related.length > 0 && (
+        <section class="related" aria-label={t.post.relatedAria}>
+          <div class="sec-head"><h2>{t.post.related}{lang === 'zh' && <span class="sec-en">Related</span>}</h2></div>
+          <ul>
+            {related.map((r) => (
+              <li>
+                <a href={href(lang, `/blog/${r.id}/`)}>{r.data.title}</a>
+                <span class="mono">{formatDate(r.data.pubDate, lang)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+    <Toc headings={headings} />
+  </div>
+  <JsonLd data={jsonLd} />
+  <JsonLd data={breadcrumb} />
+</BaseLayout>
+<style>
+  .meta { color: var(--text-muted); }
+  .tag-row { display: inline-flex; gap: 0.6rem; margin-left: 0.35rem; }
+  .tag-link { color: var(--text-muted); }
+  .tag-link:hover { color: var(--accent); text-decoration: none; }
+  .adjacent {
+    margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .adj-link { color: var(--text-muted); }
+  .adj-next { text-align: right; }
+  /* 相关文章：同主题（共同标签/同分类）的横向发现出口，避免长文读完是死胡同 */
+  .related { margin-top: 3rem; }
+  .related ul { list-style: none; margin: 1rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+  .related li { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+  .related a { color: var(--text); }
+  .related a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--accent); }
+  .related .mono { color: var(--text-muted); font-size: 0.85rem; flex: none; }
+</style>

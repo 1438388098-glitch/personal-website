@@ -1,16 +1,19 @@
 ---
+import { langOf, strings, groupLabel, href } from '../lib/i18n';
 import { formatDate } from '../lib/format';
-import type { CollectionEntry } from 'astro:content';
-interface Props { project: CollectionEntry<'projects'>; showMetrics?: boolean; index?: number; }
+import type { AnyProject } from '../lib/projects';
+interface Props { project: AnyProject; showMetrics?: boolean; index?: number; }
 const { project, showMetrics = true, index } = Astro.props;
+const lang = langOf(Astro.url.pathname);
+const t = strings(lang);
 const { title, summary, metrics, date, group, links } = project.data;
 /* 仓库直达：只认 links 里的 GitHub 地址，列表页一键到仓库，不必先进详情页 */
 const repo = links.find((l) => l.url.includes('github.com'));
 ---
 <article class="card project-card">
   {index !== undefined && <span class="idx mono" aria-hidden="true">{String(index).padStart(2, '0')}</span>}
-  <p class="meta">{group} · {formatDate(date)}{repo && <> · <a class="repo" href={repo.url} target="_blank" rel="noopener noreferrer" aria-label="仓库（在新窗口打开）">仓库</a></>}</p>
-  <h3><a href={`/projects/${project.id}/`}>{title}</a></h3>
+  <p class="meta">{groupLabel(lang, group)} · {formatDate(date, lang)}{repo && <> · <a class="repo" href={repo.url} target="_blank" rel="noopener noreferrer" aria-label={`${t.projects.repo}${t.footer.opensInNew}`}>{t.projects.repo}</a></>}</p>
+  <h3><a href={href(lang, `/projects/${project.id}/`)}>{title}</a></h3>
   <p class="summary">{summary}</p>
   {showMetrics && metrics.length > 0 && (
     <ul class="metrics">

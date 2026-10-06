@@ -1,28 +1,25 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PostCard from '../../components/PostCard.astro';
+import TagDetail from '../../templates/TagDetail.astro';
 import { getPublishedPosts } from '../../lib/posts';
 import { groupByTag } from '../../lib/tags';
+import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
   /* 已按发布时间降序，分桶保持原顺序，桶内天然就是新→旧，无需再排一次 */
-  const byTag = groupByTag(await getPublishedPosts());
+  const byTag = groupByTag(await getPublishedPosts('zh'));
+  /* 对方语言对应页存在性：en 标签页只覆盖有英文译文的标签 */
+  const enPosts = await getCollection('postsEn');
+  const enTagSet = new Set(enPosts.flatMap((p) => p.data.tags));
   return [...byTag.entries()].map(([tag, posts]) => ({
     params: { tag },
-    props: { tag, posts },
+    props: {
+      tag,
+      posts,
+      lang: 'zh' as const,
+      alternate: enTagSet.has(tag) ? `/en/tags/${tag}/` : null,
+    },
   }));
 }
-const { tag, posts } = Astro.props;
 ---
-<BaseLayout title={`标签：${tag}`} description={`标签「${tag}」下的全部文章，共 ${posts.length} 篇。`}>
-  <h1>#{tag}</h1>
-  <p class="intro">{posts.length} 篇文章。<a href="/tags/">← 全部标签</a></p>
-  {/* 补 h2：PostCard 标题是 h3，h1 直连 h3 会跳级；沿用全站区块头语言 */}
-  <div class="sec-head">
-    <h2>文章<span class="sec-en">Posts</span></h2>
-  </div>
-  {posts.map((p) => <PostCard post={p} />)}
-</BaseLayout>
-<style>
-  .intro { color: var(--text-muted); margin: 0 0 1.5rem; }
-</style>
+<TagDetail {...Astro.props} />

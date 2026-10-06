@@ -1,0 +1,112 @@
+---
+/* 项目详情模板：zh（/projects/[slug]/）与 en（/en/projects/[slug]/）共用。
+   getStaticPaths 在各薄壳页按语言取集合并配好 toolbox 互链、同组推荐与相关博文（均为本语言标题）。 */
+import { render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Toc from '../components/Toc.astro';
+import JsonLd from '../components/JsonLd.astro';
+import type { Lang } from '../lib/i18n';
+import { strings, href, groupLabel } from '../lib/i18n';
+import { formatDate } from '../lib/format';
+import type { AnyProject } from '../lib/projects';
+import { SITE, githubRepoUrl } from '../lib/site';
+
+interface Props {
+  project: AnyProject;
+  lang: Lang;
+  alternate: string | null;
+  toolboxUrl: string | null;
+  sameGroup: { id: string; title: string }[];
+  relatedBlog: { id: string; title: string }[];
+}
+const { project, lang, alternate, toolboxUrl, sameGroup, relatedBlog } = Astro.props;
+const t = strings(lang);
+const { Content, headings } = await render(project);
+const { title, summary, group, date, metrics, links, relatedPosts: _relatedPosts, disclaimer } = project.data;
+
+const pageUrl = new URL(Astro.url.pathname, SITE.url).toString();
+/* codeRepository 优先用 frontmatter 里登记的 GitHub 链接，缺失时按项目 id 推仓库地址 */
+const repoUrl = links.find((l) => l.url.includes('github.com'))?.url ?? githubRepoUrl(project.id);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  description: summary,
+  url: pageUrl,
+  codeRepository: repoUrl,
+  applicationCategory: 'BusinessApplication',
+  applicationSubCategory: groupLabel(lang, group),
+  inLanguage: lang === 'en' ? 'en' : 'zh-CN',
+  author: { '@type': 'Person', name: SITE.author, url: new URL('/about/', SITE.url).toString() }
+};
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: t.projects.breadcrumbHome, item: new URL(lang === 'en' ? '/en/' : '/', SITE.url).toString() },
+    { '@type': 'ListItem', position: 2, name: t.projects.breadcrumbProjects, item: new URL(href(lang, '/projects/'), SITE.url).toString() },
+    { '@type': 'ListItem', position: 3, name: title, item: pageUrl }
+  ]
+};
+---
+<BaseLayout title={title} description={summary} type="article" alternate={alternate}>
+  <div class="doc">
+    <article class="prose">
+      <p class="meta">{groupLabel(lang, group)} · {formatDate(date, lang)}</p>
+      <h1>{title}</h1>
+      <p class="summary"><strong>{summary}</strong></p>
+
+      {metrics.length > 0 && (
+        <table>
+          <thead><tr>{t.projects.tableHead.map((h) => <th>{h}</th>)}</tr></thead>
+          <tbody>
+            {metrics.map((m) => (
+              <tr><td>{m.label}</td><td><strong class="mono">{m.value}</strong></td><td>{m.detail ?? ''}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      <Content />
+
+      {links.length > 0 && (
+        <p class="links">
+          {links.map((l) => <a href={l.url} target="_blank" rel="noopener noreferrer" aria-label={`${l.label}${t.footer.opensInNew}`}>{l.label}</a>)}
+        </p>
+      )}
+      <p class="disclaimer">{disclaimer}</p>
+
+      {(sameGroup.length > 0 || toolboxUrl || relatedBlog.length > 0) && (
+        <div class="related">
+          <div class="sec-head"><h2>{t.projects.related}</h2></div>
+          {sameGroup.length > 0 && (
+            <p>{t.projects.sameGroup}{sameGroup.map((p, i) => (
+              <>{i > 0 && t.projects.separator}<a href={href(lang, `/projects/${p.id}/`)}>{p.title}</a></>
+            ))}</p>
+          )}
+          {toolboxUrl && (
+            <p>{t.projects.toolbox}<a href={toolboxUrl} target="_blank" rel="noopener noreferrer" aria-label={t.projects.toolboxAria}>{t.projects.toolboxLink}</a></p>
+          )}
+          {relatedBlog.length > 0 && (
+            <p>{t.projects.relatedPosts}{relatedBlog.map((p, i) => (
+              <>{i > 0 && t.projects.separator}<a href={href(lang, `/blog/${p.id}/`)}>{p.title}</a></>
+            ))}</p>
+          )}
+        </div>
+      )}
+
+      <p><a href={href(lang, '/projects/')}>{t.projects.allProjects}</a></p>
+    </article>
+    <Toc headings={headings} />
+  </div>
+  <JsonLd data={jsonLd} />
+  <JsonLd data={breadcrumb} />
+</BaseLayout>
+<style>
+  .meta { color: var(--text-muted); }
+  .links { display: flex; gap: 1rem; }
+  .disclaimer { color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+  /* 相关推荐：沿用区块头语言，正文用普通段落 + 顿号分隔的链接列表 */
+  .related { margin-top: 2.5rem; }
+  .related p { margin: 0.7rem 0 0; }
+</style>

@@ -1,13 +1,16 @@
 ---
-import { NAV, SITE } from '../lib/site';
-const { pathname } = Astro.url;
-const isActive = (href: string) => pathname === href || pathname.startsWith(href);
+import { langOf, strings } from '../lib/i18n';
+interface Props { switchHref: string; }
+const { switchHref } = Astro.props;
+const lang = langOf(Astro.url.pathname);
+const t = strings(lang);
+const isActive = (href: string) => Astro.url.pathname === href || Astro.url.pathname.startsWith(href);
 ---
 <header class="site-header">
   <div class="container header-inner">
-    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span>{SITE.author}<span class="en">{SITE.authorEn}</span></a>
-    <nav aria-label="主导航">
-      {NAV.map((item) => (
+    <a class="brand" href={lang === 'en' ? '/en/' : '/'}><span class="brand-mark" aria-hidden="true"></span>{'胡圣炜'}<span class="en">HU SHENGWEI</span></a>
+    <nav aria-label={t.navAria}>
+      {t.navItems.map((item) => (
         <a
           class:list={['nav-link', { active: isActive(item.href) }]}
           aria-current={isActive(item.href) ? 'page' : undefined}
@@ -18,22 +21,25 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
       ))}
     </nav>
     {/* 轻量搜索：GET 表单直达 /search/?q=，结果由搜索页客户端渲染；窄屏收起（页脚仍保留入口） */}
-    <form class="header-search" action="/search/" method="get" role="search">
-      <input type="search" name="q" placeholder="搜索" aria-label="站内搜索" autocomplete="off" />
+    <form class="header-search" action={t.searchAction} method="get" role="search">
+      <input type="search" name="q" placeholder={t.searchPlaceholder} aria-label={t.searchAria} autocomplete="off" />
     </form>
-    <button id="theme-toggle" type="button" aria-label="切换明暗主题" aria-pressed="false">◐</button>
+    <a class="lang-switch" href={switchHref} aria-label={t.langSwitch.aria}>{t.langSwitch.label}</a>
+    <button id="theme-toggle" type="button" aria-label={t.themeToggle.base} aria-pressed="false" data-label-dark={t.themeToggle.dark} data-label-light={t.themeToggle.light}>◐</button>
   </div>
 </header>
 <script>
   /* 主题按钮状态同步：aria-pressed 表示「当前是否深色」，aria-label 顺带报出当前主题。
      服务端渲染时 aria-pressed 是静态的，深色用户首屏会读到错状态，故在模块求值时先同步一次；
-     View Transitions 换页后按钮被替换，再挂 astro:page-load 同步。 */
+     View Transitions 换页后按钮被替换，再挂 astro:page-load 同步。
+     文案随语言走：BaseHead 在按钮上注入 data-label-dark/light（双语字典），脚本只读不写死。 */
   const syncThemeButton = () => {
     const btn = document.getElementById('theme-toggle');
     if (!btn) return;
     const dark = document.documentElement.dataset.theme === 'dark';
     btn.setAttribute('aria-pressed', String(dark));
-    btn.setAttribute('aria-label', `切换明暗主题（当前：${dark ? '深色' : '浅色'}）`);
+    const label = dark ? btn.dataset.labelDark : btn.dataset.labelLight;
+    if (label) btn.setAttribute('aria-label', label);
   };
   syncThemeButton();
   document.addEventListener('astro:page-load', syncThemeButton);
@@ -50,6 +56,14 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
     html.dataset.theme = next;
     localStorage.setItem('theme', next);
     syncThemeButton();
+  });
+
+  /* 语言切换器点击即落 cookie：之后首访协商不再弹跳，尊重用户显式选择 */
+  document.addEventListener('click', (e) => {
+    const link = (e.target as HTMLElement).closest?.('a.lang-switch');
+    if (!link) return;
+    const to = link.getAttribute('data-lang') === 'en' ? 'en' : 'zh';
+    document.cookie = `site-lang=${to};max-age=31536000;path=/;samesite=lax`;
   });
 </script>
 <style>
@@ -84,6 +98,15 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(href
   .header-search input::placeholder { color: var(--text-muted); }
   .header-search input:hover { border-color: var(--border-strong); }
   .header-search input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--accent); }
+  /* 语言切换：等宽字小方框，与主题按钮同一盒语言 */
+  .lang-switch {
+    font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);
+    border: 1.5px solid var(--border-strong); padding: 0.25rem 0.6rem;
+    display: inline-flex; align-items: center; min-height: 44px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+  }
+  .lang-switch:hover { background: var(--ink); color: var(--bg); }
   #theme-toggle {
     background: none; border: 1.5px solid var(--border-strong); border-radius: 0; color: var(--text);
     cursor: pointer; padding: 0.25rem 0.6rem; transition: background-color 0.15s ease, color 0.15s ease;

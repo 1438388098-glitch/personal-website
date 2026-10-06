@@ -1,0 +1,61 @@
+---
+/* 工具箱列表模板：zh（/toolbox/）与 en（/en/toolbox/）共用。
+   条目数据按语言取自 toolbox / toolboxEn 集合（en 条目为译文，name/description/related 均英文）。 */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import type { Lang } from '../lib/i18n';
+import { strings, groupLabel } from '../lib/i18n';
+import { buildSections } from '../lib/sections';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = strings(lang);
+
+const tools = (await getCollection(lang === 'en' ? 'toolboxEn' : 'toolbox'))
+  .sort((a, b) => a.data.name.localeCompare(b.data.name));
+const categories = [
+  { name: '法律工具', en: 'Legal Tools' },
+  { name: '工程小件', en: 'Utilities' }
+] as const;
+/* 分区按页面顺序重编号（只数非空分组），过滤 + 重编号走 lib 层单源实现 */
+const sections = buildSections(tools, categories, (tool) => tool.data.category);
+const opensInNew = t.toolbox.opensInNew;
+---
+<BaseLayout title={t.toolbox.title} description={t.toolbox.metaDescription} alternate={lang === 'zh' ? '/en/toolbox/' : '/toolbox/'}>
+  <h1>{t.toolbox.title}</h1>
+  <p class="intro" set:html={t.toolbox.introHtml} />
+  {sections.map((s) => (
+    <section>
+      <div class="sec-head">
+        <span class="sec-no">{s.no}</span>
+        <h2>{groupLabel(lang, s.name)}{lang === 'zh' && <span class="sec-en">{s.en}</span>}</h2>
+      </div>
+      <div class="grid">
+        {s.items.map((tool) => (
+          <article class="card tool-card" id={tool.id}>
+            <h3><a href={tool.data.url} target="_blank" rel="noopener noreferrer" aria-label={`${tool.data.name}${opensInNew}`}>{tool.data.name}</a></h3>
+            <p class="desc">{tool.data.description}</p>
+            {tool.data.related.length > 0 && (
+              <p class="related">
+                {tool.data.related.map((r) => <a href={r.url}>{r.label}</a>)}
+              </p>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+  ))}
+</BaseLayout>
+<style>
+  .intro { color: var(--text-muted); margin: 1rem 0 1.6rem; }
+  section { margin: var(--section-gap) 0; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
+  .tool-card { padding: 1.1rem 1.3rem; }
+  h3 { margin: 0 0 0.4rem; font-size: var(--fs-card-title); }
+  /* 标题类链接：墨色常驻，hover 蓝下划线（与 ProjectCard 同语言） */
+  h3 a { color: var(--text); }
+  h3 a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--accent); }
+  .desc { color: var(--text-muted); margin: 0; }
+  .related { display: flex; gap: 0.9rem; margin: 0.6rem 0 0; font-size: 0.85rem; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+</style>

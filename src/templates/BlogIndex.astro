@@ -1,0 +1,80 @@
+---
+/* 博客列表模板：zh（/blog/）与 en（/en/blog/）共用。
+   zh 分类 tab 全量七类（与线上现状一致）；en 只出有稿分类，空分类 tab 是噪音。 */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import type { Lang } from '../lib/i18n';
+import { strings, categoryLabel } from '../lib/i18n';
+import { getPublishedPosts } from '../lib/posts';
+import { POST_CATEGORIES } from '../lib/categories';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = strings(lang);
+
+const posts = await getPublishedPosts(lang);
+const categories = lang === 'zh'
+  ? POST_CATEGORIES
+  : POST_CATEGORIES.filter((c) => posts.some((p) => p.data.category === c));
+const countOf = (c: string) => posts.filter((p) => p.data.category === c).length;
+const labelOf = (c: string) => categoryLabel(lang, c);
+---
+<BaseLayout title={t.blog.title} description={t.blog.metaDescription} alternate={lang === 'zh' ? '/en/blog/' : '/blog/'}>
+  <h1>{t.blog.title}</h1>
+
+  <div class="tabs">
+    {/* data 值「全部」是 tabs.ts 的内部 ALL 常量与 hash 深链 ID，两语言共用；展示文案走字典 */}
+    <button class="tab" type="button" data-cat="全部" aria-pressed="true">{t.blog.all}<span class="count">{posts.length}</span></button>
+    {categories.map((c) => (
+      <button class="tab" type="button" data-cat={c} aria-pressed="false">{labelOf(c)}<span class="count">{countOf(c)}</span></button>
+    ))}
+  </div>
+
+  {/*
+    两种视图：「全部」按发布时间平铺（默认），点分类 tab 才显示分板块视图。
+    section 服务端先藏、由脚本按选中分类展开；平铺列表的每张卡片自带分类角标，上下文不丢。
+  */}
+  <div data-view="all">
+    {posts.map((p) => <PostCard post={p} />)}
+  </div>
+
+  {categories.map((c) => {
+    const items = posts.filter((p) => p.data.category === c);
+    return (
+      <section data-category={c} data-empty={items.length === 0 ? 'true' : undefined} hidden>
+        <h2>{labelOf(c)}</h2>
+        {items.map((p) => <PostCard post={p} />)}
+      </section>
+    );
+  })}
+
+  <p class="essay-note" data-note set:html={t.blog.essayNoteHtml} />
+  <p class="empty-note" data-empty-note hidden>{t.blog.emptyNote}</p>
+<style>
+  /* 分类 tab：直角小方框，选中态墨底反白（v3 语言） */
+  .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.4rem 0 2rem; }
+  .tab {
+    font: inherit; font-size: 0.9rem; cursor: pointer;
+    color: var(--text); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 0;
+    padding: 0.3rem 0.85rem;
+    /* 触控目标 ≥44px：撑高可点区域，字号与版式不动 */
+    display: inline-flex; align-items: center; min-height: 44px;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .tab:hover { border-color: var(--accent); color: var(--accent); }
+  .tab[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .tab[aria-pressed='true'] .count { color: var(--bg); opacity: 0.75; }
+  /* 计数与中文分类之间用固定间距，不靠字面空格（等宽字侧边距宽，缝会随字数浮动） */
+  .count { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); margin-left: 0.35em; }
+  section { margin: var(--section-gap) 0; }
+  section > h2 { font-size: 1.3rem; }
+  .essay-note, .empty-note { color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+  .empty-note { border-top: none; padding-top: 0; }
+</style>
+<script>
+  /* 分类筛选的公共行为（含可访问性、深链、平铺/分板块切换）抽在 src/scripts/tabs.ts */
+  import { initTabs } from '../scripts/tabs';
+  initTabs({ tabAttr: 'cat', sectionAttr: 'category' });
+</script>
+</BaseLayout>

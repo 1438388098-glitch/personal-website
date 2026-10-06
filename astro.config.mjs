@@ -27,9 +27,12 @@ function anchorLinks() {
         let touched = 0;
         for (const f of files) {
           const html = readFileSync(f, 'utf8');
+          /* § 锚链的 aria 文案随页面语言走：/en/ 路径用英文，其余中文 */
+          const isEn = /[/\\]en[/\\]/.test(f.slice(root.length));
+          const anchorLabel = isEn ? 'Anchor for this section' : '本节锚点';
           const next = html.replace(re, (m, open, close) => {
             const id = /id="([^"]+)"/.exec(open)[1];
-            return open + '<a class="anchor" href="#' + id + '" aria-label="本节锚点">§</a>' + close;
+            return open + '<a class="anchor" href="#' + id + '" aria-label="' + anchorLabel + '">§</a>' + close;
           });
           if (next !== html) { writeFileSync(f, next); touched++; }
         }
@@ -40,20 +43,24 @@ function anchorLinks() {
 }
 
 /* sitemap 的 lastmod：serialize 只拿到 URL 字符串，拿不到 frontmatter，
-   故构建期直接从 src/content 读原始文件解析各内容的日期，按 URL 路径反查。
-   博客取 pubDate，exam/notes/projects 取 date，/now/ 取所有条目 updated 的最大值。 */
+   故构建期直接从内容目录读原始文件解析各内容的日期，按 URL 路径反查。
+   博客取 pubDate，exam/notes/projects 取 date，/now/ 取所有条目 updated 的最大值。
+   en 集合（src/content-en/，同名文件配对）映射到 /en/ 前缀路径。 */
 function contentLastmods() {
   /** @type {Map<string, string>} */
   const map = new Map();
-  const collections = [
-    { dir: 'posts', prefix: '/blog/', field: 'pubDate' },
-    { dir: 'exam', prefix: '/exam/', field: 'date' },
-    { dir: 'notes', prefix: '/notes/', field: 'date' },
-    { dir: 'projects', prefix: '/projects/', field: 'date' },
-  ];
   const contentRoot = fileURLToPath(new URL('./src/content/', import.meta.url));
-  for (const { dir, prefix, field } of collections) {
-    const base = join(contentRoot, dir);
+  const contentRootEn = fileURLToPath(new URL('./src/content-en/', import.meta.url));
+  const collections = [
+    { root: contentRoot, dir: 'posts', prefix: '/blog/', field: 'pubDate' },
+    { root: contentRoot, dir: 'exam', prefix: '/exam/', field: 'date' },
+    { root: contentRoot, dir: 'notes', prefix: '/notes/', field: 'date' },
+    { root: contentRoot, dir: 'projects', prefix: '/projects/', field: 'date' },
+    { root: contentRootEn, dir: 'posts', prefix: '/en/blog/', field: 'pubDate' },
+    { root: contentRootEn, dir: 'projects', prefix: '/en/projects/', field: 'date' },
+  ];
+  for (const { root, dir, prefix, field } of collections) {
+    const base = join(root, dir);
     let names;
     try { names = readdirSync(base); } catch { continue; }
     for (const name of names) {
@@ -63,18 +70,20 @@ function contentLastmods() {
       if (m) map.set(`${prefix}${name.slice(0, -3)}/`, m[1]);
     }
   }
-  /* /now/ 是聚合单页：取全部月更里最新的 updated */
-  try {
-    const base = join(contentRoot, 'now');
-    /** @type {string[]} */
-    const dates = [];
-    for (const n of readdirSync(base)) {
-      if (!n.endsWith('.md')) continue;
-      const m = /^updated:\s*["']?(\d{4}-\d{2}-\d{2})/m.exec(readFileSync(join(base, n), 'utf8'));
-      if (m) dates.push(m[1]);
-    }
-    if (dates.length) map.set('/now/', dates.sort()[dates.length - 1]);
-  } catch { /* 无 now 集合目录则跳过 */ }
+  /* /now/ 与 /en/now/ 都是聚合单页：取全部月更里最新的 updated */
+  for (const [root, path] of [[contentRoot, '/now/'], [contentRootEn, '/en/now/']]) {
+    try {
+      const base = join(root, 'now');
+      /** @type {string[]} */
+      const dates = [];
+      for (const n of readdirSync(base)) {
+        if (!n.endsWith('.md')) continue;
+        const m = /^updated:\s*["']?(\d{4}-\d{2}-\d{2})/m.exec(readFileSync(join(base, n), 'utf8'));
+        if (m) dates.push(m[1]);
+      }
+      if (dates.length) map.set(path, dates.sort()[dates.length - 1]);
+    } catch { /* 无 now 集合目录则跳过 */ }
+  }
   return map;
 }
 

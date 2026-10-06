@@ -1,24 +1,47 @@
 ---
+import { langOf, strings } from '../lib/i18n';
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
-interface Props { title: string; description?: string; type?: 'website' | 'article'; noindex?: boolean; image?: string; publishedTime?: Date; }
-const { title, description, type, noindex, image, publishedTime } = Astro.props;
+interface Props {
+  title: string;
+  description?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  image?: string;
+  publishedTime?: Date;
+  /** 对方语言的真实对应页（模板已核实存在）；缺省时切换器回退对方首页，且不发 hreflang */
+  alternate?: string | null;
+}
+const { title, description, type, noindex, image, publishedTime, alternate = null } = Astro.props;
+/* 语言只从 URL 判：zh 留根、en 走 /en/，模板不重复传 lang */
+const lang = langOf(Astro.url.pathname);
+const t = strings(lang);
+/* 切换器落点：有真实对应页就切过去，没有就退回对方首页（宁可落到语言首页，不给死链） */
+const switchHref = alternate ?? (lang === 'zh' ? '/en/' : '/');
 ---
 <!doctype html>
-<html lang="zh-CN">
+<html lang={t.htmlLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <BaseHead title={title} description={description} type={type} noindex={noindex} image={image} publishedTime={publishedTime} />
+    <BaseHead
+      title={title}
+      description={description}
+      type={type}
+      noindex={noindex}
+      image={image}
+      publishedTime={publishedTime}
+      alternate={alternate}
+    />
     {/* 移动端图标与 PWA 清单：BaseHead 之外补这两条，避免与字体/favicon 逻辑混在一起 */}
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
   </head>
   <body>
-    <a class="skip-link" href="#main">跳到主要内容</a>
-    <Header />
+    <a class="skip-link" href="#main">{t.skipLink}</a>
+    <Header switchHref={switchHref} />
     <main id="main" tabindex="-1" class="container">
       <slot />
     </main>

@@ -1,0 +1,20 @@
+---
+import TagDetail from '../../../templates/TagDetail.astro';
+import { getPublishedPosts } from '../../../lib/posts';
+import { groupByTag } from '../../../lib/tags';
+
+/* en 标签详情：只有被英文译文用到的标签；zh 对应页永远存在 */
+export async function getStaticPaths() {
+  const byTag = groupByTag(await getPublishedPosts('en'));
+  return [...byTag.entries()].map(([tag, posts]) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts,
+      lang: 'en' as const,
+      alternate: `/tags/${tag}/`,
+    },
+  }));
+}
+---
+<TagDetail {...Astro.props} />

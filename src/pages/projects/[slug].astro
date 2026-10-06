@@ -1,19 +1,21 @@
 ---
-import { getCollection, render } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Toc from '../../components/Toc.astro';
-import JsonLd from '../../components/JsonLd.astro';
-import { formatDate } from '../../lib/format';
-import { SITE, githubRepoUrl } from '../../lib/site';
+import { getCollection } from 'astro:content';
+import ProjectDetail from '../../templates/ProjectDetail.astro';
+import { getProjects } from '../../lib/projects';
 
+/* getStaticPaths 会被 Astro 提升到独立作用域，不能引用 frontmatter 顶层变量；lib 层导入可用 */
 export async function getStaticPaths() {
-  const projects = await getCollection('projects');
+  const projects = await getProjects('zh');
   /* 工具箱与项目库同名互链：详情页给出「工具箱：一键到仓库」外链，两栏不互为孤岛 */
   const toolboxUrlById = new Map((await getCollection('toolbox')).map((t) => [t.id, t.data.url]));
+  const enIds = new Set((await getCollection('projectsEn')).map((p) => p.id));
+  const postTitleById = new Map((await getCollection('posts')).map((p) => [p.id, p.data.title]));
   return projects.map((p) => ({
     params: { slug: p.id },
     props: {
       project: p,
+      lang: 'zh' as const,
+      alternate: enIds.has(p.id) ? `/en/projects/${p.id}/` : null,
       toolboxUrl: toolboxUrlById.get(p.id) ?? null,
       /* 同组其他项目：按 order 取前 3 个 */
       sameGroup: projects
@@ -21,102 +23,13 @@ export async function getStaticPaths() {
         .sort((a, b) => a.data.order - b.data.order)
         .slice(0, 3)
         .map((q) => ({ id: q.id, title: q.data.title })),
+      /* 相关博文：frontmatter 的 relatedPosts 存 post id，映射为 /blog/${id}/。
+         渲染前核对 id 确实存在于 posts 集合，写错的 id 直接跳过，避免生成死链。 */
+      relatedBlog: p.data.relatedPosts
+        .filter((id) => postTitleById.has(id))
+        .map((id) => ({ id, title: postTitleById.get(id)! })),
     },
   }));
 }
-const { project, toolboxUrl, sameGroup } = Astro.props;
-const { Content, headings } = await render(project);
-const { title, summary, group, date, metrics, links, relatedPosts, disclaimer } = project.data;
-/* 相关博文：frontmatter 的 relatedPosts 存 post id，映射为 /blog/${id}/。
-   渲染前核对 id 确实存在于 posts 集合，写错的 id 直接跳过，避免生成死链。 */
-const postTitleById = new Map((await getCollection('posts')).map((p) => [p.id, p.data.title]));
-const relatedBlog = relatedPosts
-  .filter((id) => postTitleById.has(id))
-  .map((id) => ({ id, title: postTitleById.get(id)! }));
-
-const pageUrl = new URL(Astro.url.pathname, SITE.url).toString();
-/* codeRepository 优先用 frontmatter 里登记的 GitHub 链接，缺失时按项目 id 推仓库地址 */
-const repoUrl = links.find((l) => l.url.includes('github.com'))?.url ?? githubRepoUrl(project.id);
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: title,
-  description: summary,
-  url: pageUrl,
-  codeRepository: repoUrl,
-  applicationCategory: 'BusinessApplication',
-  applicationSubCategory: group,
-  inLanguage: 'zh-CN',
-  author: { '@type': 'Person', name: SITE.author, url: new URL('/about/', SITE.url).toString() }
-};
-const breadcrumb = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: '首页', item: new URL('/', SITE.url).toString() },
-    { '@type': 'ListItem', position: 2, name: '项目', item: new URL('/projects/', SITE.url).toString() },
-    { '@type': 'ListItem', position: 3, name: title, item: pageUrl }
-  ]
-};
 ---
-<BaseLayout title={title} description={summary} type="article">
-  <div class="doc">
-    <article class="prose">
-      <p class="meta">{group} · {formatDate(date)}</p>
-      <h1>{title}</h1>
-      <p class="summary"><strong>{summary}</strong></p>
-
-      {metrics.length > 0 && (
-        <table>
-          <thead><tr><th>指标</th><th>数值</th><th>说明</th></tr></thead>
-          <tbody>
-            {metrics.map((m) => (
-              <tr><td>{m.label}</td><td><strong class="mono">{m.value}</strong></td><td>{m.detail ?? ''}</td></tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-
-      <Content />
-
-      {links.length > 0 && (
-        <p class="links">
-          {links.map((l) => <a href={l.url} target="_blank" rel="noopener noreferrer" aria-label={`${l.label}（在新窗口打开）`}>{l.label}</a>)}
-        </p>
-      )}
-      <p class="disclaimer">{disclaimer}</p>
-
-      {(sameGroup.length > 0 || toolboxUrl || relatedBlog.length > 0) && (
-        <div class="related">
-          <div class="sec-head"><h2>相关推荐</h2></div>
-          {sameGroup.length > 0 && (
-            <p>同组项目：{sameGroup.map((p, i) => (
-              <>{i > 0 && '、'}<a href={`/projects/${p.id}/`}>{p.title}</a></>
-            ))}</p>
-          )}
-          {toolboxUrl && (
-            <p>工具箱：<a href={toolboxUrl} target="_blank" rel="noopener noreferrer" aria-label="工具箱：一键到仓库（在新窗口打开）">一键到仓库</a></p>
-          )}
-          {relatedBlog.length > 0 && (
-            <p>相关博文：{relatedBlog.map((p, i) => (
-              <>{i > 0 && '、'}<a href={`/blog/${p.id}/`}>{p.title}</a></>
-            ))}</p>
-          )}
-        </div>
-      )}
-
-      <p><a href="/projects/">← 全部项目</a></p>
-    </article>
-    <Toc headings={headings} />
-  </div>
-  <JsonLd data={jsonLd} />
-  <JsonLd data={breadcrumb} />
-</BaseLayout>
-<style>
-  .meta { color: var(--text-muted); }
-  .links { display: flex; gap: 1rem; }
-  .disclaimer { color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 1rem; }
-  /* 相关推荐：沿用区块头语言，正文用普通段落 + 顿号分隔的链接列表 */
-  .related { margin-top: 2.5rem; }
-  .related p { margin: 0.7rem 0 0; }
-</style>
+<ProjectDetail {...Astro.props} />

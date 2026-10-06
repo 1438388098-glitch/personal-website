@@ -1,0 +1,40 @@
+---
+/* 标签索引模板：zh（/tags/）与 en（/en/tags/）共用。标签值是中文受控词表 ID，en 展示英文对照。 */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import type { Lang } from '../lib/i18n';
+import { strings, href, tagLabel } from '../lib/i18n';
+import { getPublishedPosts } from '../lib/posts';
+import { countTags } from '../lib/tags';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = strings(lang);
+const posts = await getPublishedPosts(lang);
+/* 计数与排序走 lib 层单源实现：多的在前，同级按拼音序 */
+const tags = countTags(posts);
+---
+<BaseLayout title={t.tags.title} description={t.tags.metaDescription} alternate={lang === 'zh' ? '/en/tags/' : '/tags/'}>
+  <h1>{t.tags.title}</h1>
+  <p class="intro">{t.tags.intro(tags.length, posts.length)}</p>
+  <ul class="cloud">
+    {tags.map(([tg, n]) => (
+      <li><a href={href(lang, `/tags/${tg}/`)}>{tagLabel(lang, tg)}<span class="count">{n}</span></a></li>
+    ))}
+  </ul>
+</BaseLayout>
+<style>
+  .intro { color: var(--text-muted); margin: 1.4rem 0 1.5rem; }
+  .cloud { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0; margin: 0; }
+  /* 标签 pill 直角化：v3 小方框语言 */
+  .cloud a {
+    /* 触控目标 ≥44px：撑高可点区域，字号与版式不动 */
+    display: inline-flex; align-items: center; min-height: 44px;
+    border: 1px solid var(--border);
+    padding: 0.25rem 0.8rem; color: var(--text); font-size: 0.9rem;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .cloud a:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
+  /* 计数：等宽数字与中文标签之间改用固定间距，不再靠字面空格。
+     等宽字的侧边距比正文宽，靠空格撑出来的缝会随字数浮动，同一行几枚 pill 节奏不一 */
+  .count { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); margin-left: 0.35em; }
+</style>

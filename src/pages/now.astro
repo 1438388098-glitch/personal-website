@@ -1,23 +1,5 @@
 ---
-import { getCollection, render } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { formatDate } from '../lib/format';
-
-// 单页：只渲染最新一期，月更后由新条目自然替换（历史期不上站）。
-const current = (await getCollection('now'))
-  .sort((a, b) => b.data.period.localeCompare(a.data.period))[0];
-if (!current) throw new Error('now 集合为空：src/content/now/ 需至少保留一期 .md');
-const { Content } = await render(current);
+/* Now 页薄壳：zh 留根路径 */
+import Now from '../templates/Now.astro';
 ---
-<BaseLayout title={`Now · ${current.data.period}`} description="此刻正在做的事：备考、构建、写作与待决，按月更新。" type="article" publishedTime={current.data.updated}>
-  <article class="prose">
-    <p class="meta">更新于 <span class="mono">{formatDate(current.data.updated)}</span></p>
-    <h1>Now · {current.data.period}</h1>
-    <Content />
-    <p class="see-also">我的背景与联系方式见<a href="/about/">关于</a>页。</p>
-  </article>
-</BaseLayout>
-<style>
-  .meta { color: var(--text-muted); }
-  .see-also { color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
-</style>
+<Now lang="zh" />

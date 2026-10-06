@@ -4,8 +4,13 @@ const GITHUB = 'https://github.com/1438388098-glitch';
 
 export const SITE = {
   title: '胡圣炜 · Stoic',
+  /** 英文语境下的站点名：en 首页 <title> 用它；BaseHead 借它判断「裸标题不拼后缀」 */
+  titleEn: 'HU Shengwei · Stoic',
   description:
     '胡圣炜（Stoic）：法学在读，业余造工具。法条检索、法考判分、司法评测，全部开源，数字可查。',
+  /** 英文版站点描述：en 页 meta/og/JSON-LD 的缺省描述 */
+  descriptionEn:
+    'HU Shengwei (Stoic): law student who builds tools on the side. Statute retrieval, bar-exam grading, judicial benchmarks: all open source, every number checkable.',
   url: ORIGIN,
   author: '胡圣炜',
   /** 站长拉丁转写：页头品牌行与中文并列（v3 设计语言） */
@@ -22,6 +27,7 @@ export const SITE = {
 export const SITE_PATHS = {
   ogImage: '/og-default.png',
   feed: '/feed.xml',
+  feedEn: '/en/feed.xml',
   sitemap: '/sitemap-index.xml',
   search: '/search/',
   searchIndex: '/search-index.json'
@@ -32,13 +38,3 @@ export const THEME_COLORS = { light: '#faf9f6', dark: '#151513' } as const;
 
 /** 站长的某个 GitHub 仓库地址 */
 export const githubRepoUrl = (name: string): string => `${GITHUB}/${name}`;
-
-export const NAV = [
-  { label: '项目', href: '/projects/' },
-  { label: '博客', href: '/blog/' },
-  { label: '法考', href: '/exam/' },
-  { label: '笔记', href: '/notes/' },
-  { label: 'Now', href: '/now/' },
-  { label: '工具箱', href: '/toolbox/' },
-  { label: '关于', href: '/about/' }
-] as const;

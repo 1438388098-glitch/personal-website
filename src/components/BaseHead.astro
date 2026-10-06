@@ -1,5 +1,6 @@
 ---
 import { SITE, SITE_PATHS, THEME_COLORS } from '../lib/site';
+import { langOf, strings } from '../lib/i18n';
 import { ClientRouter } from 'astro:transitions';
 import fontsCssUrl from '../styles/fonts.css?url';
 /* 首屏 preload：下面 8 个 woff2 是展示字族（--font-display，Noto Sans SC）在站内展示字重
@@ -7,7 +8,8 @@ import fontsCssUrl from '../styles/fonts.css?url';
    - 品牌名分片（57/112/113）：页头 .brand「胡圣炜」每页可见，故全站每页 preload；
      「胡」=112、「圣」=113、「炜」=57。
    - hero 分片（114/116/117/118/119）：被首页主标题「法学在读，业余造工具。」额外命中，
-     仅首页 preload，其余页面注入纯属浪费高优先级带宽。
+     仅中文首页 preload（/en/ 首页主标题是英文，走 Archivo，不需要 Noto 分片），
+     其余页面注入纯属浪费高优先级带宽。
    其余上百个分片不 preload，仍按需加载；正文 400/700 不 preload（非首屏关键路径）。
    维护提示：换首页 hero 站名或主标题文案时，必须同步重新计算并更新这组分片（步骤：读
    node_modules/@fontsource-variable/noto-sans-sc/wght.css 的 unicode-range，对新文案逐字求命中分片），
@@ -22,30 +24,42 @@ import fontNotoSans118 from '@fontsource-variable/noto-sans-sc/files/noto-sans-s
 import fontNotoSans119 from '@fontsource-variable/noto-sans-sc/files/noto-sans-sc-119-wght-normal.woff2?url';
 /* 品牌名分片：页头 .brand「胡圣炜」每页可见，全站每页 preload */
 const fontNotoBrandShards = [fontNotoSans57, fontNotoSans112, fontNotoSans113];
-/* hero 文案独有分片：仅首页 preload */
+/* hero 文案独有分片：仅中文首页 preload */
 const fontNotoHeroShards = [fontNotoSans114, fontNotoSans116, fontNotoSans117, fontNotoSans118, fontNotoSans119];
-interface Props { title: string; description?: string; type?: 'website' | 'article'; image?: string; noindex?: boolean; publishedTime?: Date; }
-const { title, description = SITE.description, type = 'website', image = SITE_PATHS.ogImage, noindex = false, publishedTime } = Astro.props;
-const pageTitle = title.includes(SITE.author) ? title : `${title} · ${SITE.title}`;
+interface Props { title: string; description?: string; type?: 'website' | 'article'; image?: string; noindex?: boolean; publishedTime?: Date; alternate?: string | null; }
+const { title, type = 'website', image = SITE_PATHS.ogImage, noindex = false, publishedTime, alternate = null } = Astro.props;
+/* 语言只从 URL 判；描述缺省值随语言切换（SITE 双语描述是唯一事实源） */
+const lang = langOf(Astro.url.pathname);
+const t = strings(lang);
+const description = Astro.props.description ?? (lang === 'en' ? SITE.descriptionEn : SITE.description);
+const bareTitle = title === SITE.title || title === SITE.titleEn;
+const siteTitle = lang === 'en' ? SITE.titleEn : SITE.title;
+const pageTitle = bareTitle ? title : `${title} · ${siteTitle}`;
 /* 域名单一事实源：astro.config.mjs 的 site 字段（经 Astro.site 注入） */
 const siteUrl = Astro.site ?? new URL(SITE.url);
 const ogImage = new URL(image, siteUrl);
 /* 尺寸只对已知的默认 og 图输出：自定义 image 尺寸未知，硬写 1200x630 会误导抓取器 */
 const isDefaultOgImage = image === SITE_PATHS.ogImage;
+/* hreflang 双向 + x-default（指向 zh 版）：只在两侧页面都真实存在时输出，
+   模板传 null（无对应页）就不发，避免把搜索引擎指到一个不存在的「译文」。 */
+const selfPath = Astro.url.pathname;
+const zhPath = lang === 'zh' ? selfPath : (alternate ?? '');
+const enPath = lang === 'en' ? selfPath : alternate;
 ---
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-<link rel="alternate" type="application/rss+xml" title={SITE.title} href={new URL(SITE_PATHS.feed, siteUrl)} />
+<link rel="alternate" type="application/rss+xml" title={SITE.title} href={new URL(t.feedPath, siteUrl)} />
 <link rel="sitemap" href={SITE_PATHS.sitemap} />
 <meta name="generator" content={Astro.generator} />
 <title>{pageTitle}</title>
 <meta name="description" content={description} />
 <meta name="author" content={SITE.author} />
-{noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={new URL(Astro.url.pathname, siteUrl)} />}
-<meta property="og:locale" content="zh_CN" />
+{noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={new URL(selfPath, siteUrl)} />}
+<meta property="og:locale" content={t.ogLocale} />
+{alternate && <meta property="og:locale:alternate" content={t.ogLocaleAlternate} />}
 <meta property="og:type" content={type} />
 <meta property="og:title" content={pageTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:url" content={new URL(Astro.url.pathname, siteUrl)} />
+<meta property="og:url" content={new URL(selfPath, siteUrl)} />
 <meta property="og:image" content={ogImage} />
 {isDefaultOgImage && <meta property="og:image:width" content="1200" />}
 {isDefaultOgImage && <meta property="og:image:height" content="630" />}
@@ -59,15 +73,18 @@ const isDefaultOgImage = image === SITE_PATHS.ogImage;
 <meta name="twitter:title" content={pageTitle} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
+{zhPath && <link rel="alternate" hreflang="zh-CN" href={new URL(zhPath, siteUrl)} />}
+{enPath && <link rel="alternate" hreflang="en" href={new URL(enPath, siteUrl)} />}
+{zhPath && <link rel="alternate" hreflang="x-default" href={new URL(zhPath, siteUrl)} />}
 {/* 首屏字体分片 preload：preload 的是 woff2 文件本身（不是 CSS），高优先级与 HTML 解析并行取回，
     字体 CSS 异步生效后立即可用，省去「CSS 生效后才按需发现分片」的串行等待。
     crossorigin 必须带：字体一律以 CORS 模式请求，缺了会二次下载。分片选择依据见 frontmatter 注释。
     品牌名分片（57/112/113）全站每页注入：页头 .brand「胡圣炜」每页可见；
-    hero 分片仅首页注入：其余页面几乎无人命中，却抢走高优先级带宽 */}
+    hero 分片仅中文首页注入：其余页面几乎无人命中，却抢走高优先级带宽 */}
 {fontNotoBrandShards.map((href) => (
   <link rel="preload" as="font" type="font/woff2" crossorigin href={href} />
 ))}
-{Astro.url.pathname === '/' && fontNotoHeroShards.map((href) => (
+{selfPath === '/' && fontNotoHeroShards.map((href) => (
   <link rel="preload" as="font" type="font/woff2" crossorigin href={href} />
 ))}
 {/* 字体声明非阻塞加载：print 样式不拦首绘，加载完翻转为 all；无 JS 环境由 noscript 兜底 */}
@@ -89,3 +106,25 @@ const isDefaultOgImage = image === SITE_PATHS.ogImage;
     document.addEventListener('astro:after-swap', applyTheme);
   })();
 </script>
+{/* 首访语言协商（只注入 zh 页）：浏览器语言是用户真实偏好，优先于 IP 地理信号。
+    只在无 cookie 且落在根路径时跳一次英文版；bot/Lighthouse 一律不跳，中文访客落 cookie 后不再协商。
+    服务器侧的 CF-IPCountry 兜底层见 docs/i18n-rollout.md，上线时由 nginx/Cloudflare 应用。 */}
+{lang === 'zh' && (
+  <script is:inline>
+    (function () {
+      try {
+        if (/bot|crawl|spider|slurp|preview|lighthouse/i.test(navigator.userAgent)) return;
+        if (/(?:^|;\s*)site-lang=/.test(document.cookie)) return;
+        var pref = String((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase();
+        if (pref.indexOf('zh') === 0) {
+          document.cookie = 'site-lang=zh;max-age=31536000;path=/;samesite=lax';
+          return;
+        }
+        if (pref.indexOf('en') === 0 && location.pathname === '/') {
+          document.cookie = 'site-lang=en;max-age=31536000;path=/;samesite=lax';
+          location.replace('/en/');
+        }
+      } catch (e) { /* 环境异常时保持 zh 页原样 */ }
+    })();
+  </script>
+)}

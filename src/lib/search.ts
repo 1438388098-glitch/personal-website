@@ -42,12 +42,31 @@ export function highlight(text: string, terms: string[]): string {
 }
 
 /** 取摘要：以首个命中词为锚点向前留 40 字，截 len 字；锚点靠后时以省略号表明前文被截。
-    返回纯文本（不含 HTML 标签），高亮由 highlight 在渲染层叠加。 */
+    返回纯文本（不含 HTML 标签），高亮由 highlight 在渲染层叠加。
+    纯 ASCII 词按词边界定位锚点（与 matchTerm 同语义），中文等其余词按子串。 */
 export function makeSnippet(text: string, terms: string[], len = 160): string {
   const first = (terms[0] ?? '').toLowerCase();
-  const i = first ? text.toLowerCase().indexOf(first) : -1;
+  let i = -1;
+  if (first) {
+    if (/^[a-z0-9]+$/i.test(first)) {
+      const m = new RegExp(`\\b${first.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').exec(text);
+      i = m ? m.index : -1;
+    } else {
+      i = text.toLowerCase().indexOf(first);
+    }
+  }
   const start = Math.max(0, (i < 0 ? 0 : i) - 40);
   return (start > 0 ? '…' : '') + text.slice(start, start + len) + (start + len < text.length ? '…' : '');
+}
+
+/** 词元匹配：中文（及含非词字符的词）按子串；纯 ASCII 词加词边界，
+    避免 art 命中 start 这类英文误召回。纯函数，客户端评分与测试共用。 */
+export function matchTerm(haystack: string, term: string): boolean {
+  if (/^[a-z0-9]+$/i.test(term)) {
+    const re = new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+    return re.test(haystack);
+  }
+  return haystack.includes(term);
 }
 
 /** 评分：标题 +10 / 标签 +5 / 描述 +3 / 正文 +1；多词时任一未命中即返回 null（AND 语义） */
@@ -59,10 +78,10 @@ export function scoreDoc(doc: SearchDoc, terms: string[]): number | null {
   let score = 0;
   for (const raw of terms) {
     const t = raw.toLowerCase();
-    const inTitle = title.includes(t);
-    const inDesc = desc.includes(t);
-    const inTags = tags.includes(t);
-    const inText = text.includes(t);
+    const inTitle = matchTerm(title, t);
+    const inDesc = matchTerm(desc, t);
+    const inTags = matchTerm(tags, t);
+    const inText = matchTerm(text, t);
     if (!inTitle && !inDesc && !inTags && !inText) return null;
     if (inTitle) score += 10;
     if (inDesc) score += 3;
