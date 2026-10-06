@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://iweistoicqc5.top/sitemap-index.xml

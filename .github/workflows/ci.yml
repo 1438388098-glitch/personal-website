@@ -39,3 +39,24 @@ jobs:
       - run: npm run check:secrets
       - run: npm run check:style
       - run: npm run check:content
+      # scripts/*.mjs 的 JSDoc 类型检查（tsconfig.scripts.json，无需构建产物）
+      - run: npm run check:scripts
+
+  # 只在定时任务触发：依赖漏洞雷达与外链探活都依赖外网，上游抖动不该阻塞 PR。
+  # continue-on-error 显式为 false（允许阻断），但因 job 仅 schedule 触发，PR/push 不受影响。
+  scheduled-audit:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check:audit
+      # check:extlinks 扫 dist 产物里的站外链接，需先构建
+      - run: npm run build
+      - run: npm run check:extlinks

@@ -2,7 +2,7 @@
 title: 拦住了广告，删不掉那格标签
 description: 摸包名、读日志、蹲 /proc 抓广告端点，用 RethinkDNS 把广告域名解析成 0.0.0.0；想删掉 App 里那格广告标签时，卡在加固壳和签名校验上。
 category: 技术笔记
-tags: [踩坑记, Android, 安全]
+tags: [踩坑记, 工程方法, 安全]
 pubDate: 2026-06-26
 ---
 

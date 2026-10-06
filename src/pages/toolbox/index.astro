@@ -1,17 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { buildSections } from '../../lib/sections';
 
 const tools = (await getCollection('toolbox')).sort((a, b) => a.data.name.localeCompare(b.data.name));
 const categories = [
   { name: '法律工具', en: 'Legal Tools' },
   { name: '工程小件', en: 'Utilities' }
 ] as const;
-/* 分区按页面顺序重编号（sec-head 的 01 递增只数非空分组），仅展示层推导 */
-const sections = categories
-  .map((c) => ({ ...c, items: tools.filter((t) => t.data.category === c.name) }))
-  .filter((s) => s.items.length > 0)
-  .map((s, i) => ({ ...s, no: String(i + 1).padStart(2, '0') }));
+/* 分区按页面顺序重编号（只数非空分组），过滤 + 重编号走 lib 层单源实现 */
+const sections = buildSections(tools, categories, (t) => t.data.category);
 ---
 <BaseLayout title="工具箱" description="工具箱是项目的可安装入口（仓库均公开可见）：点标题直达 GitHub 仓库；想看每个工具怎么做的、哪里失败过，去对应的项目案例页。">
   <h1>工具箱</h1>
@@ -25,7 +23,7 @@ const sections = categories
       <div class="grid">
         {s.items.map((t) => (
           <article class="card tool-card" id={t.id}>
-            <h3><a href={t.data.url} target="_blank" rel="noopener noreferrer">{t.data.name}</a></h3>
+            <h3><a href={t.data.url} target="_blank" rel="noopener noreferrer" aria-label={`${t.data.name}（在新窗口打开）`}>{t.data.name}</a></h3>
             <p class="desc">{t.data.description}</p>
             {t.data.related.length > 0 && (
               <p class="related">
@@ -40,10 +38,10 @@ const sections = categories
 </BaseLayout>
 <style>
   .intro { color: var(--text-muted); margin: 1rem 0 1.6rem; }
-  section { margin: 2.5rem 0; }
+  section { margin: var(--section-gap) 0; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
   .tool-card { padding: 1.1rem 1.3rem; }
-  h3 { margin: 0 0 0.4rem; font-size: 1.1rem; }
+  h3 { margin: 0 0 0.4rem; font-size: var(--fs-card-title); }
   /* 标题类链接：墨色常驻，hover 蓝下划线（与 ProjectCard 同语言） */
   h3 a { color: var(--text); }
   h3 a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--accent); }

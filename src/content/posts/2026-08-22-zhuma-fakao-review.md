@@ -2,7 +2,7 @@
 title: 我把竹马错题册做成了一本背诵笔记
 description: 搭建一条全自动流水线，把法考错题重组为可直接背诵的分科 PDF：带六维交叉审校与防静默报错守卫。
 category: 工程方法论
-tags: [法考, Agent, 工作流]
+tags: [法考, Agent, 工程方法]
 pubDate: 2026-08-22
 ---
 

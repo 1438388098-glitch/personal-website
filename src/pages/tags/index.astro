@@ -1,13 +1,11 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { isPublished } from '../../lib/publish';
+import { getPublishedPosts } from '../../lib/posts';
+import { countTags } from '../../lib/tags';
 
-const posts = await getCollection('posts', isPublished);
-const counts = new Map<string, number>();
-for (const p of posts) for (const t of p.data.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
-/* 多的在前，同级按拼音序，方便扫读也方便找 */
-const tags = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh'));
+const posts = await getPublishedPosts();
+/* 计数与排序走 lib 层单源实现：多的在前，同级按拼音序 */
+const tags = countTags(posts);
 ---
 <BaseLayout title="标签" description="全部文章按标签索引：点一个标签，看同一主题下写过什么。">
   <h1>标签</h1>
@@ -23,7 +21,9 @@ const tags = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeComp
   .cloud { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0; margin: 0; }
   /* 标签 pill 直角化：v3 小方框语言 */
   .cloud a {
-    display: inline-block; border: 1px solid var(--border);
+    /* 触控目标 ≥44px：撑高可点区域，字号与版式不动 */
+    display: inline-flex; align-items: center; min-height: 44px;
+    border: 1px solid var(--border);
     padding: 0.25rem 0.8rem; color: var(--text); font-size: 0.9rem;
     transition: color 0.15s ease, border-color 0.15s ease;
   }

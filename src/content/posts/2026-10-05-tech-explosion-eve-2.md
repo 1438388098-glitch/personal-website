@@ -2,7 +2,7 @@
 title: 站在技术爆炸前夜2：一年进度，五周做完
 description: Hinton、Bengio 等 22 位作者的新论文，把递归自我提升从直觉做成了算术：数百万影子研究员、r 值 1.2 到 1.9、一年进度压进五周，外加一份三步走的政策清单。
 category: 杂谈
-tags: [大模型, RSI, AI治理]
+tags: [大模型, RSI, AI监管]
 pubDate: 2026-10-05
 ---
 

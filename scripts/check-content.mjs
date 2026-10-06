@@ -1,3 +1,4 @@
+// @ts-check
 // 内容一致性门禁：文件名日期前缀必须等于 frontmatter 日期。
 // posts 校验 pubDate（定时发布机制由它驱动，slug 说谎比死链更伤可信度）；exam 校验 date。
 // notes 按 README 约定不吃日期前缀（存量 4 篇均为 slug 名），故只比对带前缀的文件，不强制前缀。
@@ -12,13 +13,18 @@ const rules = [
   { dir: 'src/content/notes', dateField: 'date', requirePrefix: false },
 ];
 
-/** 文件名前缀日期：YYYY-MM-DD-slug.md -> 'YYYY-MM-DD'；无前缀返回 null */
+/** 文件名前缀日期：YYYY-MM-DD-slug.md -> 'YYYY-MM-DD'；无前缀返回 null
+ * @param {string} filename
+ * @returns {string | null} */
 export function slugDate(filename) {
   const m = /^(\d{4}-\d{2}-\d{2})-/.exec(filename);
   return m ? m[1] : null;
 }
 
-/** 从 frontmatter 文本提取日期字段的 YYYY-MM-DD；引号包裹的日期同样识别 */
+/** 从 frontmatter 文本提取日期字段的 YYYY-MM-DD；引号包裹的日期同样识别
+ * @param {string} content
+ * @param {string} field
+ * @returns {string | null} */
 export function frontDate(content, field) {
   const m = new RegExp(`^${field}:\\s*["']?(\\d{4}-\\d{2}-\\d{2})`, 'm').exec(content);
   return m ? m[1] : null;
@@ -26,7 +32,11 @@ export function frontDate(content, field) {
 
 /** 对一组 {name, content} 跑一致性检查，返回违规说明列表。
     requirePrefix=true 时，.md 漏写 YYYY-MM-DD- 前缀直接判违规（不再静默跳过）；
-    非 .md（.gitkeep 等）一律忽略。 */
+    非 .md（.gitkeep 等）一律忽略。
+ * @param {{ name: string, content: string }[]} entries
+ * @param {string} dateField
+ * @param {boolean} [requirePrefix]
+ * @returns {string[]} */
 export function checkEntries(entries, dateField, requirePrefix = true) {
   const bad = [];
   for (const { name, content } of entries) {

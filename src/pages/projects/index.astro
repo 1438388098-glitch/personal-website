@@ -2,15 +2,13 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
+import { buildSections } from '../../lib/sections';
 
 const projects = (await getCollection('projects'))
   .sort((a, b) => a.data.order - b.data.order);
 const groups = ['法律主线', '法律工具', '工程侧证', '实验'] as const;
-/* 分区按页面顺序重编号（sec-head 的 01 递增只数非空分组），仅展示层推导 */
-const sections = groups
-  .map((g) => ({ name: g, items: projects.filter((p) => p.data.group === g) }))
-  .filter((s) => s.items.length > 0)
-  .map((s, i) => ({ ...s, no: String(i + 1).padStart(2, '0') }));
+/* 分区按页面顺序重编号（只数非空分组），过滤 + 重编号走 lib 层单源实现 */
+const sections = buildSections(projects, groups, (p) => p.data.group);
 ---
 <BaseLayout title="项目" description="法律 AI 与工程小件的全量项目清单：每个项目都有边界、机制与可验证的事实。本页讲项目的边界与机制，想要仓库入口去工具箱。">
   <h1>项目</h1>
@@ -33,43 +31,9 @@ const sections = groups
   ))}
 
 <script>
-  /* astro:page-load 首次加载与每次换页后都触发：与博客页分类 tab 同理，顶层绑定会在返回本页后失灵 */
-  document.addEventListener('astro:page-load', () => {
-    const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.tab'));
-    const sections = Array.from(document.querySelectorAll<HTMLElement>('section[data-group]'));
-
-    const select = (group: string) => {
-      tabs.forEach((t) => t.setAttribute('aria-pressed', String(t.dataset.group === group)));
-      /* 可见分区动态重排编号（01 递增），并用全站同款缓动重放淡入；reduced-motion 下 CSS 层直接不播 */
-      let visibleIndex = 0;
-      sections.forEach((s) => {
-        const show = group === '全部' || s.dataset.group === group;
-        s.hidden = !show;
-        if (show) {
-          visibleIndex += 1;
-          const no = s.querySelector<HTMLElement>('.sec-no');
-          if (no) no.textContent = String(visibleIndex).padStart(2, '0');
-          s.classList.remove('section-enter');
-          void s.offsetWidth;
-          s.style.animationDelay = `${(visibleIndex - 1) * 60}ms`;
-          s.classList.add('section-enter');
-        }
-      });
-      /* 浏览器会把非 ASCII fragment 百分号编码，写入用原中文，读取先解码（与博客页一致） */
-      history.replaceState(null, '', group === '全部' ? location.pathname : `#${group}`);
-    };
-
-    tabs.forEach((t) => t.addEventListener('click', () => select(t.dataset.group ?? '全部')));
-
-    let hash = location.hash;
-    try {
-      hash = decodeURIComponent(hash);
-    } catch {
-      /* 畸形百分号序列保持原值，不影响页面其余交互 */
-    }
-    const fromHash = tabs.map((t) => t.dataset.group).find((g) => g && hash === `#${g}`);
-    if (fromHash) select(fromHash);
-  });
+  /* 分组筛选的公共行为（含可见分区重编号、淡入重放、深链）抽在 src/scripts/tabs.ts */
+  import { initTabs } from '../../scripts/tabs';
+  initTabs({ tabAttr: 'group', sectionAttr: 'group' });
 </script>
 <style>
   /* 分组子 tab：与博客页分类 tab 同语言（直角方框，选中墨底反白） */
@@ -79,13 +43,15 @@ const sections = groups
     color: var(--text); background: var(--surface);
     border: 1px solid var(--border); border-radius: 0;
     padding: 0.3rem 0.85rem;
+    /* 触控目标 ≥44px：撑高可点区域，字号与版式不动 */
+    display: inline-flex; align-items: center; min-height: 44px;
     transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   }
   .tab:hover { border-color: var(--accent); color: var(--accent); }
   .tab[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
   .tab[aria-pressed='true'] .count { color: var(--bg); opacity: 0.75; }
   .count { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); }
-  section { margin: 2.5rem 0; }
+  section { margin: var(--section-gap) 0; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
   /* tab 切换重放入场：一次性 transform/opacity，与全站 fade-up 同曲线；reduce 时不播 */
   @media (prefers-reduced-motion: no-preference) {

@@ -2,7 +2,9 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Toc from '../../components/Toc.astro';
+import JsonLd from '../../components/JsonLd.astro';
 import { formatDate } from '../../lib/format';
+import { SITE, githubRepoUrl } from '../../lib/site';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -31,6 +33,31 @@ const postTitleById = new Map((await getCollection('posts')).map((p) => [p.id, p
 const relatedBlog = relatedPosts
   .filter((id) => postTitleById.has(id))
   .map((id) => ({ id, title: postTitleById.get(id)! }));
+
+const pageUrl = new URL(Astro.url.pathname, SITE.url).toString();
+/* codeRepository 优先用 frontmatter 里登记的 GitHub 链接，缺失时按项目 id 推仓库地址 */
+const repoUrl = links.find((l) => l.url.includes('github.com'))?.url ?? githubRepoUrl(project.id);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: title,
+  description: summary,
+  url: pageUrl,
+  codeRepository: repoUrl,
+  applicationCategory: 'BusinessApplication',
+  applicationSubCategory: group,
+  inLanguage: 'zh-CN',
+  author: { '@type': 'Person', name: SITE.author, url: new URL('/about/', SITE.url).toString() }
+};
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: new URL('/', SITE.url).toString() },
+    { '@type': 'ListItem', position: 2, name: '项目', item: new URL('/projects/', SITE.url).toString() },
+    { '@type': 'ListItem', position: 3, name: title, item: pageUrl }
+  ]
+};
 ---
 <BaseLayout title={title} description={summary} type="article">
   <div class="doc">
@@ -54,7 +81,7 @@ const relatedBlog = relatedPosts
 
       {links.length > 0 && (
         <p class="links">
-          {links.map((l) => <a href={l.url} target="_blank" rel="noopener noreferrer">{l.label}</a>)}
+          {links.map((l) => <a href={l.url} target="_blank" rel="noopener noreferrer" aria-label={`${l.label}（在新窗口打开）`}>{l.label}</a>)}
         </p>
       )}
       <p class="disclaimer">{disclaimer}</p>
@@ -68,7 +95,7 @@ const relatedBlog = relatedPosts
             ))}</p>
           )}
           {toolboxUrl && (
-            <p>工具箱：<a href={toolboxUrl} target="_blank" rel="noopener noreferrer">一键到仓库</a></p>
+            <p>工具箱：<a href={toolboxUrl} target="_blank" rel="noopener noreferrer" aria-label="工具箱：一键到仓库（在新窗口打开）">一键到仓库</a></p>
           )}
           {relatedBlog.length > 0 && (
             <p>相关博文：{relatedBlog.map((p, i) => (
@@ -82,6 +109,8 @@ const relatedBlog = relatedPosts
     </article>
     <Toc headings={headings} />
   </div>
+  <JsonLd data={jsonLd} />
+  <JsonLd data={breadcrumb} />
 </BaseLayout>
 <style>
   .meta { color: var(--text-muted); }

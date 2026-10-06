@@ -1,0 +1,12 @@
+---
+/* 结构化数据出口：统一走这里，把序列化与「< 转义」集中一处。
+   直接把对象 data 交给组件，或用 json 传入已序列化字符串；两者必给其一。
+   转义复用 lib/search 的 jsonForScript（< → \u003c），防止正文含 </script> 时提前闭合脚本标签。 */
+import { jsonForScript } from '../lib/search';
+interface Props { data?: unknown; json?: string; }
+const { data, json } = Astro.props;
+/* 两个 prop 都缺时不发脚本：jsonForScript(undefined) 会在构建期抛
+   Cannot read properties of undefined，这里返回 null 让它静默跳过。 */
+const payload = json != null ? json : data != null ? jsonForScript(data) : null;
+---
+{payload && <script is:inline type="application/ld+json" set:html={payload} />}

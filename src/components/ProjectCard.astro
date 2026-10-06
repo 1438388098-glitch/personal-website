@@ -9,7 +9,7 @@ const repo = links.find((l) => l.url.includes('github.com'));
 ---
 <article class="card project-card">
   {index !== undefined && <span class="idx mono" aria-hidden="true">{String(index).padStart(2, '0')}</span>}
-  <p class="meta">{group} · {formatDate(date)}{repo && <> · <a class="repo" href={repo.url} target="_blank" rel="noopener noreferrer">仓库 ↗</a></>}</p>
+  <p class="meta">{group} · {formatDate(date)}{repo && <> · <a class="repo" href={repo.url} target="_blank" rel="noopener noreferrer" aria-label="仓库（在新窗口打开）">仓库</a></>}</p>
   <h3><a href={`/projects/${project.id}/`}>{title}</a></h3>
   <p class="summary">{summary}</p>
   {showMetrics && metrics.length > 0 && (
@@ -39,7 +39,7 @@ const repo = links.find((l) => l.url.includes('github.com'));
   /* 仓库外链：与 meta 同字号，hover 转强调蓝（与全站外链语言一致） */
   .repo { color: var(--text-muted); white-space: nowrap; }
   .repo:hover { color: var(--accent); }
-  h3 { margin: 0 0 0.5rem; font-size: 1.22rem; }
+  h3 { margin: 0 0 0.5rem; font-size: var(--fs-card-title); }
   h3 a { color: var(--text); }
   h3 a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; text-decoration-color: var(--accent); }
   .summary { color: var(--text-muted); margin: 0 0 0.75rem; }

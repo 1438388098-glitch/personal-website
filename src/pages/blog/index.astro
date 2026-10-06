@@ -1,12 +1,10 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
-import { byDateDesc } from '../../lib/sort';
-import { isPublished } from '../../lib/publish';
+import { getPublishedPosts } from '../../lib/posts';
 import { POST_CATEGORIES } from '../../lib/categories';
 
-const posts = (await getCollection('posts', isPublished)).sort(byDateDesc((p) => p.data.pubDate));
+const posts = await getPublishedPosts();
 const categories = POST_CATEGORIES;
 const countOf = (c: string) => posts.filter((p) => p.data.category === c).length;
 ---
@@ -48,6 +46,8 @@ const countOf = (c: string) => posts.filter((p) => p.data.category === c).length
     color: var(--text); background: var(--surface);
     border: 1px solid var(--border); border-radius: 0;
     padding: 0.3rem 0.85rem;
+    /* 触控目标 ≥44px：撑高可点区域，字号与版式不动 */
+    display: inline-flex; align-items: center; min-height: 44px;
     transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   }
   .tab:hover { border-color: var(--accent); color: var(--accent); }
@@ -55,46 +55,14 @@ const countOf = (c: string) => posts.filter((p) => p.data.category === c).length
   .tab[aria-pressed='true'] .count { color: var(--bg); opacity: 0.75; }
   /* 计数与中文分类之间用固定间距，不靠字面空格（等宽字侧边距宽，缝会随字数浮动） */
   .count { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); margin-left: 0.35em; }
-  section { margin: 3rem 0; }
+  section { margin: var(--section-gap) 0; }
   section > h2 { font-size: 1.3rem; }
   .essay-note, .empty-note { color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
   .empty-note { border-top: none; padding-top: 0; }
 </style>
 <script>
-  /* astro:page-load 首次加载与每次换页后都触发：ClientRouter 换页会替换 DOM，
-     打包脚本整个会话只执行一次，绑定放顶层会让返回本页后的筛选全部失灵 */
-  document.addEventListener('astro:page-load', () => {
-    const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.tab'));
-    const sections = Array.from(document.querySelectorAll<HTMLElement>('section[data-category]'));
-    const allView = document.querySelector<HTMLElement>('[data-view="all"]');
-    const essayNote = document.querySelector<HTMLElement>('[data-note]');
-    const emptyNote = document.querySelector<HTMLElement>('[data-empty-note]');
-
-    const select = (cat: string) => {
-      tabs.forEach((t) => t.setAttribute('aria-pressed', String(t.dataset.cat === cat)));
-      const isAll = cat === '全部';
-      /* 空分类在构建期就带上 data-empty，选中的若是空分类则藏起板块、只显示占位文案 */
-      const empty = !isAll && sections.some((s) => s.dataset.category === cat && s.dataset.empty === 'true');
-      if (allView) allView.hidden = !isAll;
-      sections.forEach((s) => {
-        s.hidden = isAll || s.dataset.category !== cat || empty;
-      });
-      if (emptyNote) emptyNote.hidden = !empty;
-      if (essayNote) essayNote.hidden = !isAll;
-      history.replaceState(null, '', isAll ? location.pathname : `#${cat}`);
-    };
-
-    tabs.forEach((t) => t.addEventListener('click', () => select(t.dataset.cat ?? '全部')));
-
-    /* 浏览器会把非 ASCII fragment 百分号编码，比较前先解码，中文 hash 深链才能命中 */
-    let hash = location.hash;
-    try {
-      hash = decodeURIComponent(hash);
-    } catch {
-      /* 畸形百分号序列保持原值，不影响页面其余交互 */
-    }
-    const fromHash = tabs.map((t) => t.dataset.cat).find((c) => c && hash === `#${c}`);
-    if (fromHash) select(fromHash);
-  });
+  /* 分类筛选的公共行为（含可访问性、深链、平铺/分板块切换）抽在 src/scripts/tabs.ts */
+  import { initTabs } from '../../scripts/tabs';
+  initTabs({ tabAttr: 'cat', sectionAttr: 'category' });
 </script>
 </BaseLayout>

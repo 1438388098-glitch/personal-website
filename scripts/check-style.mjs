@@ -1,3 +1,4 @@
+// @ts-check
 // 扫描站内文案的文风红线：破折号（——）、工程黑话禁词、「不是A而是B」句式堆叠。命中即失败。
 // 豁免：src/content/notes 是定稿论文笔记，体例单独约定不进本扫描；
 //      《书名号》整段剥除后再扫（论文标题等引用自带原文用词，如标题含「赋能」）。
@@ -9,6 +10,7 @@ const roots = ['src/content', 'src/pages', 'src/components', 'src/layouts'];
 const exts = new Set(['.md', '.mdx', '.astro']);
 const exemptDirs = new Set(['src/content/notes']);
 
+/** @type {[RegExp, string][]} */
 const hardPatterns = [
   [/——+/g, '破折号（——）：改冒号、逗号或句号（单个连接号 — 不拦）'],
   [/闭环/g, '工程黑话「闭环」：改「流程」「走完」等平实说法'],
@@ -23,8 +25,12 @@ const hardPatterns = [
 const stackPattern = /不是[^。\n]{1,24}(，而是|而是|，是)/g;
 const STACK_LIMIT = 1;
 
-/** 对一段文本跑文风红线，返回违规列表（line + label + snippet）。纯函数，gates 测试消费。 */
+/** 对一段文本跑文风红线，返回违规列表（line + label + snippet）。纯函数，gates 测试消费。
+ * @param {string} rawContent
+ * @param {boolean} isMd
+ * @returns {{ line: number, label: string, snippet?: string }[]} */
 export function scanStyle(rawContent, isMd) {
+  /** @type {{ line: number, label: string, snippet?: string }[]} */
   const issues = [];
   /* frontmatter 体例：.md 首行必须是标准三连字符（六连字符等变体会破坏按行解析的脚本；兼容 CRLF） */
   if (isMd && rawContent.split(/\r?\n/, 1)[0] !== '---') {
@@ -50,7 +56,9 @@ export function scanStyle(rawContent, isMd) {
 }
 
 function main() {
+  /** @type {string[]} */
   const files = [];
+  /** @param {string} dir */
   function walk(dir) {
     if (exemptDirs.has(dir.replace(/\\/g, '/'))) return;
     for (const name of readdirSync(dir)) {

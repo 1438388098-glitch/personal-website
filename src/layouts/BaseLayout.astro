@@ -12,6 +12,9 @@ const { title, description, type, noindex, image, publishedTime } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <BaseHead title={title} description={description} type={type} noindex={noindex} image={image} publishedTime={publishedTime} />
+    {/* 移动端图标与 PWA 清单：BaseHead 之外补这两条，避免与字体/favicon 逻辑混在一起 */}
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
   </head>
   <body>
     <a class="skip-link" href="#main">跳到主要内容</a>

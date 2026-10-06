@@ -1,14 +1,10 @@
 /* 自托管字体（OFL 协议）：v3 设计体系，全部无衬线。
-   正文与标题：Archivo（西文展示/标签，400/500/600/700/800）+ Noto Sans SC（中文，400 正文 / 700 加粗 / 900 展示标题）。
+   正文与标题：Archivo Variable（西文展示/标签，wght 100–900）+ Noto Sans SC Variable（中文同）。
    数字与日期：Space Mono（设计位专用，等宽数字；代码块仍走系统等宽栈保证可读性）。
+   用可变字体（wght 轴单文件）而非静态多档：同一 unicode-range 切片只需下载一次，
+   不再为 400/700/900 各带一份 @font-face —— 静态三档的字体声明约 334KB，可变版约 103KB。
    unicode-range 切片按需下载。本文件经 BaseHead 以非阻塞方式加载（media=print + onload 翻转）。 */
-@import '@fontsource/archivo/400.css';
-@import '@fontsource/archivo/500.css';
-@import '@fontsource/archivo/600.css';
-@import '@fontsource/archivo/700.css';
-@import '@fontsource/archivo/800.css';
-@import '@fontsource/noto-sans-sc/400.css';
-@import '@fontsource/noto-sans-sc/700.css';
-@import '@fontsource/noto-sans-sc/900.css';
+@import '@fontsource-variable/archivo/wght.css';
+@import '@fontsource-variable/noto-sans-sc/wght.css';
 @import '@fontsource/space-mono/400.css';
 @import '@fontsource/space-mono/700.css';

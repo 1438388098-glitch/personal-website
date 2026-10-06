@@ -2,6 +2,12 @@
    蓝色只出现在小元素上（小方块、编号、hover 指示、链接），不用于大面积铺色；
    层级靠字重与留白，不用彩色侧条；全站直角（无圆角、无噪点纹理）。
    呼应语境：图纸感网格 + 高对比黑白 + 数据等宽字。 */
+
+/* 断点登记（全站只有三档，新增/改动一律就近归并到这三档，不要再引入第四档）：
+   - 480px  窄手机：收英文对照、缩几何构成等单列下的挤缩处理
+   - 720px  手机 / 窄平板：单列栅格、表格横向滚动、页头换行
+   - 960px  平板 / 窄桌面：详情页收目录、首屏两栏并作单栏、页头收起搜索框
+   历史值 560→480、860→960、900→960 已归并。 */
 :root {
   --bg: #faf9f6;
   --bg-soft: #f1efe8;
@@ -24,6 +30,11 @@
   /* 亮色块自带对比，收边线透明；暗色块与页底相近，靠上下细线立住边界 */
   --band-line: transparent;
   --maxw: 72rem;
+  /* 卡片标题统一字号：列表行 / 项目卡 / 工具箱卡 / 栏目入口卡共用一档，
+     原先 1.08 / 1.1 / 1.15 / 1.22rem 四档并存，同一视觉层级却四种大小 */
+  --fs-card-title: 1.15rem;
+  /* 区块（section）统一垂直间距：原先 2.5 / 3 / 3.5 / 4.5rem 四种 */
+  --section-gap: 3.5rem;
   /* 展示字族：Archivo 管西文与数字展示位，思源黑体管中文；正文同族小字重 */
   --font-display: 'Archivo', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   --font-mono: 'Space Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
@@ -67,6 +78,15 @@ body {
 }
 a { color: var(--accent); text-decoration: none; transition: color 0.15s ease; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* 外链统一标识：新窗口箭头由 CSS 生成，链接自身用 aria-label 说明「在新窗口打开」。
+   aria-label 会覆盖可访问名，屏幕阅读器读到的是完整说明，不会把 ↗ 念成「右上箭头」；
+   链接可见文本里的手写 ↗ 一律删掉，避免出现两个箭头。 */
+a[target='_blank']::after {
+  content: ' ↗';
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  opacity: 0.75;
+}
 img { max-width: 100%; height: auto; }
 h1, h2, h3 { font-family: var(--font-display); line-height: 1.25; letter-spacing: 0; }
 /* 展示标题：超大字重（900/800）撑层级，负字距只给 h1 */
@@ -126,7 +146,7 @@ h3 { font-weight: 700; }
    用 margin-left:auto 而不是 justify-content:space-between —— 后者会把编号和标题也一起摊开 */
 .sec-head a { white-space: nowrap; margin-left: auto; }
 /* 窄屏收起英文对照：区块头保持单行节奏 */
-@media (max-width: 560px) {
+@media (max-width: 480px) {
   .sec-en { display: none; }
 }
 .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
@@ -229,4 +249,60 @@ html[data-theme='dark'] .astro-code span {
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ---- 打印样式：about 是简历页，优先保证它整页可读、可另存 PDF ----
+   隐藏导航性 / 交互性元素，去掉反色通栏与负 margin 通栏，正文纯黑，
+   正文区链接在文字后展开 URL（导航、页脚、区块头「更多」与锚链不展开）。 */
+@media print {
+  /* 打印一律走浅色：暗色主题的 --text 是近白，直接打在白纸上不可读。
+     在打印上下文里重置整套令牌，正文与边框都回到黑/灰。 */
+  :root,
+  html[data-theme='dark'] {
+    --bg: #fff; --bg-soft: #f2f2f2; --surface: #fff;
+    --ink: #000; --text: #000; --text-muted: #333;
+    --accent: #000; --border: #999; --border-strong: #000; --code-bg: #f2f2f2;
+    --band-bg: #fff; --band-fg: #000; --band-mark: #000; --band-line: #999;
+    --shadow-card: none;
+  }
+  html { color-scheme: light; }
+
+  .site-header,
+  .site-footer,
+  .skip-link,
+  .tabs,
+  .toc,
+  #theme-toggle,
+  .header-search,
+  .btn,
+  .band::before,
+  .band::after { display: none !important; }
+
+  body { background: #fff; color: #000; }
+  a { color: #000; }
+
+  /* 目录隐藏后右栏空置，详情页回到单栏正文 */
+  .doc { grid-template-columns: minmax(0, 68ch); }
+
+  /* 反色块回归普通文字块：不反色、不通栏（负 margin 在纸张上会溢出可印区域） */
+  .band {
+    background: none !important; color: #000 !important;
+    margin-left: 0 !important; margin-right: 0 !important; border-block: 0;
+  }
+  .band-inner { padding-inline: 0; }
+  .band-text, .band-figures { opacity: 1; }
+  .band .label, .band .sec-en { color: #000; opacity: 1; }
+
+  /* 卡片边框在纸上是多余装饰，淡化为分隔线 */
+  .card { border-color: #999; box-shadow: none; }
+
+  /* 正文区链接展开真实地址；排在最后以压过上面的外链 ↗ 规则 */
+  main a[href]:not([href^='#']):not(.btn)::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em; color: #444; word-break: break-all;
+  }
+  /* 区块头「更多」、上下篇导航、页脚式链接不展开，避免噪声 */
+  main .sec-head a::after,
+  main .adjacent a::after,
+  main .tag-row a::after { content: none !important; }
 }

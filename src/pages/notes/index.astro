@@ -3,20 +3,19 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatDate } from '../../lib/format';
 import { byDateDesc } from '../../lib/sort';
+import { isVisible } from '../../lib/publish';
+import { buildSections } from '../../lib/sections';
 import EntryCard from '../../components/EntryCard.astro';
 
-const notes = (await getCollection('notes', (n) => !n.data.draft))
+const notes = (await getCollection('notes', isVisible))
   .sort(byDateDesc((n) => n.data.date));
 const categories = [
   { name: '课程论文', en: 'Course Papers' },
   { name: '文献研读', en: 'Readings' },
   { name: '读书笔记', en: 'Book Notes' }
 ] as const;
-/* 分区按页面顺序重编号（sec-head 的 01 递增只数非空分组），仅展示层推导 */
-const sections = categories
-  .map((c) => ({ ...c, items: notes.filter((n) => n.data.category === c.name) }))
-  .filter((s) => s.items.length > 0)
-  .map((s, i) => ({ ...s, no: String(i + 1).padStart(2, '0') }));
+/* 分区按页面顺序重编号（只数非空分组），过滤 + 重编号走 lib 层单源实现 */
+const sections = buildSections(notes, categories, (n) => n.data.category);
 ---
 <BaseLayout title="论文与研读" description="课程论文的存档索引与文献研读清单：论文全文不上站，条目记录研究问题、论点与关键材料。">
   <h1>论文与研读</h1>
@@ -38,5 +37,5 @@ const sections = categories
   ))}
 </BaseLayout>
 <style>
-  section { margin: 2.5rem 0; }
+  section { margin: var(--section-gap) 0; }
 </style>

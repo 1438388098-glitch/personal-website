@@ -1,70 +1,70 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { isPublished } from '../lib/publish';
 import { jsonForScript } from '../lib/search';
+import { SITE_PATHS } from '../lib/site';
 
-/* 正文压成纯文本：剥代码块、图片、链接语法与行内标记，限长避免索引虚胖 */
-const toText = (md: string | undefined) =>
-  (md ?? '')
-    .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/`([^`]*)`/g, '$1')
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-    .replace(/^#{1,6}\s+/gm, '')
-    .replace(/^>\s?/gm, '')
-    .replace(/[*_]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    /* snippet 只展示正负 200 字，4 千字外的正文命中价值极低：cap 控制内嵌索引体积 */
-    .slice(0, 4000);
-
-const docs = [
-  ...(await getCollection('posts', isPublished)).map((p) => ({
-    url: `/blog/${p.id}/`, title: p.data.title, description: p.data.description, tags: p.data.tags, text: toText(p.body), kind: '博客',
-  })),
-  ...(await getCollection('exam', (e) => !e.data.draft)).map((e) => ({
-    url: `/exam/${e.id}/`, title: e.data.title, description: e.data.description, tags: [] as string[], text: toText(e.body), kind: '法考',
-  })),
-  ...(await getCollection('notes', (n) => !n.data.draft)).map((n) => ({
-    url: `/notes/${n.id}/`, title: n.data.title, description: n.data.description, tags: [] as string[], text: toText(n.body), kind: '笔记',
-  })),
-  ...((await getCollection('projects')).sort((a, b) => a.data.order - b.data.order)).map((p) => ({
-    url: `/projects/${p.id}/`, title: p.data.title, description: p.data.summary, tags: [p.data.group], text: p.data.summary, kind: '项目',
-  })),
-  ...(await getCollection('toolbox')).map((t) => ({
-    url: `/toolbox/#${t.id}`, title: t.data.name, description: t.data.description, tags: [t.data.category], text: t.data.description, kind: '工具',
-  })),
-];
+/* 索引不再内嵌：装配逻辑在 src/lib/search-docs.ts，由端点 /search-index.json 提供，
+   客户端首次输入时 fetch。此处仅把端点地址安全地传给客户端脚本。 */
 ---
 <BaseLayout title="搜索" description="站内搜索：在已发布的博客、法考实录、研读笔记、项目案例与工具箱里找关键词。" noindex>
   <h1>搜索</h1>
-  <p class="intro">{docs.length} 条内容，找关键词直达。</p>
+  <p class="intro" id="intro">在已发布的博客、法考实录、研读笔记、项目案例与工具箱里找关键词。</p>
   <noscript><p class="noscript">搜索需要启用 JavaScript；也可以改用无需脚本的<a href="/tags/">标签索引</a>。</p></noscript>
   <div class="searchbox">
     <input id="q" type="search" placeholder="试试：幻觉、错题、竞业限制…" autocomplete="off" aria-label="搜索关键词" />
     <p class="count" id="count" aria-live="polite"></p>
   </div>
   <ul id="results"></ul>
-  <script type="application/json" id="search-data" set:html={jsonForScript(docs)} />
+  <script type="application/json" id="search-config" set:html={jsonForScript({ index: SITE_PATHS.searchIndex })} />
 <script>
   import { escapeHtml, highlight, makeSnippet, scoreDoc } from '../lib/search';
 
-  /* astro:page-load 首次加载与每次换页后都触发：与博客页 tabs 同理，顶层绑定会在返回本页后失灵 */
+  type Doc = { url: string; title: string; description: string; tags: string[]; text: string; kind: string };
+
+  /* astro:page-load 首次加载与每次换页后都触发：与博客页 tabs 同理，顶层绑定会在返回本页后失灵。
+     索引改为按需 fetch：模块级缓存与 fetch 失败兜底都放在本回调内，换页重入时重新装配和加载。
+     换到非搜索页时 #search-config 不存在，若继续往下会 JSON.parse(null) 抛未捕获异常，故先守卫返回。 */
   document.addEventListener('astro:page-load', () => {
-  const DATA: { url: string; title: string; description: string; tags: string[]; text: string; kind: string }[] = JSON.parse(
-    document.getElementById('search-data')!.textContent!
-  );
-  const input = document.getElementById('q') as HTMLInputElement;
+  const config = document.getElementById('search-config');
+  if (!config) return; /* 非搜索页：不碰任何元素，也不重复绑定 */
+  const input = document.getElementById('q') as HTMLInputElement | null;
+  if (!input) return; /* 防御：结构变动时同样不发散 */
   const list = document.getElementById('results')!;
   const count = document.getElementById('count')!;
+  const intro = document.getElementById('intro');
+  const indexUrl = (JSON.parse(config.textContent!) as { index: string }).index;
 
-  const run = () => {
+  let dataPromise: Promise<Doc[]> | null = null;
+  /* 每次输入自增：fetch 是异步的，旧请求返回时不得覆盖新一轮结果 */
+  let runId = 0;
+
+  const load = async (): Promise<Doc[]> => {
+    const res = await fetch(indexUrl, { headers: { accept: 'application/json' } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const docs = (await res.json()) as Doc[];
+    if (intro) intro.textContent = `${docs.length} 条内容，找关键词直达。`;
+    return docs;
+  };
+  const ensureData = () => (dataPromise ??= load());
+
+  const run = async () => {
+    const id = ++runId;
     const raw = input.value.trim();
     list.innerHTML = '';
     if (!raw) { count.textContent = ''; return; }
     const terms = raw.split(/\s+/);
-    const hits = DATA
+    let data: Doc[];
+    try {
+      data = await ensureData();
+    } catch {
+      dataPromise = null; /* 失败不缓存，下一次输入可重试 */
+      if (id !== runId) return;
+      count.textContent = '';
+      list.innerHTML = '<li class="err">索引加载失败，请检查网络后重试。</li>';
+      return;
+    }
+    if (id !== runId) return;
+    const hits = data
       .map((d) => {
         const score = scoreDoc(d, terms);
         return score === null ? null : { ...d, score };
@@ -83,16 +83,21 @@ const docs = [
     }).join('');
   };
 
-  let timer: ReturnType<typeof setTimeout>;
-  input.addEventListener('input', () => {
-    clearTimeout(timer);
-    timer = setTimeout(run, 150);
-  });
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { clearTimeout(timer); run(); }
-  });
+  /* 元素级监听收敛为「每个页面实例只绑一次」：在 input 上打 data-search-bound 标记。
+     重回本页会换到新的 input 元素，标记随之消失后再绑一次，不会叠加；同一元素重复触发则跳过。 */
+  if (!input.dataset.searchBound) {
+    input.dataset.searchBound = '1';
+    let timer: ReturnType<typeof setTimeout>;
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(run, 150);
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { clearTimeout(timer); run(); }
+    });
+  }
 
-  /* 页头迷你搜索框以 GET /search/?q= 提交：落地后带词出结果 */
+  /* 页头迷你搜索框以 GET /search/?q= 提交：落地后带词出结果（索引按需 fetch 完成后再跑） */
   const initial = new URLSearchParams(location.search).get('q');
   if (initial) {
     input.value = initial;
@@ -132,6 +137,8 @@ const docs = [
   #results :global(li a) { color: var(--text); font-weight: 700; font-size: 1.05rem; }
   #results :global(li a:hover) { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--accent); }
   #results :global(.snippet) { margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.95rem; }
+  /* 索引 fetch 失败时的兜底提示 */
+  #results :global(li.err) { color: var(--text-muted); }
   /* 命中词高亮：强调蓝低饱和底，明暗两模式都够对比 */
   #results :global(mark) { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--text); padding: 0 0.15em; }
 </style>

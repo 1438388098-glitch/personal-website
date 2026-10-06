@@ -19,8 +19,9 @@ Node ≥ 20.3（开发环境 22 LTS，见 .nvmrc）。
     npm run check:secrets  # 密钥泄漏扫描
     npm run check:style    # 文风红线扫描（破折号/黑话禁词/句式堆叠）
     npm run check:content  # 内容日期一致性（文件名前缀须等于 frontmatter 日期）
-    npm run check:audit    # 依赖漏洞雷达（固定官方 registry；定期手动跑，暂不入 CI）
-    npm run check:extlinks # 站外链接探活（网络门禁易抖动，建议每月或发布前手动跑，暂不入 CI）
+    npm run check:scripts  # scripts/*.mjs 的 JSDoc 类型检查（tsconfig.scripts.json，无需构建）
+    npm run check:audit    # 依赖漏洞雷达（固定官方 registry；由定时任务跑，PR/push 不跑）
+    npm run check:extlinks # 站外链接探活（网络门禁易抖动；由定时任务跑，PR/push 不跑）
 
 ## 如何写内容
     src/content/projects/  项目案例（.md，frontmatter 见 src/content.config.ts）

@@ -1,3 +1,4 @@
+// @ts-check
 // 扫描 dist/**/*.html 里的站外 http(s) 链接，逐个探活（HEAD，405/501 时降级 GET），非 2xx/3xx 即失败。
 // 网络门禁有抖动，刻意不进 CI：作为定期手动巡检（建议每月）与发布前自查，见 README。
 // 反爬站点（微信/知乎等 403 拦机器人）走 ALLOWLIST 豁免，必须写明理由。
@@ -15,14 +16,17 @@ if (!siteMatch) {
 }
 const SITE_ORIGIN = siteMatch[1];
 
-/* 豁免清单：URL 前缀精确匹配，必须写明理由 */
+/** 豁免清单：URL 前缀精确匹配，必须写明理由
+ * @type {{ prefix: string, reason: string }[]} */
 const ALLOWLIST = [
   // { prefix: 'https://mp.weixin.qq.com/', reason: '微信反爬对机器人恒 403，人工月检' },
 ];
 
 const extRe = /\shref="(https?:\/\/[^"]+)"/g;
 
+/** @returns {string[]} */
 function collectLinks() {
+  /** @type {Set<string>} */
   const urls = new Set();
   (function walk(dir) {
     for (const name of readdirSync(dir)) {
@@ -40,6 +44,11 @@ function collectLinks() {
   return [...urls];
 }
 
+/** @typedef {{ url: string, ok: boolean, status: number | string }} ProbeResult */
+
+/** HEAD 探活，405/501 降级 GET；网络异常重试一次后按失败返回。
+ * @param {string} url
+ * @returns {Promise<ProbeResult>} */
 async function probe(url) {
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
@@ -61,9 +70,14 @@ async function probe(url) {
       }
       return { url, ok: false, status: res.status };
     } catch (err) {
-      if (attempt === 2) return { url, ok: false, status: String(err?.cause?.code ?? err?.name ?? err) };
+      if (attempt === 2) {
+        const e = /** @type {{ cause?: { code?: string }, name?: string }} */ (err);
+        return { url, ok: false, status: String(e.cause?.code ?? e.name ?? err) };
+      }
     }
   }
+  /* 循环必然在 attempt===2 返回；此行仅为类型穷尽，运行时不可达 */
+  return { url, ok: false, status: 'unreachable' };
 }
 
 async function main() {

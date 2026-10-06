@@ -2,7 +2,7 @@
 title: 法律问答的引用护栏
 description: 用确定性规则拦住 AI 凭空捏造的法条：条文存在、引文保真、断言有据。
 category: 技术笔记
-tags: [法律AI, AI幻觉, 校验]
+tags: [法律AI, AI幻觉, 评测]
 pubDate: 2026-08-31
 ---
 

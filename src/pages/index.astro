@@ -3,18 +3,16 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import PostCard from '../components/PostCard.astro';
-import { SITE } from '../lib/site';
+import JsonLd from '../components/JsonLd.astro';
+import { SITE, SITE_PATHS } from '../lib/site';
 import { EXAM_AGG } from '../lib/exam-progress';
-import { byDateDesc } from '../lib/sort';
-import { isPublished } from '../lib/publish';
+import { getPublishedPosts } from '../lib/posts';
 
 const featuredProjects = (await getCollection('projects'))
   .filter((p) => p.data.featured)
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 3);
-const posts = (await getCollection('posts', isPublished))
-  .sort(byDateDesc((p) => p.data.pubDate))
-  .slice(0, 4);
+const posts = (await getPublishedPosts()).slice(0, 4);
 // Now 摘要：最新一期 + frontmatter topics（结构化字段，正文不再承担取数职责）
 const currentNow = (await getCollection('now'))
   .sort((a, b) => b.data.period.localeCompare(a.data.period))[0];
@@ -24,11 +22,13 @@ const nowTopics = currentNow?.data.topics ?? [];
 // 正是「Recall@5」被改写成「盲写留出题 Recall@5」后前缀对不上）。改名即取不到，由 check:dist 拦下。
 const metricOf = (id: string, label: string) =>
   featuredProjects.find((p) => p.id === id)?.data.metrics.find((m) => m.label === label)?.value ?? '';
+/* note 是给术语补的一句白话括注：面板不做术语科普页，但「Recall@5」这类词对非技术读者
+   等于没读，展示处一句话说清「这个数在量什么」，数字本身一字不改。 */
 const panelRows = [
-  { k: '法条检索 Recall@5', v: metricOf('statute-rag', '盲写留出题 Recall@5') },
+  { k: '法条检索 Recall@5', v: metricOf('statute-rag', '盲写留出题 Recall@5'), note: '前 5 条里找得到正确答案的比例' },
   { k: '入库法条', v: metricOf('statute-rag', '语料规模') },
   { k: '评测规模 · 法衡', v: metricOf('cn-judbench', '评测规模') },
-  { k: '判分口径 · 逐采分点', v: metricOf('fakao-grader', '判定口径') },
+  { k: '判分口径 · 逐采分点', v: metricOf('fakao-grader', '判定口径'), note: '按官方采分点逐点判定，不整体给分' },
 ];
 ---
 <BaseLayout title={SITE.title}>
@@ -54,7 +54,7 @@ const panelRows = [
       </div>
       <div class="num-list">
         {panelRows.map((row) => (
-          <div class="num-row"><span class="k">{row.k}</span><span class="v mono">{row.v}</span></div>
+          <div class="num-row"><span class="k">{row.k}{row.note && <span class="note">{row.note}</span>}</span><span class="v mono">{row.v}</span></div>
         ))}
       </div>
     </aside>
@@ -127,14 +127,20 @@ const panelRows = [
       </div>
     </section>
   )}
-  <script is:inline type="application/ld+json" set:html={JSON.stringify({
+  <JsonLd data={{
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: SITE.title,
     description: SITE.description,
     url: SITE.url,
-    author: { '@type': 'Person', name: SITE.author, jobTitle: '法学在读 · 法律 × AI', url: SITE.github }
-  })} />
+    author: { '@type': 'Person', name: SITE.author, jobTitle: '法学在读 · 法律 × AI', url: SITE.github },
+    /* 站内搜索入口声明：让搜索引擎在站点结果里直接给出搜索框 */
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: { '@type': 'EntryPoint', urlTemplate: `${SITE.url}${SITE_PATHS.search}?q={search_term_string}` },
+      'query-input': 'required name=search_term_string'
+    }
+  }} />
 </BaseLayout>
 <style>
   /* ---- 首屏：纸面网格 / 网格线 / 文案 / 数字面板 四层，从后往前压 ----
@@ -209,15 +215,17 @@ const panelRows = [
   .num-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.85rem 0; border-bottom: 1px solid var(--border); }
   .num-row:last-child { border-bottom: none; }
   .num-row .k { font-size: 0.9rem; color: var(--text-muted); }
+  /* 术语白话括注：另起一行、更小更淡，不参与「标签—数值」的基线对齐 */
+  .num-row .note { display: block; font-size: 0.72rem; line-height: 1.5; margin-top: 0.15rem; }
   .num-row .v { font-size: 1.15rem; font-weight: 700; white-space: nowrap; color: var(--text); }
 
-  section { margin: 4.5rem 0; }
+  section { margin: var(--section-gap) 0; }
   section.band { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
   .featured-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
   .cell.wide { grid-column: 1 / -1; }
   /* 栏目入口卡：复用 .card 直角白面与工具箱页的「标题链接」语言，只补内边距与字号 */
   .explore-card { padding: 1.2rem 1.4rem; }
-  .explore-card h3 { margin: 0 0 0.4rem; font-size: 1.15rem; }
+  .explore-card h3 { margin: 0 0 0.4rem; font-size: var(--fs-card-title); }
   .explore-card h3 a { color: var(--text); }
   .explore-card h3 a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--accent); }
   .explore-card p { margin: 0; color: var(--text-muted); font-size: 0.95rem; }
@@ -247,7 +255,7 @@ const panelRows = [
 
   .now-chips { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.2rem; }
 
-  @media (max-width: 900px) {
+  @media (max-width: 960px) {
     .hero { grid-template-columns: 1fr; gap: 2.4rem; padding: 3rem 0; }
     /* 单栏后两栏之间那条竖线没有意义，连同压在它顶端的蓝方块一起收起 */
     .hero::after, .numbers::before { display: none; }

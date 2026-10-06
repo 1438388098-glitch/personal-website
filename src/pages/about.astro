@@ -1,7 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import JsonLd from '../components/JsonLd.astro';
 import { SITE } from '../lib/site';
 // TODO(资产): 个人照片位，用户提供后插入（本页头部右侧信息面板上方，1:1，max-width 180px）
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE.author,
+  url: `${SITE.url}/about/`,
+  jobTitle: '法学在读 · 法律 × AI 工程实践',
+  /* sameAs 用于把站内 Person 与外部身份对齐，当前唯一可公开的外部主页是 GitHub */
+  sameAs: [SITE.github]
+};
 ---
 <BaseLayout title={`关于 · ${SITE.title}`} description={`${SITE.author}的个人介绍与简历：法学与经济学双学位、三段法律实习、法律 × AI 工程实践。`}>
   <section class="about-hero">
@@ -157,7 +167,7 @@ import { SITE } from '../lib/site';
     </div>
     <div class="contact">
       <p>
-        <a href={SITE.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href={SITE.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub（在新窗口打开）">GitHub</a>
         {SITE.email && <> · <a href={`mailto:${SITE.email}`}>{SITE.email}</a></>}
         。此刻在做什么见 <a href="/now/">Now</a> 页。
       </p>
@@ -165,6 +175,7 @@ import { SITE } from '../lib/site';
       <p>简历可<a href={`mailto:${SITE.email}?subject=${encodeURIComponent('简历索取')}`}>来信索取</a>。</p>
     </div>
   </section>
+  <JsonLd data={person} />
 </BaseLayout>
 <style>
   /* ---- 头部：左简介 + 右事实面板（与首页数字面板同语言） ---- */
@@ -178,7 +189,7 @@ import { SITE } from '../lib/site';
   .fact-row .v { font-weight: 600; font-size: 0.95rem; text-align: right; }
   .facts .mono { font-size: 0.9rem; }
 
-  section { margin: 3.5rem 0; }
+  section { margin: var(--section-gap) 0; }
 
   /* ---- 经历条目：等宽日期 + 机构 + 职位，蓝方块列表 ---- */
   .entry { padding: 1.4rem 0 1.5rem; border-top: 1px solid var(--border); }
@@ -209,7 +220,7 @@ import { SITE } from '../lib/site';
   .contact p { margin: 0.4rem 0; }
   .contact { padding-top: 1.2rem; }
 
-  @media (max-width: 900px) {
+  @media (max-width: 960px) {
     .about-hero { grid-template-columns: 1fr; gap: 2rem; padding-top: 2.5rem; }
     .skill-row { grid-template-columns: 1fr; gap: 0.2rem; }
   }
