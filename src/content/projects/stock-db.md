@@ -3,8 +3,8 @@ title: stock-db：A 股量化平台
 summary: 自用 A 股量化平台：数据管线到双链模型再到生产选股，外加 GP 因子挖掘研究线。私有仓库，单人加 AI agent 协作，数据是资产、模型是产物、诚实数字是底线。
 group: 量化研究
 date: 2026-09-28
-featured: false
-order: 0
+featured: true
+order: 4
 disclaimer: 个人量化研究项目，仓库私有不公开；页面描述不构成任何投资建议。
 metrics:
   - label: 数据规模

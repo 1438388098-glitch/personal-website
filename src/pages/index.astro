@@ -11,8 +11,9 @@ import { isPublished } from '../lib/publish';
 const allProjects = await getCollection('projects');
 const featuredProjects = allProjects
   .filter((p) => p.data.featured)
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 3);
+  /* order 并列时按 id 兜底，与 byDateDesc 同理：顺序不依赖内容层迭代 */
+  .sort((a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id))
+  .slice(0, 4);
 const posts = (await getCollection('posts', isPublished))
   .sort(byDateDesc((p) => p.data.pubDate, (p) => p.id))
   .slice(0, 4);
@@ -70,7 +71,7 @@ const panelRows = [
         <h2>精选项目<span class="sec-en">Selected Work</span></h2>
         <a href="/projects/">全部项目 →</a>
       </div>
-      <div class="featured-grid">
+      <div class="work-grid">
         {featuredProjects.map((p, i) => (
           <div class:list={['cell', { wide: i === 0 }]}><ProjectCard project={p} showMetrics={false} index={i + 1} /></div>
         ))}
@@ -217,6 +218,23 @@ const panelRows = [
   section { margin: 4.5rem 0; }
   section.band { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
   .featured-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
+  /* 精选：桌面为一张通栏主卡 + 三张并列（3 列）。不与 .featured-grid 合并：
+     探索区固定两列，两类网格的列数需求不同，共用一类会顾此失彼。 */
+  .work-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.2rem; }
+  .work-grid .cell.wide { grid-column: 1 / -1; }
+  /* ≤1024：主卡让位成等宽卡，四张排成 2×2。三列在 900~1024 区间会把摘要挤到五行以上、
+     标题折两行，读起来费劲；四张等宽两列反而更整齐，也不留空位。 */
+  @media (max-width: 1024px) {
+    .work-grid { grid-template-columns: 1fr 1fr; }
+    .work-grid .cell.wide { grid-column: auto; }
+    .work-grid .cell.wide :global(.project-card) { padding: 1.4rem 1.6rem; }
+    .work-grid .cell.wide :global(.project-card h3) { font-size: 1.22rem; }
+    .work-grid .cell.wide :global(.project-card .summary) { font-size: inherit; max-width: none; }
+  }
+  /* ≤720：单列，四张依次往下 */
+  @media (max-width: 720px) {
+    .work-grid { grid-template-columns: 1fr; }
+  }
   .cell.wide { grid-column: 1 / -1; }
   /* 栏目入口卡：复用 .card 直角白面与工具箱页的「标题链接」语言，只补内边距与字号 */
   .explore-card { padding: 1.2rem 1.4rem; }
