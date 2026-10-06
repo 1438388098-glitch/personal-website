@@ -7,7 +7,7 @@ import { isPublished } from '../lib/publish';
 /** @param {import('astro').APIContext} context */
 export async function GET(context) {
   const posts = (await getCollection('posts', isPublished))
-    .sort(byDateDesc((p) => p.data.pubDate));
+    .sort(byDateDesc((p) => p.data.pubDate, (p) => p.id));
   const latest = posts[0]?.data.pubDate;
   /* 自引用链接用站点 URL 拼绝对地址，与 site: context.site 同源 */
   const selfUrl = new URL('feed.xml', context.site).href;

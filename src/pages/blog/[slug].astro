@@ -18,7 +18,7 @@ const { title, description, category, pubDate, tags, image } = post.data;
 const shareImage = new URL(image ?? '/og-default.png', SITE.url).toString();
 /* 相邻文章按发布日期排序：新一篇 / 旧一篇（含定时发布过滤） */
 const sorted = (await getCollection('posts', isPublished))
-  .sort(byDateDesc((p) => p.data.pubDate));
+  .sort(byDateDesc((p) => p.data.pubDate, (p) => p.id));
 const idx = sorted.findIndex((p) => p.id === post.id);
 const newer = idx > 0 ? sorted[idx - 1] : undefined;
 const older = idx >= 0 && idx < sorted.length - 1 ? sorted[idx + 1] : undefined;

@@ -64,14 +64,22 @@ describe('figure 结构化取数', () => {
 
 describe('byDateDesc', () => {
   const d = (iso: string) => new Date(iso);
+  const item = (id: string, iso: string) => ({ id, t: d(iso) });
+  const ids = (items: { id: string; t: Date }[]) =>
+    items.sort(byDateDesc((x) => x.t, (x) => x.id)).map((x) => x.id);
+
   it('按日期降序排列', () => {
-    const items = [{ t: d('2026-09-01') }, { t: d('2026-10-01') }, { t: d('2026-09-15') }];
-    expect([...items].sort(byDateDesc((x) => x.t)).map((x) => x.t.getUTCMonth())).toEqual([9, 8, 8]);
+    const items = [item('a', '2026-09-01'), item('b', '2026-10-01'), item('c', '2026-09-15')];
+    expect(ids([...items])).toEqual(['b', 'c', 'a']);
   });
-  it('同日期保持稳定（不交换原有顺序）', () => {
-    const a = { id: 'a', t: d('2026-09-01') };
-    const b = { id: 'b', t: d('2026-09-01') };
-    const c = { id: 'c', t: d('2026-08-01') };
-    expect([{ ...a }, { ...b }, { ...c }].sort(byDateDesc((x) => x.t)).map((x) => x.id)).toEqual(['a', 'b', 'c']);
+  it('同日期按 id 升序，且不随输入顺序变化', () => {
+    const sameDate = () => [item('c', '2026-09-01'), item('a', '2026-09-01'), item('b', '2026-09-01')];
+    /* 旧实现按日期排完并列项为 0，稳定排序会退回输入顺序：此处输入为 c,a,b 时旧实现得 c,a,b */
+    expect(ids(sameDate())).toEqual(['a', 'b', 'c']);
+    /* 反转输入仍是同一结果：次级键让排序键成为全序，输出与输入顺序无关 */
+    expect(ids(sameDate().reverse())).toEqual(['a', 'b', 'c']);
+  });
+  it('日期优先级高于 id：较新日期在前，即使其 id 更大', () => {
+    expect(ids([item('a', '2026-09-01'), item('z', '2026-09-02')])).toEqual(['z', 'a']);
   });
 });

@@ -13,7 +13,7 @@ const featuredProjects = (await getCollection('projects'))
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 3);
 const posts = (await getCollection('posts', isPublished))
-  .sort(byDateDesc((p) => p.data.pubDate))
+  .sort(byDateDesc((p) => p.data.pubDate, (p) => p.id))
   .slice(0, 4);
 // Now 摘要：最新一期 + frontmatter topics（结构化字段，正文不再承担取数职责）
 const currentNow = (await getCollection('now'))

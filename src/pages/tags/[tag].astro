@@ -16,7 +16,7 @@ export async function getStaticPaths() {
   }
   return [...byTag.entries()].map(([tag, tagPosts]) => ({
     params: { tag },
-    props: { tag, posts: tagPosts.sort(byDateDesc((p) => p.data.pubDate)) },
+    props: { tag, posts: tagPosts.sort(byDateDesc((p) => p.data.pubDate, (p) => p.id)) },
   }));
 }
 const { tag, posts } = Astro.props;

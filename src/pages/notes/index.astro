@@ -6,7 +6,7 @@ import { byDateDesc } from '../../lib/sort';
 import EntryCard from '../../components/EntryCard.astro';
 
 const notes = (await getCollection('notes', (n) => !n.data.draft))
-  .sort(byDateDesc((n) => n.data.date));
+  .sort(byDateDesc((n) => n.data.date, (n) => n.id));
 const categories = [
   { name: '课程论文', en: 'Course Papers' },
   { name: '文献研读', en: 'Readings' },

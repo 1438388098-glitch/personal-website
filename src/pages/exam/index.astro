@@ -8,7 +8,7 @@ import { figure } from '../../lib/metrics';
 import EntryCard from '../../components/EntryCard.astro';
 
 const articles = (await getCollection('exam', (e) => !e.data.draft))
-  .sort(byDateDesc((e) => e.data.date));
+  .sort(byDateDesc((e) => e.data.date, (e) => e.id));
 
 /* 输出数字从 lib 层单源取结构化 figures，不在此页复述字面量 */
 const publicRepos = (await getCollection('toolbox')).length;
