@@ -5,7 +5,7 @@ import ProjectCard from '../../components/ProjectCard.astro';
 
 const projects = (await getCollection('projects'))
   .sort((a, b) => a.data.order - b.data.order);
-const groups = ['法律主线', '法律工具', '工程侧证', '实验'] as const;
+const groups = ['法律主线', '法律工具', '量化研究', '工程侧证', '实验'] as const;
 /* 分区按页面顺序重编号（sec-head 的 01 递增只数非空分组），仅展示层推导 */
 const sections = groups
   .map((g) => ({ name: g, items: projects.filter((p) => p.data.group === g) }))
