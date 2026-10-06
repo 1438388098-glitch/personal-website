@@ -2,11 +2,11 @@
 title: cn-judbench（法衡）：中国司法 LLM 评测基准
 summary: 用 12 个任务包、323 道公开题测中国司法工作流：判分全程机检、统计协议预注册，回答模型哪个能力行、哪里危险、跨跑稳不稳、代价多大。
 group: 法律主线
-date: 2026-09-28
+date: 2026-07-12
 featured: true
 order: 2
 relatedPosts:
-  - 2026-09-29-cn-judbench
+  - 2026-07-21-cn-judbench
 metrics:
   - label: 评测规模
     value: '12 包 / 323 题'

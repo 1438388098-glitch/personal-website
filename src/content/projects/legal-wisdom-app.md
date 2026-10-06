@@ -2,7 +2,7 @@
 title: legal-wisdom-app：法律智库本地法条库
 summary: 覆盖 257 部中国法律法规的桌面法条库：FTS5 全文检索、条文交叉引用、结合当前条文作答的 AI 问答，87MB 数据库可从公开来源一键重建。
 group: 法律主线
-date: 2026-09-29
+date: 2026-04-20
 featured: false
 order: 8
 metrics:

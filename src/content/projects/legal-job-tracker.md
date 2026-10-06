@@ -2,11 +2,11 @@
 title: legal-job-tracker：法学招聘信息聚合器
 summary: 跑在自己电脑上的法学招聘采集与投递跟踪工具：33 个官方源自动采集、严格去重、简历匹配打分每分有理由、截止提醒与汇总导出，数据不出本机。
 group: 法律工具
-date: 2026-09-29
+date: 2026-09-20
 featured: false
 order: 1
 relatedPosts:
-  - 2026-09-29-legal-job-tracker-33-sources
+  - 2026-09-26-legal-job-tracker-33-sources
 metrics:
   - label: 数据源
     value: '33 个'

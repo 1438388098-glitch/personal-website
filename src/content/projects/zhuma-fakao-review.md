@@ -2,11 +2,11 @@
 title: zhuma-fakao-review：竹马法考错题复习助手
 summary: 把错题本里的全部错题变成按科目分册、可直接背诵的知识点笔记 PDF：只读接口全量抓取、多 subagent 六维审查、原子写与熔断的防御性工程。
 group: 法律主线
-date: 2026-09-10
+date: 2026-08-12
 featured: false
 order: 4
 relatedPosts:
-  - 2026-09-29-zhuma-fakao-review
+  - 2026-08-22-zhuma-fakao-review
 metrics:
   - label: 错题规模
     value: '1,655 道'

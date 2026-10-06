@@ -7,5 +7,5 @@ related:
   - label: 详情：项目案例
     url: /projects/statute-rag/
   - label: 记一笔：检索选型博文
-    url: /blog/2026-09-25-statute-rag-recall/
+    url: /blog/2026-07-28-statute-rag-recall/
 ---

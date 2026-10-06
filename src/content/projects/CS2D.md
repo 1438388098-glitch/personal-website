@@ -2,12 +2,12 @@
 title: CS2D：平面反恐精英
 summary: 自研 HTML5 俯视角 5v5 战术射击游戏：A/B 点爆破模式配 CS2 经济规则、投掷物、AI 人机、多地图与多视角，另有生涯、排位、电竞经理等娱乐模式，零依赖 ES Modules。
 group: 实验
-date: 2026-09-28
+date: 2026-08-10
 featured: false
 order: 1
 relatedPosts:
-  - 2026-09-29-cs2d-atrium-balance
-  - 2026-09-29-cs2d-dqn-overfit
+  - 2026-08-18-cs2d-atrium-balance
+  - 2026-08-20-cs2d-dqn-overfit
 disclaimer: 个人游戏项目，仅供学习交流。
 metrics:
   - label: 经济系统

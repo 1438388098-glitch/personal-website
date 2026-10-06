@@ -2,11 +2,11 @@
 title: auto-iterate-project：项目自动迭代工作流
 summary: 在 Agent 会话里自动迭代任意 git 项目：扫描仓库事实产出有据可查的候选、按价值排序、小步实现、验证后提交，预算与硬停止门禁管住多小时的自主运行。
 group: 工程侧证
-date: 2026-09-29
+date: 2026-05-06
 featured: false
 order: 1
 relatedPosts:
-  - 2026-09-29-auto-iterate-project
+  - 2026-06-18-auto-iterate-project
 metrics:
   - label: 测试规模
     value: '~190 例'

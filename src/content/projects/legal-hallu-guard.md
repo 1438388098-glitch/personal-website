@@ -2,12 +2,12 @@
 title: legal-hallu-guard：法律答案引用护栏
 summary: 对带引用标记的法律问答答案做三类确定性校验：引用的条文是否存在、引文是否原样、断言有没有出处，并给出错误引用率指标，全程不经过模型判断。
 group: 法律主线
-date: 2026-09-29
+date: 2026-08-24
 featured: false
 order: 6
 relatedPosts:
-  - 2026-09-29-legal-hallu-guard
-  - 2026-10-01-baidu-ai-hallu-libel
+  - 2026-08-31-legal-hallu-guard
+  - 2026-09-14-baidu-ai-hallu-libel
   - 2026-09-09-supreme-court-ai-24
 metrics:
   - label: 假阳性率

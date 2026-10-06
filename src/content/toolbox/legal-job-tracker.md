@@ -5,7 +5,7 @@ description: 本地法学求职信息看板：33 个官方源自动采集、去�
 category: 法律工具
 related:
   - label: 记一笔：求职爬虫博文
-    url: /blog/2026-09-29-legal-job-tracker-33-sources/
+    url: /blog/2026-09-26-legal-job-tracker-33-sources/
   - label: 详情：项目案例
     url: /projects/legal-job-tracker/
 ---

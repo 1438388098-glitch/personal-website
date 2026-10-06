@@ -2,11 +2,11 @@
 title: statute-rag：法条混合检索底座
 summary: 把 25,987 条法条按「条」结构化入库，用多通道 BM25 混合检索与强制条文引用，让法条问答可评测、可回跳。
 group: 法律主线
-date: 2026-09-01
+date: 2026-05-20
 featured: true
 order: 1
 relatedPosts:
-  - 2026-09-25-statute-rag-recall
+  - 2026-07-28-statute-rag-recall
   - 2026-10-04-jev-rerank
   - 2026-10-04-lexicon-and-gates
   - 2026-09-18-rag-search-liability

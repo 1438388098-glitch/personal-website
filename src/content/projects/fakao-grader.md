@@ -2,11 +2,11 @@
 title: fakao-grader：法考主观题 AI 评分老师
 summary: 在 Agent CLI 里按官方采分点逐点判分：复用题库自带的结构化评分标准，白/黑名单定等义与矛盾，连锁失分显式画链，输出可行动的丢分点清单。
 group: 法律主线
-date: 2026-09-14
+date: 2026-08-16
 featured: true
 order: 3
 relatedPosts:
-  - 2026-09-20-fakao-grader-agent
+  - 2026-08-26-fakao-grader-agent
 metrics:
   - label: 判定口径
     value: '✓ / △ / ✗'

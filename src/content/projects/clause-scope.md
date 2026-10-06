@@ -2,7 +2,7 @@
 title: clause-scope：确定性合同条款抽取与风险标记
 summary: 用零第三方依赖的规则引擎把整份合同变成条款清单加风险发现，span 全程可回跳原文：v0.1 无 LLM，每条判定可解释、可测试、可复现。
 group: 法律主线
-date: 2026-09-18
+date: 2026-08-28
 featured: false
 order: 5
 metrics:
