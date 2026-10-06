@@ -20,6 +20,9 @@ metrics:
     value: 'IC 阈值 0.10'
     detail: VERIFY_GATE 实测拦下自家 E5 线：信号质量跌破门槛即拒绝导出，门禁不分内外
 links: []
+relatedPosts:
+  - 2026-10-06-gate-rejected-my-signal-line
+  - 2026-10-06-six-silent-trading-days
 ---
 
 ## 问题与边界
