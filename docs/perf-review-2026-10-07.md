@@ -101,27 +101,42 @@ click 4162 → before-preparation 4165 → after-preparation 4714 → before-swa
 实测预取效果：点击时那次 fetch 的传输量从 12544 字节降到 300 字节（304 复用），
 但**仍要一轮往返**——因为 nginx 对 HTML 发 `Cache-Control: no-cache`。
 
-## 四、还留在桌上的事
+## 四、HTML 缓存头（2026-10-07 已改服务器）
 
-### 4.1 让 HTML 可缓存（需服务器侧改，未做）
+预取只省掉了 body，省不掉那轮 RTT。根因在源站 nginx：`location /` 对 HTML 发
+`no-cache`，Cloudflare 因此也不缓存 HTML（`cf-cache-status: DYNAMIC`）。
 
-现状：源站 nginx 对 HTML 发 `Cache-Control: no-cache`，Cloudflare 因此不缓存 HTML
-（`cf-cache-status: DYNAMIC`），每次换页都要回一次源站。预取已经把 body 省掉了，
-但省不掉这一轮 RTT。
-
-建议（宝塔 → 站点 → 配置文件，`location /` 内）：
+已改（配置 `/www/server/panel/vhost/nginx/iweistoicqc5.conf`，备份
+`/root/iweistoicqc5.conf.bak-20261007-htmlcache`）：
 
 ```nginx
-# HTML 短窗缓存：换页走预取时直接命中，不再回源；60 秒窗口让发布后最多 stale 一分钟
-location ~* \.html$ {
-    add_header Cache-Control "public, max-age=60, stale-while-revalidate=300";
+# 文件顶部（http 上下文，与 limit_req_zone 同级）
+map $uri $cache_control_static {
+    default       "no-cache";
+    ~\.html$      "public, max-age=60, stale-while-revalidate=300";
 }
+
+# location / 内：只把取值换成 map，其余 add_header 一行未动
+add_header Cache-Control $cache_control_static always;
 ```
 
-风险与前提：发布后最长 60 秒内可能拿到旧页（个人站可接受）；上线后要实测一次
-「发布 → 立即访问」，确认 stale 窗口符合预期。**改服务器配置属于对外操作，需站主确认后执行。**
+为什么用 map 而不是单独写一个 `location ~ \.html$`：**nginx 的 `add_header` 一旦在子层出现，
+就不再继承父层**。给 HTML 单开一段会静默丢掉同一 location 里的 CSP、nosniff、Referrer-Policy
+四个安全头。map 让安全头仍然只有一处声明。目录型 URL（`/blog/`）经 try_files 内部重写到
+`/blog/index.html` 后会重新求值 `$uri`，实测同样命中短窗缓存。
 
-### 4.2 字体还能再压（评估过，暂不做）
+实测结果（线上）：HTML 头为 `public, max-age=60, stale-while-revalidate=300`；
+`/search-index.json`、`/feed.xml` 仍 `no-cache`；`/_astro/*` 仍 immutable；
+CSP 与其余安全头在 HTML 上完好。换页点击耗时 **545ms → 16ms**（点击到新页可见），
+View Transitions 动画照旧播放。
+
+代价与回滚：发布后最长 60 秒可能拿到旧页（`stale-while-revalidate=300` 只影响复用，
+不延长新鲜期）。**发布流程里若需立刻看到新版，加一次强制刷新**；
+要回滚就 `cp /root/iweistoicqc5.conf.bak-20261007-htmlcache` 覆盖后 `nginx -s reload`。
+
+## 五、还留在桌上的事
+
+### 5.1 字体还能再压（评估过，暂不做）
 
 现在博文页仍要约 631KB 字体。理论上限：一页真正用到约 800 个字形，
 按可变字体 ~300B/字形算，地板约 240KB。差距来自分片粒度——页面命中 27 片、
@@ -138,7 +153,7 @@ location ~* \.html$ {
 
 真要继续压，先看 `npm run fonts:budget` 的数字，别凭感觉。
 
-### 4.3 预存的其它观察
+### 5.2 预存的其它观察
 
 - 站内没有任何 `<img>`，图片不构成负担；`og-default.png` 只在抓取时用
 - HTML/CSS/JS 都很小（首页 24KB HTML、19KB 阻塞 CSS、30KB JS），且 `_astro/*` 已
@@ -147,7 +162,7 @@ location ~* \.html$ {
 - 首页主线程长任务合计约 295ms（最大一段 140ms），属正常量级，未做处理
 - `public/sw.js` 是旧站 SW 的自毁脚本，新站不注册 SW，维持现状
 
-## 五、顺手修掉的门禁问题
+## 六、顺手修掉的门禁问题
 
 - `npm run check:scripts` 原本 45 个类型错误（含 3 个门禁脚本共 36 个历史遗留），
   本次一并补齐 JSDoc 类型，现为 0
@@ -156,7 +171,7 @@ location ~* \.html$ {
 - `check-dist.mjs` 增加字体门禁：@font-face 指向的文件必须存在、页面可见文本必须落在
   已发布字体的 unicode-range 内、字体总量不得超预算（防止子集化没跑）
 
-## 六、未处理的历史遗留（与本次改造无关，留待站主决定）
+## 七、未处理的历史遗留（与本次改造无关，留待站主决定）
 
 - `npm run check:i18n`：3 处违规（`projects/fakao-tracker.md` 日期不一致、
   `projects/fakao-self-check.md` 缺英文译文、10-07 博文英文版缺数字 1860）
