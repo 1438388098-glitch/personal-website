@@ -131,13 +131,13 @@ const zh = {
     numbersAria: '关键数字',
     panel: [
       /* 每行带项目名（「指标 · 项目名」，同「评测规模 · 法衡」的既有模式）：
-         否则五行数字读起来像同一个项目的。statute-rag 两行同标「法条检索」，
-         恰好说明它们同源；fakao-grader 取拟人名「评分老师」，与「法衡」同一风格。 */
-      { projectId: 'statute-rag', metricLabel: '盲写留出题 Recall@5', k: 'Recall@5 · 法条检索' },
-      { projectId: 'statute-rag', metricLabel: '语料规模', k: '入库法条 · 法条检索' },
+         项目名用项目 ID 本尊（statute-rag / fakao-grader / stock-db），
+         法衡是 cn-judbench 的正式中文名故保留。取数 key（metricLabel）不动。 */
+      { projectId: 'statute-rag', metricLabel: '盲写留出题 Recall@5', k: 'Recall@5 · statute-rag' },
+      { projectId: 'statute-rag', metricLabel: '语料规模', k: '入库法条 · statute-rag' },
       { projectId: 'cn-judbench', metricLabel: '评测规模', k: '评测规模 · 法衡' },
-      { projectId: 'fakao-grader', metricLabel: '判定口径', k: '判分口径 · 评分老师' },
-      { projectId: 'stock-db', metricLabel: '数据规模', k: '数据规模 · 量化平台' },
+      { projectId: 'fakao-grader', metricLabel: '判定口径', k: '判分口径 · fakao-grader' },
+      { projectId: 'stock-db', metricLabel: '数据规模', k: '数据规模 · stock-db' },
     ],
     featured: { h2: '精选项目', en: 'Selected Work', link: '全部项目 →' },
     writing: { h2: '最近写作', en: 'Writing', link: '全部文章 →' },
