@@ -2,6 +2,7 @@
 title: "statute-rag: a hybrid statute retrieval foundation"
 summary: "25,987 statutes ingested as discrete provisions; multi-channel hybrid BM25 plus mandatory citations make statute QA evaluable and traceable."
 group: 法律主线
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-05-20
 featured: true
 order: 1
@@ -101,7 +102,7 @@ The 90% finally came from the third layer: the pipeline's top 50 go to an LLM th
 ### Two corpus blood-transfusions and one pure append
 
 - The earliest 14,212 rows were not provisions but page blocks sliced by length from two-column gazette PDFs. They were replaced wholesale with verified provision-level text: 130 golden-sample statutes restored verbatim at 7,339/7,340, and 26 statutes matched provision-for-provision against an independent compilation.
-- The Criminal Law main text was swapped for the consolidated version with all 12 amendments, making 53 "之N" provisions (drunk driving, the aiding-cybercrime offence, the personal-information offence) searchable for the first time.
+- The Criminal Law main text was swapped for the consolidated version with all 12 amendments, making 53 sub-numbered provisions searchable for the first time (drunk driving, the aiding-cybercrime offence, the personal-information offence).
 - Gaps measured by the blind-written set were filled with the full text of 7 statutes: Social Insurance Law, Work Injury Insurance Regulations, Copyright Law, Patent Law, Environmental Protection Law, Tax Collection and Administration Law, Consumer Rights Protection Law; the testable rate went from 89/100 to 100/100.
 
 The golden sets themselves then passed a new structural gate: the validator caught 8 migration artifacts ("the interpretation of 21 provisions labeled as Article 48") and 4 stale-law evidence entries, since aligned verbatim to current text (Public Security Administration Punishments Law 2025, Civil Procedure Law 2023, Labor Dispute Interpretation (II) 2025), each with audit fields.

@@ -1,6 +1,6 @@
 ---
 title: "maze-game: maze generation and pathfinding, gamified"
-summary: "A minimal keyboard-only 2D maze game: Growing Tree parameterized generation plus MCMC simulated-annealing topology tuning, seven quality metrics, six difficulties, six modes, two engines, zero dependencies, zero build."
+summary: "A keyboard-only 2D maze game: Growing Tree parameterized generation plus MCMC annealing, seven quality metrics, six difficulties, six modes, two engines."
 group: 实验
 date: 2026-09-28
 featured: false

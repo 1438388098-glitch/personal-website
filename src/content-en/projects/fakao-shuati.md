@@ -1,7 +1,8 @@
 ---
 title: "fakao-shuati: a self-hosted practice platform for bar exam essays"
-summary: "Self-hosted practice for Chinese bar exam essay questions: question-bank management, point-by-point AI grading, deep review reports, mistake book and recitation cards, multi-account isolation, zero question content in the repo."
+summary: "Self-hosted practice for bar exam essays: question-bank management, point-by-point AI grading, review reports, mistake book, recitation cards."
 group: 法律主线
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-09-28
 featured: false
 order: 7

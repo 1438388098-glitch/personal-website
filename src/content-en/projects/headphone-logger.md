@@ -1,7 +1,8 @@
 ---
 title: "headphone-logger: a headphone usage logger"
-summary: "A Windows tray resident that logs how long you wore headphones each day, which pair, and in what context: it records only while sound plays, tags concurrent contexts honestly, and the stats page renders offline in WebView2 plus ECharts."
+summary: "A Windows tray resident logging headphone time by pair and context: records only while sound plays, tags concurrent contexts honestly, offline stats."
 group: 工程侧证
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-09-28
 featured: false
 order: 3

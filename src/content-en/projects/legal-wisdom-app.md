@@ -1,7 +1,8 @@
 ---
 title: "legal-wisdom-app: a local statute library for legal research"
-summary: "A desktop statute library covering 257 Chinese statutes and regulations: FTS5 full-text search, cross-references between provisions, and AI Q&A grounded in the provision you are reading; the 87MB database rebuilds from public sources in one pipeline."
+summary: "A desktop statute library of 257 Chinese statutes: FTS5 search, cross-references, AI Q&A grounded in the current provision; rebuilds from public data."
 group: 法律主线
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-04-20
 featured: false
 order: 8
@@ -30,7 +31,7 @@ A PySide6 desktop app: the built-in reader highlights chapter headings and artic
 
 ## Verification
 
-Quality checks come in three layers; there is no automated retrieval-quality evaluation. Corpus scope is verified by the ingestion pipeline: the source corpus holds 263 (70 statutes, 132 administrative regulations, 59 judicial interpretations, 2 supervision regulations); 6 judicial interpretations failed to import, leaving 257 in the library, with the gap recorded in section 5 of docs/repro.md. The 87MB database stays out of the repository, and the rebuild pipeline (full import, provision-level splitting, cross-reference indexing) is three documented steps. Retrieval correctness rests on unit tests: 3 files, 33 cases in tests/, covering Chinese substrings via LIKE, English tokens hitting FTS with highlighting, FTS syntax injection not crashing, category filters, snippet extraction, and provision references: short and full names matching, repealed laws mapping to the Civil Code, reference direction, no self-references. Run with python -m unittest discover -s tests -v, including temporary-database unit tests and local real-database smoke cases. The bilingual UI has its own key-and-placeholder alignment tests. Retrieval recall is currently judged by human use; the golden-set evaluation lives in statute-rag. Screenshots are real PySide6 offscreen renders of the 7-statute demo library, not the full corpus.
+Quality checks come in three layers; there is no automated retrieval-quality evaluation. Corpus scope is verified by the ingestion pipeline: the source corpus holds 263 (70 statutes, 132 administrative regulations, 59 judicial interpretations, 2 supervision regulations); 6 judicial interpretations failed to import, leaving 257 in the library, with the gap recorded in section 5 of docs/repro.md. The 87MB database stays out of the repository, and the rebuild pipeline (full import, provision-level splitting, cross-reference indexing) is three documented steps, with data current to 2026. Retrieval correctness rests on unit tests: 3 files, 33 cases in tests/, covering Chinese substrings via LIKE, English tokens hitting FTS with highlighting, FTS syntax injection not crashing, category filters, snippet extraction, and provision references: short and full names matching, repealed laws mapping to the Civil Code, reference direction, no self-references. Run with python -m unittest discover -s tests -v, including temporary-database unit tests and local real-database smoke cases. The bilingual UI has its own key-and-placeholder alignment tests. Retrieval recall is currently judged by human use; the golden-set evaluation lives in statute-rag. Screenshots are real PySide6 offscreen renders of the 7-statute demo library, not the full corpus.
 
 ## Known failures
 

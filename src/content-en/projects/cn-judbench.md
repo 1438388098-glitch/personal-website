@@ -2,6 +2,7 @@
 title: "cn-judbench: an LLM benchmark for the Chinese judiciary"
 summary: "12 task packages, 323 public questions, machine-checked grading, pre-registered statistics: what models can do, where they are dangerous, what it costs."
 group: 法律主线
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-07-12
 featured: true
 order: 2
@@ -31,7 +32,7 @@ In judicial settings the gap between "looks competent" and "is competent" is wid
 
 ## Mechanism
 
-Twelve task packages cover citation validity, element extraction, computation with hidden unit tests, subsuming facts under offences, tool calling with fault injection, multi-turn interviewing and multi-day case management. Grading is machine-checked at predicate level: each package ships a machine-checkable oracle (hidden unit tests, a citation-status ladder, env_diff end-state comparison, among others), plus a registered failure taxonomy, contamination canaries, and leakage monitoring against random and rule-based baselines. The statistics protocol is pre-registered: pass^k combination semantics, paired bootstrap confidence intervals, exact McNemar tests, two-level ranking granularity. Questions pass an admission pipeline from draft to public: two isolated real examinees answer, golden answers are adjudicated under a five-condition policy, verified verbatim against official anchor text plus a text_hash, and only then enter the public set and reconcile against MANIFEST.
+12 task packages cover citation validity, element extraction, computation with hidden unit tests, subsuming facts under offences, tool calling with fault injection, multi-turn interviewing and multi-day case management. Grading is machine-checked at predicate level: each package ships a machine-checkable oracle (hidden unit tests, a citation-status ladder, env_diff end-state comparison, among others), plus a registered failure taxonomy, contamination canaries, and leakage monitoring against random and rule-based baselines. The statistics protocol is pre-registered: pass^k combination semantics, paired bootstrap confidence intervals, exact McNemar tests, two-level ranking granularity. Questions pass an admission pipeline from draft to public: two isolated real examinees answer, golden answers are adjudicated under a five-condition policy, verified verbatim against official anchor text plus a text_hash, and only then enter the public set and reconcile against MANIFEST.
 
 ## Verification
 

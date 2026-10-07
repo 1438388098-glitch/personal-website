@@ -1,7 +1,8 @@
 ---
 title: "bilibili-progress-tracker: a course-progress extension for Bilibili"
-summary: "A Chrome extension (MV3) that records Bilibili course progress automatically: official collections auto-identified, each part tracked independently, daily study time and streaks, IndexedDB local storage, zero third-party dependencies."
+summary: "A Chrome MV3 extension recording Bilibili course progress: collections auto-identified, parts tracked separately, daily time and streaks, local storage."
 group: 工程侧证
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-09-28
 featured: false
 order: 4

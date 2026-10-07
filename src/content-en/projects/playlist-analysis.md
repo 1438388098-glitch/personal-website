@@ -1,6 +1,6 @@
 ---
 title: "playlist-analysis: deep playlist analysis"
-summary: "Scrapes playlists from four platforms, then analyzes on many dimensions: scripts handle the statistics that compute reliably, AI subagents handle the annotations that need semantic understanding, and 20+ dimensions roll up into a vinyl-magazine-style report."
+summary: "Scrapes playlists from four platforms and analyzes 20+ dimensions: scripts compute the statistics, AI subagents write the semantic annotations."
 group: 实验
 date: 2026-09-28
 featured: false

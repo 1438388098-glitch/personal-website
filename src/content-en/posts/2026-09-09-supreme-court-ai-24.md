@@ -1,6 +1,6 @@
 ---
 title: "From one apology letter to the Supreme Court's 24 articles"
-description: "In March a Nanjing court ordered Baidu to apologize for an AI hallucination; in September the Supreme People's Court issued its Opinion on adjudicating AI-related disputes, 5 parts and 24 articles. Six months between the price tag and the boundary."
+description: "March: a court orders Baidu to apologize for an AI hallucination; September: the Supreme Court issues 24 articles."
 category: 法学随笔
 tags: [AI幻觉, 司法]
 pubDate: 2026-09-09

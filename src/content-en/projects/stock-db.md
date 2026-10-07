@@ -1,6 +1,6 @@
 ---
 title: "stock-db: an A-share quant platform"
-summary: "A personal A-share quant platform: from data pipeline to a multi-leg model to production stock picks, plus a GP factor-mining research line. Private repository, one person plus AI agents; data is the asset, models are outputs, honest numbers are the floor."
+summary: "A personal A-share quant platform: data pipeline to multi-leg model to production picks, plus a GP factor-mining line; honest numbers are the floor."
 group: 工程侧证
 date: 2026-09-14
 featured: false

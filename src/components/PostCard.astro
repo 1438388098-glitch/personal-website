@@ -1,5 +1,5 @@
 ---
-import { langOf, strings, href, tagLabel } from '../lib/i18n';
+import { langOf, strings, href, tagLabel, categoryLabel } from '../lib/i18n';
 import { formatDate } from '../lib/format';
 import type { AnyPost } from '../lib/posts';
 interface Props { post: AnyPost; }
@@ -12,7 +12,7 @@ const { title, description, category, pubDate, tags } = post.data;
   <p class="date mono">{formatDate(pubDate, lang)}</p>
   <h3><a href={href(lang, `/blog/${post.id}/`)}>{title}</a></h3>
   <p class="desc">{description}</p>
-  <p class="tags">{category && <span class="cat">{lang === 'en' ? tagLabel(lang, category) : category}</span>}{tags.map((tg) => <a href={href(lang, `/tags/${tg}/`)}>#{lang === 'en' ? tagLabel(lang, tg) : tg}</a>)}</p>
+  <p class="tags">{category && <span class="cat">{categoryLabel(lang, category)}</span>}{tags.map((tg) => <a href={href(lang, `/tags/${tg}/`)}>#{tagLabel(lang, tg)}</a>)}</p>
 </article>
 <style>
   /* 列表行：左侧 hover 指示小方块（灰变蓝），等宽日期列对齐 */

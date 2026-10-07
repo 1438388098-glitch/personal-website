@@ -1,6 +1,6 @@
 ---
 title: "Standing at the eve of the tech explosion, part 2: a year of progress in five weeks"
-description: "A new paper by Hinton, Bengio and 20 others turns recursive self-improvement from intuition into arithmetic: millions of shadow researchers, r between 1.2 and 1.9, a year of progress compressed into five weeks, plus a three-step policy list."
+description: "Hinton and Bengio turn recursive self-improvement into arithmetic: r of 1.2 to 1.9, a year of progress in five weeks."
 category: 杂谈
 tags: [大模型, RSI, AI监管]
 pubDate: 2026-10-05

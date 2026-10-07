@@ -1,7 +1,8 @@
 ---
 title: "fakao-grader: an AI grader for Chinese bar exam essay questions"
-summary: "Grades point by point against official scoring points inside an agent CLI: reuses the question bank's structured rubrics, white/blacklists equivalents and contradictions, draws explicit chains of cascading losses."
+summary: "Grades bar exam essays point by point against official scoring points in an agent CLI, with structured rubrics, white/blacklists and cascading-loss chains."
 group: 法律主线
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-08-16
 featured: true
 order: 3

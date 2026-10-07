@@ -34,4 +34,5 @@ export const TAG_VOCAB = [
   '比较法',
   '求职',
   '踩坑记',
+  '数学',
 ] as const;

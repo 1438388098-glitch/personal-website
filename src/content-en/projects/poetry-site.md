@@ -1,6 +1,6 @@
 ---
 title: "poetry-site: Strangers, a personal poetry site"
-summary: "A personal poetry collection, 2021 to 2026: pure PHP plus JSON, no framework, no database; poem browsing, a random pick, a guestbook, per-poem likes, and a password-protected publishing backend."
+summary: "A personal poetry site, 2021 to 2026: pure PHP plus JSON, no framework or database; browsing, a random pick, a guestbook, per-poem likes."
 group: 实验
 date: 2026-09-28
 featured: false

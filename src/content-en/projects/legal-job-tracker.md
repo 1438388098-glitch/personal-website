@@ -1,7 +1,8 @@
 ---
 title: "legal-job-tracker: an aggregator for legal-job postings"
-summary: "Legal-job scraping and application tracking that runs on your own machine: 33 official sources, strict dedup, resume matching where every point carries its reason, deadline alerts and export. Data never leaves the machine."
+summary: "Legal-job scraping and application tracking on your own machine: 33 official sources, strict dedup, explainable matching, deadline alerts, all local."
 group: 法律工具
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-09-20
 featured: false
 order: 1

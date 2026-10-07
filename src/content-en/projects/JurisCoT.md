@@ -1,7 +1,8 @@
 ---
 title: "JurisCoT: a chain-of-thought prompt engine for legal papers"
-summary: "A CoT prompt library for Chinese legal scholarship: 6 paper templates each with structured reasoning chains and step-by-step prompt assets, a small list/show/run CLI and template-integrity tests. v0.1 manages template assets only; the inference pipeline is unimplemented and reported as such."
+summary: "A CoT prompt library for legal scholarship: 6 paper templates with reasoning chains and a small CLI. The inference pipeline is not built, and it says so."
 group: 法律工具
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-09-28
 featured: false
 order: 4

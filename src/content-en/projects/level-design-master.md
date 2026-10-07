@@ -1,6 +1,6 @@
 ---
 title: "level-design-master: an AI skill for level design"
-summary: "An AI skill for 2D platformer and metroidvania level design: 15 knowledge-base documents, a five-stage workflow, 20 critique gates plus three-persona simulation. The LLM handles structure and creativity; deterministic validators handle truth."
+summary: "An AI skill for 2D platformer and metroidvania design: 15 knowledge docs, five workflow stages, 20 critique gates, three-persona simulation."
 group: 实验
 date: 2026-08-11
 featured: false

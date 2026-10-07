@@ -1,7 +1,8 @@
 ---
-title: "zhcrypt: an end-to-end encryption toolkit"
-summary: "End-to-end encryption for Chinese-speaking users: Argon2id derivation, AES-256-GCM authenticated encryption, RSA-4096 hybrid encryption, X3DH plus Double Ratchet forward secrecy, TOFU safety codes against man-in-the-middle, in CLI and GUI forms."
+title: "zhcrypt: an end-to-end encrypted communication toolkit"
+summary: "End-to-end encryption for Chinese users: Argon2id, AES-256-GCM, RSA-4096, X3DH + Double Ratchet forward secrecy, TOFU codes against man-in-the-middle, CLI/GUI."
 group: 工程侧证
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-09-28
 featured: false
 order: 2

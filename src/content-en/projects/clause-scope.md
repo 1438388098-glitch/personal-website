@@ -1,7 +1,8 @@
 ---
 title: "clause-scope: deterministic contract clause extraction and risk flags"
-summary: "A zero-dependency rule engine turns a whole contract into a clause list plus risk findings, with spans that always jump back to the source text: v0.1 has no LLM, and every verdict is explainable, testable, reproducible."
+summary: "A zero-dependency rule engine turns a contract into a clause list plus risk findings, spans jump back to source; no LLM, every verdict reproducible."
 group: 法律主线
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-08-28
 featured: false
 order: 5

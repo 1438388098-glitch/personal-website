@@ -58,6 +58,7 @@ export const EN_TAG: Record<string, string> = {
   比较法: 'Comparative law',
   求职: 'Job hunting',
   踩坑记: 'Debugging notes',
+  数学: 'Mathematics',
 };
 
 export const EN_GROUP: Record<string, string> = {
@@ -65,6 +66,8 @@ export const EN_GROUP: Record<string, string> = {
   法律工具: 'Legal Tools',
   工程侧证: 'Engineering Side',
   实验: 'Experiments',
+  /* 工具箱的分类与项目分组共用一张表：工程小件只出现在 toolbox */
+  工程小件: 'Utilities',
 };
 
 /** 分类/标签展示值：zh 原样返回 ID（即中文），en 查表；漏配返回 ID 并在控制台留一声（构建期可见） */
@@ -160,8 +163,8 @@ const zh = {
     metaDescription: '胡圣炜的个人介绍与简历：法学与经济学双学位、三段法律实习、法律 × AI 工程实践。',
     h1: '关于',
     intro: [
-      '我是胡圣炜，广东韶关人，中南财经政法大学法学与经济学双学位本科生，成长于粤北多语言环境（普通话、粤语、客家话），这让我习惯在不同语境间准确转译，也让我对「表述精确」有职业级的执念。',
-      '我的方向是法律与 AI 的交叉地带：法律文本的结构化、检索与评估。我相信法律场景的 AI 输出不能靠蒙，所以我的项目都围着同一件事转：让模型的每句话可复核、可评估、可追溯。工具上重度使用 Claude Code 等 AI 编码协作，并把工程纪律（测试、指标、失败案例）带进每一个法律项目。',
+      '我是胡圣炜，广东韶关人，中南财经政法大学法学与经济学双学位本科生， 成长于粤北多语言环境（普通话、粤语、客家话），这让我习惯在不同语境间准确转译， 也让我对「表述精确」有职业级的执念。',
+      '我的方向是法律与 AI 的交叉地带：法律文本的结构化、检索与评估。 我相信法律场景的 AI 输出不能靠蒙，所以我的项目都围着同一件事转： 让模型的每句话可复核、可评估、可追溯。工具上重度使用 Claude Code 等 AI 编码协作， 并把工程纪律（测试、指标、失败案例）带进每一个法律项目。',
     ],
     factsAria: '关键信息',
     facts: [
@@ -459,6 +462,7 @@ const en: Strings = {
     sections: [
       {
         title: 'Education',
+        en: '',
         edu: [
           { strong: 'Law', note: 'Main courses: jurisprudence, general civil law, criminal law, criminal procedure, administrative law and administrative litigation, intellectual property, commercial law, civil procedure, public international law' },
           { strong: 'Economics', note: 'Main courses: calculus, political economy, mathematical statistics and probability, intermediate microeconomics, intermediate macroeconomics, intermediate econometrics' },

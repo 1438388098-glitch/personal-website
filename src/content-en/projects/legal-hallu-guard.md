@@ -2,6 +2,7 @@
 title: "legal-hallu-guard: a citation guardrail for legal answers"
 summary: "Three deterministic checks for cited legal answers: does the provision exist, is the quote verbatim, are claims backed; plus a wrong-citation-rate metric."
 group: 法律主线
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-08-24
 featured: false
 order: 6

@@ -1,7 +1,8 @@
 ---
 title: "auto-iterate-project: an autonomous project-iteration workflow"
-summary: "Iterates any git project autonomously inside an agent session: evidence-backed candidates mined from repository facts, ranked by value, implemented in small steps, verified then committed, with budgets and hard-stop gates governing multi-hour runs."
+summary: "Iterates any git project autonomously in an agent session: evidence-backed candidates, value-ranked, small verified steps, budgets and hard-stop gates."
 group: 工程侧证
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-05-06
 featured: false
 order: 1

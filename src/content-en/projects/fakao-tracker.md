@@ -1,7 +1,8 @@
 ---
 title: "fakao-tracker: bar exam study check-ins"
-summary: "A local-first Flask app bundled for double-click startup: ships the 2026 multi-stage bar exam plan, spreads a four-stage schedule and four daily blocks automatically; check-ins, progress and backups all stay on the machine."
+summary: "A local-first Flask app for bar exam prep: ships the 2026 multi-stage plan, lays out four daily blocks; check-ins and backups stay local."
 group: 法律工具
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-09-29
 featured: false
 order: 2
@@ -16,6 +17,8 @@ metrics:
     value: 'fully local'
     detail: "First run auto-creates the database (SQLite) and seeds the schedule; check-ins and backups upload nowhere"
 links:
+  - label: Live instance
+    url: https://iweistoicqc5.top/daka/
   - label: GitHub repository
     url: https://github.com/1438388098-glitch/fakao-tracker
 ---
@@ -26,7 +29,7 @@ The execution problem of exam prep is not material; it is that nobody schedules 
 
 ## Mechanism
 
-The dashboard shows the day in four blocks (morning / afternoon / evening plus review), each with its raw duration and an effective-duration suggestion (video at 1.5 to 2x); if you run ahead or behind, shift buttons move the whole plan. One-click backup into data/backups, dark mode included.
+The dashboard shows the day in four blocks (morning / afternoon / evening plus review), each with its raw duration and an effective-duration suggestion (video at 1.5 to 2x); if you run ahead or behind, shift buttons move the whole plan. One-click backup into data/backups, dark mode included. Since 2026-10-07 there is also an online instance for the site owner's own use (the [/daka/](https://iweistoicqc5.top/daka/) subsite), running on the owner's server; check-in data lands in that machine's local SQLite, and the design boundary is unchanged.
 
 ## Verification
 

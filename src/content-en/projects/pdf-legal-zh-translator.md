@@ -1,7 +1,8 @@
 ---
 title: "pdf-legal-zh-translator: a skill for translating long legal PDFs into Chinese"
-summary: "A translation AI skill for hundred-page legal and policy PDFs: chunked parallel translation, a shared glossary locking terms, citations kept verbatim, hard per-page coverage checks, then four-way review and deterministic term backfill before rendering the Chinese PDF."
+summary: "A translation skill for long legal PDFs: parallel chunked translation, shared glossary, verbatim citations, hard page-coverage checks, four-way review."
 group: 法律工具
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-09-28
 featured: false
 order: 3

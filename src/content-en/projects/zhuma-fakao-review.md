@@ -1,7 +1,8 @@
 ---
 title: "zhuma-fakao-review: a review assistant for Zhuma bar-exam wrong answers"
-summary: "Turns every wrong answer in your Zhuma bar-exam book into per-subject, recitation-ready knowledge-point PDFs: full fetch through read-only interfaces, six-dimension review by subagents, and defensive engineering with atomic writes and circuit breakers."
+summary: "Turns Zhuma bar-exam wrong answers into per-subject, recitation-ready PDFs: read-only fetch, six-dimension subagent review, atomic writes, circuit breakers."
 group: 法律主线
+disclaimer: This project is for technical research only; its output is not legal advice.
 date: 2026-08-12
 featured: false
 order: 4
