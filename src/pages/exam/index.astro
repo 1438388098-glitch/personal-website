@@ -7,7 +7,6 @@ import { isVisible } from '../../lib/publish';
 import { EXAM_AGG } from '../../lib/exam-progress';
 import { figure } from '../../lib/metrics';
 import { SELF_CHECK_AGG } from '../../data/self-check';
-import { githubRepoUrl } from '../../lib/site';
 import EntryCard from '../../components/EntryCard.astro';
 
 const articles = (await getCollection('exam', isVisible))
@@ -46,7 +45,7 @@ const stages = [
     step: '04',
     stage: '主观题刷题',
     tool: 'fakao-shuati',
-    href: githubRepoUrl('fakao-shuati'),
+    href: '/projects/fakao-shuati/',
     ai: '自托管的主观题练习平台，作答、复盘、错题本都在自己机器上',
     output: '深度复盘报告自动生成'
   },

@@ -2,7 +2,7 @@
 title: fakao-tracker：法考备考打卡
 summary: 本地优先的 Flask 打包小站：内置 2026 法考多阶段备考计划，自动铺开四阶段课表与每日四时段任务，打卡、进度、备份全在本机。
 group: 法律工具
-date: 2026-09-29
+date: 2026-10-07
 featured: false
 order: 2
 metrics:

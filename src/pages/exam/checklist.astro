@@ -159,10 +159,14 @@ import { SELF_CHECK, SELF_CHECK_AGG } from '../../data/self-check';
     border: 1.5px solid var(--border-strong); background: var(--surface);
     cursor: pointer;
   }
-  .item input:checked { background: var(--accent); border-color: var(--accent); }
-  .item input:checked::after {
-    content: '✓'; display: block; color: var(--bg);
-    font-size: 0.8rem; line-height: 1.05; text-align: center; font-weight: 700;
+  /* 勾选符号用内联 SVG 背景：input::after 在部分浏览器（Safari）不渲染；
+     data URI 里用不了 CSS 变量，对勾取两个主题 --bg 的对应色值各给一条 */
+  .item input:checked {
+    background: var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3L12.5 5' fill='none' stroke='%23faf9f6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 0.8rem no-repeat;
+    border-color: var(--accent);
+  }
+  html[data-theme='dark'] .item input:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3L12.5 5' fill='none' stroke='%23151513' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   }
   .item input:checked ~ .text { color: var(--text-muted); }
   .text { font-size: 0.95rem; }
@@ -175,7 +179,8 @@ import { SELF_CHECK, SELF_CHECK_AGG } from '../../data/self-check';
   @media print {
     .toolbar, .actions { display: none; }
     .crumb { display: none; }
-    .subject { break-inside: avoid-page; }
+    /* 一组最多 6 条，组级防断页必然放得下；科目级（10~12 条）接近整页高，浏览器要么强行断开要么留大片空白 */
+    .group { break-inside: avoid; }
     .item input:checked ~ .text { color: var(--text); }
   }
 </style>

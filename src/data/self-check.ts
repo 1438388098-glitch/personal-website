@@ -53,7 +53,7 @@ export const SELF_CHECK: SelfCheckSubject[] = [
           {
             id: 'g-flow-selective',
             text: '商法 / 行政二选一，只答一道',
-            hint: '双答只计第一道，第二道写了也白写'
+            hint: '按答题卡所选科目计分，双答一般只认第一道，别赌'
           },
           {
             id: 'g-flow-final',
@@ -131,7 +131,7 @@ export const SELF_CHECK: SelfCheckSubject[] = [
         items: [
           { id: 'c-gen-attempt', text: '犯罪形态（预备 / 未遂 / 中止 / 既遂）的判断标准落到案情' },
           { id: 'c-gen-number', text: '罪数一句话交代（想象竞合 / 法条竞合 / 数罪并罚）' },
-          { id: 'c-gen-surrender', text: '自首 / 坦白 / 立功构成表述完整（自动投案 + 如实供述）' }
+          { id: 'c-gen-surrender', text: '自首写全「自动投案 + 如实供述」；坦白、立功按各自构成交代，不混用' }
         ]
       }
     ]
@@ -211,7 +211,7 @@ export const SELF_CHECK: SelfCheckSubject[] = [
         id: 'admin-scope',
         title: '受案范围与当事人',
         items: [
-          { id: 'a-scope-first', text: '先判断是否属于受案范围（内部行为 / 过程性行为 / 事实行为）' },
+          { id: 'a-scope-first', text: '先判断是否属于受案范围：内部行为、过程性行为一般不可诉；事实行为通常可诉' },
           { id: 'a-defendant', text: '被告列对；经复议的案件点明复议机关作共同被告的情形' },
           { id: 'a-rexian', text: '复议前置还是自由选择，写明依据' }
         ]
@@ -253,7 +253,7 @@ export const SELF_CHECK: SelfCheckSubject[] = [
         items: [
           { id: 'b-br-cause', text: '破产原因表述准确（不能清偿到期债务 + 资不抵债或明显缺乏清偿能力）' },
           { id: 'b-br-rights', text: '别除权 / 撤销权 / 抵销权的构成与行使期限点明' },
-          { id: 'b-br-order', text: '清偿顺序写全（担保债权 → 职工债权 → 税收 → 普通）' }
+          { id: 'b-br-order', text: '清偿顺序按位次写全：破产费用与共益债务 → 职工债权 → 社保与税款 → 普通债权', hint: '担保物权人行使别除权、就特定财产优先受偿，不进这个顺位' }
         ]
       }
     ]
