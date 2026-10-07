@@ -94,8 +94,10 @@ const stages = [
     <div class="stage-grid">
       {stages.map((s) => (
         <div class="card stage-card">
-          <p class="step mono" aria-hidden="true">{s.step}</p>
-          <p class="stage-name">{s.stage}</p>
+          <p class="stage-head">
+            <span class="step mono" aria-hidden="true">{s.step}</span>
+            <span class="stage-name">{s.stage}</span>
+          </p>
           <a
             class="tool"
             href={s.href}
@@ -129,11 +131,11 @@ const stages = [
 <style>
   section { margin: var(--section-gap) 0; }
   .stage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
-  .stage-card { padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.35rem; }
-  /* 环节编号：与 ProjectCard 的卡片序号同一套墨色描边方框；蓝色留给区块编号 .sec-no，
-     同一个「卡片序号」概念不再有方框 / 纯蓝两种长相 */
+  .stage-card { padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  /* 头部一行：编号框 + 环节名并排。编号框与 ProjectCard 的卡片序号同一套墨色描边方框，
+     蓝色留给区块编号 .sec-no；hover 反色是这张卡唯一的小图形反馈 */
+  .stage-head { display: flex; align-items: center; gap: 0.65rem; margin: 0; }
   .step {
-    align-self: flex-start;
     display: inline-flex; align-items: center; justify-content: center;
     min-width: 2rem; height: 1.5rem; padding: 0 0.4rem; margin: 0;
     font-weight: 700; color: var(--text); font-size: 0.82rem;
@@ -142,20 +144,21 @@ const stages = [
   }
   /* 反色用 --bg 而非白：暗色下强调蓝变浅蓝，白字对比不足 */
   .stage-card:hover .step { background: var(--accent); border-color: var(--accent); color: var(--bg); }
-  /* 700：Noto Sans SC 无 800 面，显式 800 会回落 900，与全站小标题口径不一致 */
-  .stage-name { margin: 0; font-weight: 700; font-size: 1.1rem; }
-  /* 工具名小方框：直角描边，hover 转强调蓝 */
+  /* 700：Noto Sans SC 无 800 面，显式 800 会回落 900，与全站小标题口径一致 */
+  .stage-name { margin: 0; font-weight: 700; font-size: var(--fs-card-title); }
+  /* 工具名不再描框：中文工具名装进英文等宽描边框里两头不是，降为 ProjectCard repo 行
+     同语言的 meta 链接（muted，hover 转蓝）；min-height 保留 ≥44px 触控目标 */
   .tool {
-    align-self: flex-start; font-size: 0.82rem; line-height: 1.7;
-    border: 1px solid var(--border); padding: 0.15rem 0.6rem;
-    /* 触控目标 ≥44px：撑高可点区域，字号与版式不动 */
+    align-self: flex-start; font-size: 0.9rem;
     min-height: 44px; display: inline-flex; align-items: center;
-    color: var(--text);
-    transition: border-color 0.15s ease, color 0.15s ease;
+    color: var(--text-muted);
+    transition: color 0.15s ease;
   }
-  .tool:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+  .tool:hover { color: var(--accent); text-decoration: none; }
   .ai { margin: 0; color: var(--text); font-size: 0.95rem; }
-  .output { margin: 0; color: var(--text-muted); font-size: 0.82rem; }
+  /* 数据行钉底：与 ProjectCard 的 metrics 脚注同一套（margin-top:auto + 细上边线），
+     同排卡片不管描述几行，数据基线都落在同一条线上，不再出现下半张空白 */
+  .output { margin: auto 0 0; padding-top: 0.7rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.82rem; }
   @media (max-width: 720px) {
     .stage-grid { grid-template-columns: 1fr; }
   }
