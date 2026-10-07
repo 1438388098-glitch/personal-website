@@ -123,8 +123,10 @@ const zh = {
     title: '胡圣炜 · Stoic',
     label: '法律 × 工程',
     h1: '用 <span class="hl">AI</span> 加速进步。',
-    lede: '法条检索、法考判分、司法评测，法律工具全部开源、数字可查；A 股量化平台私有，规模与方法写在项目页。',
-    pills: ['备考法考中', '武汉', '法律工具全部开源'],
+    /* 分号后手动断行：两行各对应一层信息（开源工具/量化私有），避免词被拆断 */
+    lede: '法条检索、法考判分、司法评测，法律工具全部开源、数字可查；<br />A 股量化平台私有，规模与方法写在项目页。',
+    /* 一行元信息注记：不再用边框小签（「法律工具全部开源」与导语重复，删） */
+    pills: ['武汉', '备考法考中'],
     ctas: { primary: '看项目', about: '关于我', contact: '联系我' },
     numbersAria: '关键数字',
     panel: [
@@ -430,8 +432,8 @@ const en: Strings = {
     title: 'HU Shengwei · Stoic',
     label: 'Law × Engineering',
     h1: 'Law student,<br />building <span class="hl">tools</span> on the side.',
-    lede: 'Statute retrieval, bar-exam grading, judicial benchmarks: the legal tools are all open source, every number checkable; the A-share quant platform is private, its scale and method on the project page.',
-    pills: ['Prepping for the Chinese bar exam', 'Wuhan, China', 'Legal tools all open source'],
+    lede: 'Statute retrieval, bar-exam grading, judicial benchmarks: the legal tools are all open source, every number checkable.<br />The A-share quant platform is private, its scale and method on the project page.',
+    pills: ['Wuhan, China', 'Prepping for the Chinese bar exam'],
     ctas: { primary: 'See projects', about: 'About me', contact: 'Contact' },
     numbersAria: 'Key numbers',
     panel: [

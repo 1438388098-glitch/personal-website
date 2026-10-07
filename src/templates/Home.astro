@@ -41,9 +41,9 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
     <div>
       <p class="label fade-up">{t.home.label}{lang === 'zh' && <span class="sec-en">Law × Engineering</span>}</p>
       <h1 class="fade-up d1" set:html={t.home.h1} />
-      <p class="lede fade-up d2">{t.home.lede}</p>
+      <p class="lede fade-up d2" set:html={t.home.lede} />
       <div class="pills fade-up d2">
-        {t.home.pills.map((p, i) => <span class:list={['pill', { alt: i === 1 }]}>{p}</span>)}
+        <p class="meta-line">{t.home.pills.join(' · ')}</p>
       </div>
       <p class="ctas fade-up d3">
         <a class="btn primary" href={href(lang, '/projects/')}>{t.home.ctas.primary} <span class="arr" aria-hidden="true">→</span></a>
@@ -174,16 +174,13 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
   .label { display: inline-flex; align-items: center; gap: 0.55rem; font-size: 0.86rem; font-weight: 700; margin: 0 0 1.3rem; }
   .label::before { content: ''; width: 8px; height: 8px; background: var(--accent); flex: none; }
   .hero .hl { box-shadow: inset 0 -0.32em color-mix(in srgb, var(--accent) 26%, transparent); }
-  .lede { margin: 1.3rem 0 0; max-width: 30rem; color: var(--text-muted); font-size: 1.06rem; }
-  .pills { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 1.5rem 0 0; padding: 0; }
-  .pill {
-    display: inline-flex; align-items: center; gap: 0.45rem;
-    background: var(--surface); border: 1px solid var(--border);
-    padding: 0.34rem 0.9rem; font-size: 0.88rem; font-weight: 500; color: var(--text);
-  }
-  .pill::before { content: ''; width: 7px; height: 7px; background: var(--ink); flex: none; }
-  .pill.alt::before { background: var(--accent); }
-  .ctas { display: flex; gap: 0.9rem; margin: 2.1rem 0 0; align-items: center; }
+  .lede { margin: 1.3rem 0 0; max-width: 34rem; color: var(--text-muted); font-size: 1.06rem; }
+  /* hero 的元信息行：地点与状态作一行灰字注记（· 分隔），不再用三个边框小签——
+     签盒与主按钮抢层级，其中「法律工具全部开源」与导语逐字重复。
+     .pill 签样式保留给 Now 区话题行使用。 */
+  .pills { margin: 1.15rem 0 0; padding: 0; }
+  .meta-line { margin: 0; color: var(--text-muted); font-size: 0.92rem; letter-spacing: 0.01em; }
+  .ctas { display: flex; gap: 0.9rem; margin: 1.9rem 0 0; align-items: center; }
   .btn .arr { font-family: var(--font-mono); transition: transform 0.2s ease; }
   .btn:hover .arr { transform: translateX(4px); }
   /* 下划线加粗也要过渡：0.15s 与其余小图形的 hover 节奏一致，否则是硬闪 */
