@@ -6,6 +6,7 @@ export interface Metric {
 
 /** 站内数字来源（法考页引用）：每个数字必须能在对应项目案例页溯源。 */
 export const HOME_METRICS: Metric[] = [
+  { source: 'fakao-tracker', figures: { planStages: '4+ 阶段课表', dailySlots: '每天 4 段任务' } },
   { source: 'cn-judbench', figures: { packs: '12 个评测包', questions: '323 道公开题' } },
   { source: 'statute-rag', figures: { questions: '100 道留出盲写题', hitRate: '92.0%' } }
 ];

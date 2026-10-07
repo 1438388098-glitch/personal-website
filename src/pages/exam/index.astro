@@ -15,10 +15,18 @@ const articles = (await getCollection('exam', isVisible))
 /* 输出数字从 lib 层单源取结构化 figures，不在此页复述字面量 */
 const publicRepos = (await getCollection('toolbox')).length;
 
-// 备考一圈的先后顺序：客观题错题从竹马来，从整理错题起步，主观题收尾；产出数据均可溯源到对应案例页
+// 备考一圈的先后顺序：先有计划与打卡这个底盘，客观题错题从竹马来，主观题刷题判分收尾；产出数据均可溯源到对应案例页
 const stages = [
   {
     step: '01',
+    stage: '计划打卡',
+    tool: 'fakao-tracker',
+    href: '/projects/fakao-tracker/',
+    ai: '今天该学什么不用自己排：内置多阶段备考计划，开站自动铺课表，做完勾掉、晚上打卡；已上线，手机电脑直接打卡',
+    output: `${figure('fakao-tracker', 'planStages')}自动铺开，${figure('fakao-tracker', 'dailySlots')}，数据不出本机`
+  },
+  {
+    step: '02',
     stage: '错题整理',
     tool: 'zhuma-fakao-review',
     href: '/projects/zhuma-fakao-review/',
@@ -26,7 +34,7 @@ const stages = [
     output: `${EXAM_AGG.wrongQuestions.toLocaleString('en-US')} 道错题 → ${EXAM_AGG.pdfBooklets} 册 PDF，约 ${EXAM_AGG.minutesPerRound} 分钟一轮`
   },
   {
-    step: '02',
+    step: '03',
     stage: '法条检索',
     tool: 'statute-rag',
     href: '/projects/statute-rag/',
@@ -34,7 +42,7 @@ const stages = [
     output: `${figure('statute-rag', 'questions')}，${figure('statute-rag', 'hitRate')} 检中正确条文`
   },
   {
-    step: '03',
+    step: '04',
     stage: '主观题刷题',
     tool: 'fakao-shuati',
     href: githubRepoUrl('fakao-shuati'),
@@ -42,7 +50,7 @@ const stages = [
     output: '深度复盘报告自动生成'
   },
   {
-    step: '04',
+    step: '05',
     stage: '主观题判分',
     tool: 'fakao-grader',
     href: '/projects/fakao-grader/',
@@ -50,7 +58,7 @@ const stages = [
     output: '✓ / △ / ✗ 三级判定，±3 分考场预估带'
   },
   {
-    step: '05',
+    step: '06',
     stage: 'AI 能力评测',
     tool: 'cn-judbench（法衡）',
     href: '/projects/cn-judbench/',
@@ -58,7 +66,7 @@ const stages = [
     output: `${figure('cn-judbench', 'packs')} · ${figure('cn-judbench', 'questions')}`
   },
   {
-    step: '06',
+    step: '07',
     stage: '工具制造',
     tool: 'Claude Code 等 AI 编码协作',
     href: '/toolbox/',
@@ -67,12 +75,12 @@ const stages = [
   }
 ];
 ---
-<BaseLayout title="法考 × AI" description="把备考拆成六个环节，每个环节一个自建 AI 工具：错题变笔记、法条检索必带条文引用、主观题自练自判、AI 先评测再上岗，产出数据全部公开可查。">
+<BaseLayout title="法考 × AI" description="把备考拆成七个环节，每个环节一个自建 AI 工具：计划打卡、错题变笔记、法条检索必带条文引用、主观题自练自判、AI 先评测再上岗，产出数据全部公开可查。">
   <h1>法考 × AI</h1>
   <section aria-label="备考环节与自建工具">
     <div class="sec-head">
       <span class="sec-no">01</span>
-      <h2>六个环节，按备考顺序<span class="sec-en">Workflow</span></h2>
+      <h2>七个环节，按备考顺序<span class="sec-en">Workflow</span></h2>
     </div>
     <div class="stage-grid">
       {stages.map((s) => (

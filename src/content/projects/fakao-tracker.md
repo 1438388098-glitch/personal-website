@@ -16,6 +16,8 @@ metrics:
     value: '全本机'
     detail: 首次运行自动建库（SQLite）并播种课表，打卡记录与备份不上传任何地方
 links:
+  - label: 在线使用
+    url: https://iweistoicqc5.top/daka/
   - label: GitHub 仓库
     url: https://github.com/1438388098-glitch/fakao-tracker
 ---
@@ -26,7 +28,7 @@ links:
 
 ## 机制
 
-仪表盘按上午 / 下午 / 晚上加复盘四段展示当天内容，每段标注原始时长与有效时长建议（视频按 1.5 到 2 倍速看）；进度超前或落后可以用前后平移键整段挪计划。右上角一键备份到 data/backups，支持深色模式。
+仪表盘按上午 / 下午 / 晚上加复盘四段展示当天内容，每段标注原始时长与有效时长建议（视频按 1.5 到 2 倍速看）；进度超前或落后可以用前后平移键整段挪计划。右上角一键备份到 data/backups，支持深色模式。2026-10-07 起有站主自用的线上实例（[/daka/](https://iweistoicqc5.top/daka/) 子站），跑在自己的服务器上，打卡数据落在那台机器的本地 SQLite，设计边界不变。
 
 ## 验证
 
