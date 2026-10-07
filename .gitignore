@@ -9,3 +9,6 @@ Thumbs.db
 .preview.log
 .preview.err.log
 .autopilot/
+
+# wrangler 本地状态（可能含部署产物，OAuth token 在用户目录不入库）
+.wrangler/

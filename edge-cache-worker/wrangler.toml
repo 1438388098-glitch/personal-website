@@ -1,0 +1,9 @@
+name = "edge-cache"
+main = "worker.js"
+compatibility_date = "2026-10-07"
+account_id = "48837120a482b0a484d823cf62d07a58"
+
+# 只绑裸域：www 已由源站 301 到裸域，不参与缓存
+routes = [
+  { pattern = "iweistoicqc5.top/*", zone_name = "iweistoicqc5.top" }
+]
