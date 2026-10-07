@@ -52,9 +52,6 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
       </p>
     </div>
     <aside class="numbers fade-up d2" aria-label={t.home.numbersAria}>
-      <div class="comp" aria-hidden="true">
-        <i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i>
-      </div>
       <div class="num-list">
         {panelRows.map((row) => (
           <div class="num-row"><span class="k">{row.k}{row.note && <span class="note">{row.note}</span>}</span><span class="v mono">{row.v}</span></div>
@@ -193,34 +190,28 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
   .link-plain { font-size: 0.95rem; font-weight: 600; color: var(--text); box-shadow: inset 0 -1.5px var(--accent); padding-bottom: 1px; transition: box-shadow 0.15s ease; }
   .link-plain:hover { color: var(--text); box-shadow: inset 0 -2.5px var(--accent); text-decoration: none; }
 
-  /* 数字面板：白底描边盒，几何构成（呼应设计参考的黑块构成）+ 等宽指标行。
-     两层：右下错开 12px 的描边板垫在下面，底纹从板中间透出来，面板就落在纸叠上；
-     左上角一枚蓝方块压在网格线顶端，与导语的方块同一记号。 */
+  /* 数字面板：白底描边盒 + 等宽指标行，只装真实数字。
+     顶部原先有一块几何构成（三根描边柱加一块实心块），没有数据含义、比例也是随手定的；
+     暗色下实心块随 --ink 翻成一整块奶油底，正是「暗色不做反白色块」那条教训的复现。
+     右下错开 12px 的描边板同样去掉：1px 发丝在深色底上读起来像画歪的第二条边。
+     现在面板只留一层描边盒，加上左上角那枚压在栏界线上的蓝方块（与导语方块同一记号）。 */
   .numbers { background: var(--surface); border: 1.5px solid var(--border-strong); }
-  .numbers::after {
-    content: ''; position: absolute; z-index: -1; pointer-events: none;
-    inset: 12px -12px -12px 12px;
-    border: 1px solid var(--border);
-  }
   /* 竖线顶端的蓝方块：与导语那枚 8px 方块同一记号，压在栏界线上（3.5rem + 自身半宽） */
   .numbers::before {
     content: ''; position: absolute; left: calc(-3.5rem - 4px); top: 0;
     width: 8px; height: 8px; background: var(--accent);
   }
-  .comp { display: flex; align-items: flex-end; gap: 10px; padding: 1.6rem 1.8rem 0; height: 180px; }
-  .comp i { display: block; border: 1.5px solid var(--ink); }
-  .comp .c1 { width: 96px; height: 150px; }
-  .comp .c2 { width: 44px; height: 96px; }
-  .comp .c3 { width: 44px; height: 64px; }
-  .comp .c4 { width: 96px; height: 108px; background: var(--ink); position: relative; }
-  .comp .c4::after { content: ''; position: absolute; right: 10px; top: 10px; width: 12px; height: 12px; background: var(--accent); }
-  .num-list { padding: 0.4rem 1.8rem 1.2rem; }
-  .num-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.85rem 0; border-bottom: 1px solid var(--border); }
+  /* 行距放宽一档：五行指标是一份清单，不是仪表盘；给数字留出呼吸 */
+  .num-list { padding: 0.4rem 1.8rem 1.35rem; }
+  .num-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 1.05rem 0; border-bottom: 1px solid var(--border); }
   .num-row:last-child { border-bottom: none; }
-  .num-row .k { font-size: 0.9rem; color: var(--text-muted); }
-  /* 术语白话括注：另起一行、更小更淡，不参与「标签—数值」的基线对齐 */
-  .num-row .note { display: block; font-size: 0.72rem; line-height: 1.5; margin-top: 0.15rem; }
-  .num-row .v { font-size: 1.15rem; font-weight: 700; white-space: nowrap; color: var(--text); }
+  .num-row .k { font-size: 0.95rem; color: var(--text-muted); }
+  /* 术语白话括注：另起一行，比标签再小一档但仍在可读区。
+     原先 0.72rem（11.5px）是首屏最小的字，且首屏同时存在八种 10.5 至 14.4px 的字号，
+     「一堆小字」的观感就是这么来的；现在面板只有 0.82 / 0.95 / 1.25rem 三档。
+     不参与「标签—数值」的基线对齐。 */
+  .num-row .note { display: block; font-size: 0.82rem; line-height: 1.5; margin-top: 0.25rem; }
+  .num-row .v { font-size: 1.25rem; font-weight: 700; white-space: nowrap; color: var(--text); }
 
   section { margin: var(--section-gap) 0; }
   section.band { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
@@ -295,13 +286,8 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
     .hero { padding: 2.5rem 0; }
     .work-grid { grid-template-columns: 1fr; }
   }
-  /* 窄屏：几何构成缩比，避免固定尺寸撑破数字面板（曾溢出 ~20px 被裁掉右边框） */
+  /* 窄屏：面板左右内边距收窄，避免「1,674 万行」这类长值与标签挤到贴边 */
   @media (max-width: 480px) {
-    .comp { height: 140px; }
-    .comp .c1 { width: 72px; height: 112px; }
-    .comp .c2 { width: 34px; height: 72px; }
-    .comp .c3 { width: 34px; height: 48px; }
-    .comp .c4 { width: 72px; height: 80px; }
     .num-list { padding-inline: 1.2rem; }
   }
 </style>
