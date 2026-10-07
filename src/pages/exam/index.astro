@@ -140,7 +140,7 @@ const stages: { step: string; stage: string; tool: string; href: string; ai: str
     position: absolute; top: 0.8rem; right: 1rem;
     font-family: var(--font-display); font-weight: 900; font-size: 2.5rem; line-height: 1;
     color: var(--border); user-select: none; pointer-events: none;
-    transition: color 0.18s ease, -webkit-text-stroke-color 0.18s ease;
+    transition: color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
   @supports (-webkit-text-stroke: 1.5px #000) {
     .stage-no { color: transparent; -webkit-text-stroke: 1.5px var(--border); }
@@ -162,8 +162,10 @@ const stages: { step: string; stage: string; tool: string; href: string; ai: str
      同排卡片不管描述几行，数据基线都落在同一条线上，不再出现下半张空白 */
   .output { margin: auto 0 0; padding-top: 0.7rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.82rem; }
   /* 尾环（工具制造）是元环节：通栏横排，读法从上下堆变左中右；
-     padding-right 给幽灵数字留出专属列，数据行不再钉底改居右 */
+     padding-right 给幽灵数字留出专属列，数据行不再钉底改居右。
+     全宽行不做 hover 抬升：一整行上下抖动视觉上就是「晃」，只留数字填充与链接反馈 */
   .stage-card--wide { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 2rem; padding-right: 6.5rem; }
+  .stage-card--wide:hover { transform: none; box-shadow: none; }
   .stage-card--wide .stage-lead { flex: 0 0 15rem; }
   .stage-card--wide .ai { flex: 1; }
   .stage-card--wide .output { margin: 0; padding: 0; border-top: none; white-space: nowrap; }
