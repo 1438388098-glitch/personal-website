@@ -122,7 +122,7 @@ const zh = {
   home: {
     title: '胡圣炜 · Stoic',
     label: '法律 × 工程',
-    h1: '法学在读，<br />业余<span class="hl">造工具</span>。',
+    h1: '用 <span class="hl">AI</span> 加速进步。',
     lede: '法条检索、法考判分、司法评测，法律工具全部开源、数字可查；A 股量化平台私有，规模与方法写在项目页。',
     pills: ['备考法考中', '武汉', '法律工具全部开源'],
     ctas: { primary: '看项目', about: '关于我', contact: '联系我' },

@@ -3,11 +3,12 @@ import { SITE, SITE_PATHS, THEME_COLORS } from '../lib/site';
 import { langOf, strings } from '../lib/i18n';
 import { ClientRouter } from 'astro:transitions';
 import fontsCssUrl from '../styles/fonts.css?url';
-/* 首屏 preload：下面 8 个 woff2 是展示字族（--font-display，Noto Sans SC）在站内展示字重
+/* 首屏 preload：下面 6 个 woff2 是展示字族（--font-display，Noto Sans SC）在站内展示字重
    文本上命中的分片（可变字体 wght 轴单文件覆盖全部字重，分片编号与旧静态 900 档一致）。分两组：
    - 品牌名分片（57/112/113）：页头 .brand「胡圣炜」每页可见，故全站每页 preload；
      「胡」=112、「圣」=113、「炜」=57。
-   - hero 分片（114/116/117/118/119）：被首页主标题「法学在读，业余造工具。」额外命中，
+   - hero 分片（116/118/119）：被首页主标题「用 AI 加速进步。」额外命中
+     （「速/步」=116、「用/加/进」=118、「。」=119；「AI」走 Archivo 无需 Noto），
      仅中文首页 preload（/en/ 首页主标题是英文，走 Archivo，不需要 Noto 分片），
      其余页面注入纯属浪费高优先级带宽。
    其余上百个分片不 preload，仍按需加载；正文 400/700 不 preload（非首屏关键路径）。
@@ -17,15 +18,13 @@ import fontsCssUrl from '../styles/fonts.css?url';
 import fontNotoSans57 from '@fontsource-variable/noto-sans-sc/files/noto-sans-sc-57-wght-normal.woff2?url';
 import fontNotoSans112 from '@fontsource-variable/noto-sans-sc/files/noto-sans-sc-112-wght-normal.woff2?url';
 import fontNotoSans113 from '@fontsource-variable/noto-sans-sc/files/noto-sans-sc-113-wght-normal.woff2?url';
-import fontNotoSans114 from '@fontsource-variable/noto-sans-sc/files/noto-sans-sc-114-wght-normal.woff2?url';
 import fontNotoSans116 from '@fontsource-variable/noto-sans-sc/files/noto-sans-sc-116-wght-normal.woff2?url';
-import fontNotoSans117 from '@fontsource-variable/noto-sans-sc/files/noto-sans-sc-117-wght-normal.woff2?url';
 import fontNotoSans118 from '@fontsource-variable/noto-sans-sc/files/noto-sans-sc-118-wght-normal.woff2?url';
 import fontNotoSans119 from '@fontsource-variable/noto-sans-sc/files/noto-sans-sc-119-wght-normal.woff2?url';
 /* 品牌名分片：页头 .brand「胡圣炜」每页可见，全站每页 preload */
 const fontNotoBrandShards = [fontNotoSans57, fontNotoSans112, fontNotoSans113];
 /* hero 文案独有分片：仅中文首页 preload */
-const fontNotoHeroShards = [fontNotoSans114, fontNotoSans116, fontNotoSans117, fontNotoSans118, fontNotoSans119];
+const fontNotoHeroShards = [fontNotoSans116, fontNotoSans118, fontNotoSans119];
 interface Props { title: string; description?: string; type?: 'website' | 'article'; image?: string; noindex?: boolean; publishedTime?: Date; alternate?: string | null; }
 const { title, type = 'website', image = SITE_PATHS.ogImage, noindex = false, publishedTime, alternate = null } = Astro.props;
 /* 语言只从 URL 判；描述缺省值随语言切换（SITE 双语描述是唯一事实源） */
