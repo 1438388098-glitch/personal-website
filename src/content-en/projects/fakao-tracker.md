@@ -3,7 +3,7 @@ title: "fakao-tracker: bar exam study check-ins"
 summary: "A local-first Flask app for bar exam prep: ships the 2026 multi-stage plan, lays out four daily blocks; check-ins and backups stay local."
 group: 法律工具
 disclaimer: This project is for technical research only; its output is not legal advice.
-date: 2026-09-29
+date: 2026-10-07
 featured: false
 order: 2
 metrics:
