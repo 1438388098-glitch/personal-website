@@ -35,8 +35,12 @@
   --fs-card-title: 1.15rem;
   /* 区块（section）统一垂直间距：原先 2.5 / 3 / 3.5 / 4.5rem 四种 */
   --section-gap: 3.5rem;
-  /* 展示字族：Archivo 管西文与数字展示位，思源黑体管中文；正文同族小字重 */
-  --font-display: 'Archivo', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  /* 展示字族：Archivo 管西文与数字展示位，思源黑体管中文；正文同族小字重。
+     族名必须与 fonts.css 里引的包声明**逐字一致**：@fontsource-variable 的可变字体族名带
+     「 Variable」后缀（'Archivo Variable' / 'Noto Sans SC Variable'），只有 @fontsource/space-mono
+     这类静态包才是不带后缀的 'Space Mono'。写成 'Archivo' 不会报错、不会回退到别的地方，
+     只是永远匹配不上——浏览器静默改用系统字体，字体文件白下载。改名前先看 wght.css 的 font-family。 */
+  --font-display: 'Archivo Variable', 'Noto Sans SC Variable', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   --font-mono: 'Space Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
 }
 html[data-theme='dark'] {
