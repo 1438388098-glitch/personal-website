@@ -18,7 +18,9 @@ const EN = 'src/content-en';
 const FULL_PAIR_DIRS = ['projects', 'toolbox', 'now'];
 const PAIR_DIRS = [...FULL_PAIR_DIRS, 'posts'];
 
-/** 剥 frontmatter：返回 { frontmatter, body }。首行必须是 ---（与 check-style 同一约定）。 */
+/** 剥 frontmatter：返回 { frontmatter, body }。首行必须是 ---（与 check-style 同一约定）。
+ * @param {string} text
+ * @returns {{frontmatter: string, body: string}} */
 export function stripFrontmatter(text) {
   const lines = text.split(/\r?\n/);
   if (lines[0] !== '---') return { frontmatter: '', body: text };
@@ -30,9 +32,12 @@ export function stripFrontmatter(text) {
   return { frontmatter: lines.slice(1, end).join('\n'), body: lines.slice(end + 1).join('\n') };
 }
 
-/** 汉字数字（零一...十百千）转阿拉伯数：法条号「第一百三十三条」→ 133。非汉字数字串返回 null。 */
+/** 汉字数字（零一...十百千）转阿拉伯数：法条号「第一百三十三条」→ 133。非汉字数字串返回 null。
+ * @param {string} s
+ * @returns {number | null} */
 export function chineseNumeralsToInt(s) {
   if (!/^[零一二两三四五六七八九十百千]+$/.test(s)) return null;
+  /** @type {Record<string, number>} */
   const digit = { 零: 0, 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 };
   let total = 0, section = 0, num = 0;
   for (const ch of s) {
@@ -47,9 +52,13 @@ export function chineseNumeralsToInt(s) {
 
 /** zh 正文的「重要数字」集合：≥2 位阿拉伯数（逗号容错）、小数、万/亿量级、汉字数字条号。
     个位纯数不取（编号、序号在译文里写法自由，取了全是误报）。
-    后瞻排除三类量词：万/亿走量级归一（50 万 ↔ 500k），「N 月」是月份（en 译作月名，不保留数字）。 */
+    后瞻排除三类量词：万/亿走量级归一（50 万 ↔ 500k），「N 月」是月份（en 译作月名，不保留数字）。
+ * @param {string} zhBody
+ * @returns {Set<string>} */
 export function extractZhNumbers(zhBody) {
+  /** @type {Set<string>} */
   const nums = new Set();
+  /** @param {number} n */
   const add = (n) => { if (Number.isFinite(n)) nums.add(String(Math.round(n))); };
   /* (?!\d) 阻断回溯：否则「200 万」会被退火成「20」命中 */
   for (const m of zhBody.matchAll(/\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d{2,}(?!\d)(?![ \t]*(?:万|亿|月))/g)) {
@@ -65,9 +74,13 @@ export function extractZhNumbers(zhBody) {
   return nums;
 }
 
-/** en 正文数字集合：阿拉伯数（含小数）压平，k/M/B 量级词归一到绝对值，供与 zh 比对。 */
+/** en 正文数字集合：阿拉伯数（含小数）压平，k/M/B 量级词归一到绝对值，供与 zh 比对。
+ * @param {string} enBody
+ * @returns {Set<string>} */
 export function extractEnNumbers(enBody) {
+  /** @type {Set<string>} */
   const nums = new Set();
+  /** @param {number} n */
   const add = (n) => { if (Number.isFinite(n)) nums.add(String(Math.round(n))); };
   for (const m of enBody.matchAll(/\d[\d,]*(?:\.\d+)?/g)) {
     add(parseFloat(m[0].replace(/,/g, '')));
@@ -79,7 +92,10 @@ export function extractEnNumbers(enBody) {
   return nums;
 }
 
-/** zh 数字是否在 en 正文可寻：精确相等，或 en 含等值小数形态（92 命中 92.0）。 */
+/** zh 数字是否在 en 正文可寻：精确相等，或 en 含等值小数形态（92 命中 92.0）。
+ * @param {string} num
+ * @param {Set<string>} enNums
+ * @returns {boolean} */
 export function numberPresent(num, enNums) {
   if (enNums.has(num)) return true;
   if (/^\d+$/.test(num)) {
@@ -90,20 +106,28 @@ export function numberPresent(num, enNums) {
   return false;
 }
 
-/** en 正文里的汉字渗漏：《》书名号内豁免（按约定保留原文名），其余汉字逐处报违规。 */
+/** en 正文里的汉字渗漏：《》书名号内豁免（按约定保留原文名），其余汉字逐处报违规。
+ * @param {string} enBody
+ * @returns {string[]} */
 export function cjkViolations(enBody) {
   const stripped = enBody.replace(/《[^》]*》/g, '');
   return [...stripped.matchAll(/[\u4e00-\u9fff]+/g)].map((m) => m[0].slice(0, 20));
 }
 
-/** frontmatter 单值字段（key: value 行） */
+/** frontmatter 单值字段（key: value 行）
+ * @param {string} frontmatter
+ * @param {string} field
+ * @returns {string | null} */
 export function fmField(frontmatter, field) {
   const m = new RegExp(`^${field}:[ \\t]*(.*)$`, 'm').exec(frontmatter);
   return m ? m[1].trim() : null;
 }
 
 /** frontmatter 列表字段：行内 [a, b] 与块式 "- item" 两种形态。
-    块式读到第一个非 "- " 行为止（frontmatter 内不会再有别的缩进列表语义）。 */
+    块式读到第一个非 "- " 行为止（frontmatter 内不会再有别的缩进列表语义）。
+ * @param {string} frontmatter
+ * @param {string} field
+ * @returns {string[]} */
 export function fmList(frontmatter, field) {
   const lines = frontmatter.split(/\r?\n/);
   const start = lines.findIndex((l) => new RegExp(`^${field}:[ \\t]`).test(l) || l === `${field}:`);
@@ -125,13 +149,16 @@ export function fmList(frontmatter, field) {
 /** en 正文汉字白名单：字面量是代码/产物格式的一部分，译掉反而失真。
     legal-job-tracker 的三个词是日期解析代码匹配的原始字符串；
     pdf-legal-zh-translator 的「中文 (English)」是该工具术语回填的输出格式本身。 */
+/** @type {Record<string, string[]>} */
 const CJK_ALLOWLIST = {
   'projects/legal-job-tracker.md': ['截止', '报名', '申请'],
   'projects/pdf-legal-zh-translator.md': ['中文'],
 };
 
 /** links 字段块内的 url 集合：只在 links: 行到下一个顶层键之间找，避免误吞 toolbox 的 related 回链
-    （related 指向 /en/ 是有意的语言内回链，不参与比对）。 */
+    （related 指向 /en/ 是有意的语言内回链，不参与比对）。
+ * @param {string} frontmatter
+ * @returns {string[]} */
 export function linksUrls(frontmatter) {
   const lines = frontmatter.split(/\r?\n/);
   const start = lines.findIndex((l) => l === 'links:' || /^links:[ \t]/.test(l));
@@ -144,7 +171,11 @@ export function linksUrls(frontmatter) {
   return [...zone.join('\n').matchAll(/url:\s*(\S+)/g)].map((m) => m[1]);
 }
 
-/** 对一对同名 zh/en 文件做全部检查，返回违规说明列表。 */
+/** 对一对同名 zh/en 文件做全部检查，返回违规说明列表。
+ * @param {string} name
+ * @param {string} zhText
+ * @param {string} enText
+ * @returns {string[]} */
 export function checkPair(name, zhText, enText) {
   const issues = [];
   const zh = stripFrontmatter(zhText);
@@ -198,6 +229,8 @@ export function checkPair(name, zhText, enText) {
   return issues;
 }
 
+/** @param {string} base
+ * @returns {string[]} */
 function listMd(base) {
   if (!existsSync(base)) return [];
   return readdirSync(base).filter((n) => n.endsWith('.md')).sort();

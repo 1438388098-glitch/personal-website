@@ -10,25 +10,38 @@ import { pathToFileURL } from 'node:url';
 const ROOT = resolve('src/content');
 const MANIFEST = resolve('scripts/content-golden.json');
 
+/** 单份内容的 SHA256（hex）
+ * @param {string} text
+ * @returns {string} */
 export function sha256(text) {
   return createHash('sha256').update(text, 'utf8').digest('hex');
 }
 
-/** 相对路径 → 哈希 的全量清单（按路径排序，保证 diff 稳定） */
+/** 相对路径 → 哈希 的全量清单（按路径排序，保证 diff 稳定）
+ * @param {string} [root]
+ * @returns {Record<string, string>} */
 export function collectHashes(root = ROOT) {
+  /** @type {Record<string, string>} */
   const map = {};
   (function walk(dir) {
     for (const name of readdirSync(dir).sort()) {
       const p = join(dir, name);
       if (statSync(p).isDirectory()) walk(p);
-      else if (name.endsWith('.md')) map[p.split(root).pop().replace(/\\/g, '/')] = sha256(readFileSync(p, 'utf8'));
+      else if (name.endsWith('.md')) {
+        const rel = (p.split(root).pop() ?? name).replace(/\\/g, '/');
+        map[rel] = sha256(readFileSync(p, 'utf8'));
+      }
     }
   })(root);
   return map;
 }
 
-/** 比对清单，返回违规说明列表（新增/缺失/改动各是一条） */
+/** 比对清单，返回违规说明列表（新增/缺失/改动各是一条）
+ * @param {Record<string, string>} hashes
+ * @param {Record<string, string>} manifest
+ * @returns {string[]} */
 export function diffManifest(hashes, manifest) {
+  /** @type {string[]} */
   const issues = [];
   for (const [f, h] of Object.entries(hashes)) {
     if (!(f in manifest)) issues.push(`${f}: 新文件不在金标清单（--update 再生）`);

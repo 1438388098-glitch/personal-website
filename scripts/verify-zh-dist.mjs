@@ -12,8 +12,11 @@ import { pathToFileURL } from 'node:url';
 const baselineDir = resolve(process.argv[2] ?? '../site-i18n-baseline/dist');
 const currentDir = resolve(process.argv[3] ?? 'dist');
 
-/** 相对路径 → html 的全量映射（只收 .html） */
+/** 相对路径 → html 的全量映射（只收 .html） 
+ * @param {string} root
+ * @returns {Record<string, string>} */
 export function collectHtml(root) {
+  /** @type {Record<string, string>} */
   const map = {};
   (function walk(dir) {
     for (const name of readdirSync(dir).sort()) {
@@ -28,7 +31,9 @@ export function collectHtml(root) {
   return map;
 }
 
-/** 可见文本：剥 head/script/style/全部标签，压缩空白 */
+/** 可见文本：剥 head/script/style/全部标签，压缩空白 
+ * @param {string} html
+ * @returns {string} */
 export function visibleText(html) {
   const body = html.replace(/<head[\s\S]*?<\/head>/i, '');
   return body
@@ -41,7 +46,9 @@ export function visibleText(html) {
 }
 
 /** 站内链接集合：只看 body（head 里的 _astro 哈希资源每轮构建都变，属构建噪声）；
-    href/src 以 / 开头；剥锚点查询；过滤 /en 前缀（切换器带出，属有意增量）与 /_astro/ 资源。 */
+    href/src 以 / 开头；剥锚点查询；过滤 /en 前缀（切换器带出，属有意增量）与 /_astro/ 资源。 
+ * @param {string} html
+ * @returns {Set<string>} */
 export function internalLinks(html) {
   const body = html
     .replace(/<head[\s\S]*?<\/head>/i, '')
@@ -54,7 +61,10 @@ export function internalLinks(html) {
   return out;
 }
 
-/** 首处可见文本分歧的位置与前后文（调试定位用） */
+/** 首处可见文本分歧的位置与前后文（调试定位用） 
+ * @param {string} a
+ * @param {string} b
+ * @returns {string | null} */
 export function firstDivergence(a, b) {
   const ia = visibleText(a);
   const ib = visibleText(b);
