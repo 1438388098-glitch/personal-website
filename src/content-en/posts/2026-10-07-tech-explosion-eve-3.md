@@ -1,6 +1,6 @@
 ---
-title: "Standing at the eve of the tech explosion, part 3: one paper, three hours of compute"
-description: "OpenAI posted 722 math manuscripts in one drop: three hours of compute per result, 162 Lean-verified. Still before RSI."
+title: "Standing at the eve of the tech explosion, part 3: a machine wrote 722 math manuscripts, no ignition yet"
+description: "Three hours of Pro-tier compute per manuscript, 162 Lean-verified, 560 still in human hands. Still before RSI."
 category: 杂谈
 tags: [大模型, RSI, 数学]
 pubDate: 2026-10-07
