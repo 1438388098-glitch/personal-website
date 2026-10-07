@@ -54,7 +54,7 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
     <aside class="numbers fade-up d2" aria-label={t.home.numbersAria}>
       <div class="num-list">
         {panelRows.map((row) => (
-          <div class="num-row"><span class="k">{row.k}{row.note && <span class="note">{row.note}</span>}</span><span class="v mono">{row.v}</span></div>
+          <div class="num-row"><span class="k">{row.k}</span><span class="v mono">{row.v}</span></div>
         ))}
       </div>
     </aside>
@@ -206,11 +206,8 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
   .num-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 1.05rem 0; border-bottom: 1px solid var(--border); }
   .num-row:last-child { border-bottom: none; }
   .num-row .k { font-size: 0.95rem; color: var(--text-muted); }
-  /* 术语白话括注：另起一行，比标签再小一档但仍在可读区。
-     原先 0.72rem（11.5px）是首屏最小的字，且首屏同时存在八种 10.5 至 14.4px 的字号，
-     「一堆小字」的观感就是这么来的；现在面板只有 0.82 / 0.95 / 1.25rem 三档。
-     不参与「标签—数值」的基线对齐。 */
-  .num-row .note { display: block; font-size: 0.82rem; line-height: 1.5; margin-top: 0.25rem; }
+  /* 术语括注小字已整体删去：标签—数值两列清单不需要第二层说明；
+     面板字号只剩 0.95 / 1.25rem 两档，首屏高度也随两行括注的移除收紧。 */
   .num-row .v { font-size: 1.25rem; font-weight: 700; white-space: nowrap; color: var(--text); }
 
   section { margin: var(--section-gap) 0; }
