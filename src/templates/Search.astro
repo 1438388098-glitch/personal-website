@@ -23,12 +23,12 @@ const indexPath = lang === 'en' ? '/en/search-index.json' : SITE_PATHS.searchInd
   <ul id="results"></ul>
   <script type="application/json" id="search-config" set:html={jsonForScript({ index: indexPath, strings: t.search.client })} />
 <script>
-  import { escapeHtml, highlight, makeSnippet, scoreDoc } from '../lib/search';
+  import { escapeHtml, fillN, highlight, makeSnippet, scoreDoc } from '../lib/search';
 
   type Doc = { url: string; title: string; description: string; tags: string[]; text: string; kind: string };
   type ClientStrings = {
-    loaded: (n: number) => string;
-    results: (n: number) => string;
+    loaded: string;
+    results: string;
     capped: string;
     none: string;
     err: string;
@@ -57,7 +57,7 @@ const indexPath = lang === 'en' ? '/en/search-index.json' : SITE_PATHS.searchInd
     const res = await fetch(indexUrl, { headers: { accept: 'application/json' } });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const docs = (await res.json()) as Doc[];
-    if (intro) intro.textContent = msg.loaded(docs.length);
+    if (intro) intro.textContent = fillN(msg.loaded, docs.length);
     return docs;
   };
   const ensureData = () => (dataPromise ??= load());
@@ -88,7 +88,7 @@ const indexPath = lang === 'en' ? '/en/search-index.json' : SITE_PATHS.searchInd
       .sort((a, b) => b.score - a.score)
       .slice(0, 20);
 
-    count.textContent = hits.length ? msg.results(hits.length) + (hits.length >= 20 ? msg.capped : '') : msg.none;
+    count.textContent = hits.length ? fillN(msg.results, hits.length) + (hits.length >= 20 ? msg.capped : '') : msg.none;
 
     list.innerHTML = hits.map((h) => {
       const snippet = makeSnippet(h.text, terms);

@@ -365,10 +365,12 @@ const zh = {
     noscriptHtml: '搜索需要启用 JavaScript；也可以改用无需脚本的<a href="/tags/">标签索引</a>。',
     placeholder: '试试：幻觉、错题、竞业限制…',
     searchAria: '搜索关键词',
-    /* 客户端脚本用的字符串：经 search-config JSON 传给前端 */
+    /* 客户端脚本用的字符串：经 search-config JSON 传给前端。
+       必须是纯字符串——函数过不了 JSON.stringify（会被静默丢弃，前端调用即抛错），
+       {n} 占位符由 fillN 在客户端替换。 */
     client: {
-      loaded: (n: number) => `${n} 条内容，找关键词直达。`,
-      results: (n: number) => `${n} 条结果`,
+      loaded: '{n} 条内容，找关键词直达。',
+      results: '{n} 条结果',
       capped: '（只显示前 20 条，换个更具体的词）',
       none: '没有匹配的内容，换个词试试。',
       err: '索引加载失败，请检查网络后重试。',
@@ -649,8 +651,8 @@ const en: Strings = {
     placeholder: 'Try: hallucination, recall, statute…',
     searchAria: 'Search keywords',
     client: {
-      loaded: (n: number) => `${n} documents. Type to search.`,
-      results: (n: number) => `${n} results`,
+      loaded: '{n} documents. Type to search.',
+      results: '{n} results',
       capped: ' (showing the first 20; try more specific terms)',
       none: 'Nothing matches. Try another term.',
       err: 'Index failed to load. Check your network and retry.',

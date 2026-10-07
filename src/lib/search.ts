@@ -30,6 +30,12 @@ export function jsonForScript(data: unknown): string {
   return JSON.stringify(data).replace(/</g, '\\u003c');
 }
 
+/** 把带 {n} 占位符的文案填成实际条数。文案必须留在 i18n 里当纯字符串：
+    函数过不了 search-config 的 JSON 序列化（会被静默丢弃，前端调用即抛错）。 */
+export function fillN(template: string, n: number): string {
+  return template.replace('{n}', String(n));
+}
+
 /** 命中词高亮：先转义原文再包 mark，搜索词里的正则元字符先转义防注入 */
 export function highlight(text: string, terms: string[]): string {
   let out = escapeHtml(text);

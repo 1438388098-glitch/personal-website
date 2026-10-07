@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { escapeHtml, highlight, makeSnippet, scoreDoc, jsonForScript, matchTerm } from './search';
+import { escapeHtml, fillN, highlight, makeSnippet, scoreDoc, jsonForScript, matchTerm } from './search';
+import { strings } from './i18n';
 
 describe('jsonForScript', () => {
   it('把 < 转义成 \\u003c，正文含 </script> 时不残留裸闭合标签', () => {
@@ -9,6 +10,39 @@ describe('jsonForScript', () => {
     expect(out).toContain('\\u003c/script');
     // 转义后仍是合法 JSON，parse 可还原原文
     expect(JSON.parse(out)).toEqual(payload);
+  });
+});
+
+describe('fillN', () => {
+  it('替换 {n} 占位符', () => {
+    expect(fillN('{n} 条结果', 12)).toBe('12 条结果');
+    expect(fillN('{n} results', 0)).toBe('0 results');
+  });
+
+  it('文案不含占位符时原样返回', () => {
+    expect(fillN('没有匹配的内容', 3)).toBe('没有匹配的内容');
+  });
+});
+
+/* 回归护栏：search-config 走 JSON.stringify 注入页面，函数值会被静默丢弃，
+   前端调用 undefined() 抛错 —— 曾导致搜索页一律显示「索引加载失败」。
+   i18n 里 search.client 的任何一项都必须能过 JSON 往返且仍可调用。 */
+describe('search.client 必须可 JSON 序列化', () => {
+  it.each(['zh', 'en'] as const)('%s 每一项都是纯字符串', (lang) => {
+    const client = strings(lang).search.client;
+    const roundTripped = JSON.parse(JSON.stringify(client)) as Record<string, unknown>;
+    for (const [key, value] of Object.entries(client)) {
+      expect(typeof value, `${lang}.search.client.${key} 必须是字符串，函数无法注入前端`).toBe('string');
+      expect(roundTripped[key]).toBe(value);
+    }
+  });
+
+  it.each(['zh', 'en'] as const)('%s 的 loaded/results 都带 {n} 占位符', (lang) => {
+    const client = strings(lang).search.client;
+    expect(client.loaded).toContain('{n}');
+    expect(client.results).toContain('{n}');
+    expect(fillN(client.results, 7)).toContain('7');
+    expect(fillN(client.loaded, 7)).not.toContain('{n}');
   });
 });
 
