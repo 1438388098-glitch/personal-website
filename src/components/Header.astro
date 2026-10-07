@@ -20,12 +20,18 @@ const isActive = (href: string) => Astro.url.pathname === href || Astro.url.path
         </a>
       ))}
     </nav>
-    {/* 轻量搜索：GET 表单直达 /search/?q=，结果由搜索页客户端渲染；窄屏收起（页脚仍保留入口） */}
-    <form class="header-search" action={t.searchAction} method="get" role="search">
-      <input type="search" name="q" placeholder={t.searchPlaceholder} aria-label={t.searchAria} autocomplete="off" />
-    </form>
-    <a class="lang-switch" href={switchHref} aria-label={t.langSwitch.aria}>{t.langSwitch.label}</a>
-    <button id="theme-toggle" type="button" aria-label={t.themeToggle.base} aria-pressed="false" data-label-dark={t.themeToggle.dark} data-label-light={t.themeToggle.light}>◐</button>
+    {/* 页头工具条：搜索 / 语言 / 主题装进同一个盒子，内部 1px 分隔线切格。
+        三件套原先各画各的框：搜索是 1px 淡边加填充底、36px 高，EN 与主题是 1.5px 强边、44px 高，
+        两套控件语言并排 28px，右上角读起来像三块贴歪的补丁。合成一条后只剩一套边框、一种高度；
+        整条 44px，触控目标不缩水（搜索格与两个按钮格都是整格可点）。 */}
+    <div class="header-tools">
+      {/* 轻量搜索：GET 表单直达 /search/?q=，结果由搜索页客户端渲染；窄屏收起（页脚仍保留入口） */}
+      <form class="header-search" action={t.searchAction} method="get" role="search">
+        <input type="search" name="q" placeholder={t.searchPlaceholder} aria-label={t.searchAria} autocomplete="off" />
+      </form>
+      <a class="lang-switch" href={switchHref} aria-label={t.langSwitch.aria}>{t.langSwitch.label}</a>
+      <button id="theme-toggle" type="button" aria-label={t.themeToggle.base} aria-pressed="false" data-label-dark={t.themeToggle.dark} data-label-light={t.themeToggle.light}>◐</button>
+    </div>
   </div>
 </header>
 <script>
@@ -88,32 +94,42 @@ const isActive = (href: string) => Astro.url.pathname === href || Astro.url.path
   .nav-link { color: var(--text-muted); font-size: 0.95rem; white-space: nowrap; display: inline-flex; align-items: center; min-height: 44px; }
   .nav-link:hover { color: var(--text); text-decoration: none; }
   .nav-link.active { color: var(--text); font-weight: 700; box-shadow: inset 0 -2px var(--accent); }
-  /* 迷你搜索框：直角细描边，聚焦转强调蓝；跟随导航右侧排布（nav 的 auto 外边距负责收拢） */
-  .header-search input {
-    font: inherit; font-size: 0.88rem; color: var(--text);
-    background: var(--surface); border: 1px solid var(--border); border-radius: 0;
-    padding: 0.3rem 0.7rem; width: 9.5rem;
+  /* 页头工具条：一个盒子装三件事，内部 1px 分隔线切格，整条 44px 高。
+     边框走 --border（装饰性分隔），填充 --surface 让它在页头浮起一格；
+     这组元素不再各自描边，视觉上从「三块补丁」变成一件仪器。 */
+  .header-tools {
+    display: flex; align-items: stretch; height: 44px;
+    border: 1px solid var(--border); background: var(--surface);
     transition: border-color 0.15s ease;
   }
+  .header-tools:hover { border-color: var(--border-strong); }
+  .header-search { display: flex; }
+  .header-search input {
+    font: inherit; font-size: 0.9rem; color: var(--text);
+    background: none; border: 0; border-right: 1px solid var(--border);
+    padding: 0 0.75rem; width: 9.5rem;
+  }
   .header-search input::placeholder { color: var(--text-muted); }
-  .header-search input:hover { border-color: var(--border-strong); }
-  .header-search input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--accent); }
-  /* 语言切换：等宽字小方框，与主题按钮同一盒语言 */
+  /* 焦点环画在格内：默认 outline 外扩会盖住相邻格的边线 */
+  .header-search input:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  /* 语言切换：等宽字小格，与搜索格同高同边 */
   .lang-switch {
-    font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);
-    border: 1.5px solid var(--border-strong); padding: 0.25rem 0.6rem;
-    display: inline-flex; align-items: center; min-height: 44px;
+    font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);
+    display: inline-flex; align-items: center; padding: 0 0.7rem;
+    border-right: 1px solid var(--border); white-space: nowrap;
     transition: background-color 0.15s ease, color 0.15s ease;
-    white-space: nowrap;
   }
-  .lang-switch:hover { background: var(--ink); color: var(--bg); }
+  /* hover 用淡墨底纹而非反白：反白块在暗色下会闪出一块奶油底（「暗色不做反白色块」同一条教训）。
+     下划线要显式关掉：它是格内按钮，全局 a:hover 的下划线会把它拉回链接外观 */
+  .lang-switch:hover, #theme-toggle:hover { background: color-mix(in srgb, var(--ink) 12%, transparent); color: var(--text); text-decoration: none; }
   #theme-toggle {
-    background: none; border: 1.5px solid var(--border-strong); border-radius: 0; color: var(--text);
-    cursor: pointer; padding: 0.25rem 0.6rem; transition: background-color 0.15s ease, color 0.15s ease;
-    /* 触控目标 ≥44px：方形可点区域，图标居中 */
-    min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
+    background: none; border: 0; border-radius: 0; padding: 0; color: var(--text);
+    cursor: pointer; width: 44px; display: inline-flex; align-items: center; justify-content: center;
+    /* 字形来自系统 symbol 字体（Space Mono 无此码位）：字号必须自己钉住，
+       否则按钮不继承字体，落到 UA 默认的 Arial 13.33px */
+    font: inherit; font-size: 1rem; line-height: 1;
+    transition: background-color 0.15s ease, color 0.15s ease;
   }
-  #theme-toggle:hover { background: var(--ink); color: var(--bg); }
   /* 移动端：六项导航允许换行（隐形横向滚动条对触屏不可发现），高度放开自适应；迷你搜索框收起 */
   @media (max-width: 960px) {
     .header-search { display: none; }
@@ -123,5 +139,7 @@ const isActive = (href: string) => Astro.url.pathname === href || Astro.url.path
     .brand { font-size: 1rem; }
     nav { gap: 0.7rem; overflow-x: visible; flex-wrap: wrap; }
     .nav-link { font-size: 0.9rem; }
+    /* 换行后工具条独占一行：靠右收齐，别让它孤零零挂在左边 */
+    .header-tools { margin-left: auto; }
   }
 </style>
