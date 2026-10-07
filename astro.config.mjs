@@ -92,6 +92,15 @@ const lastmods = contentLastmods();
 export default defineConfig({
   /* 域名唯一事实源：src/lib/site.ts 的 SITE.url */
   site: SITE.url,
+  /* 站内链接预取：换页走 View Transitions，点击后要先拿到新页 HTML 才能开始过渡。
+     不预取时整轮网络往返（跨境到 CF 约 300–400ms）都摊在点击上，手感就是「点一下卡一下」。
+     hover 策略在鼠标悬停时预热，落点是浏览器 HTTP 缓存——慢速连接与 saveData 由 Astro 自行跳过，
+     移动端没有 hover，按下时也走同一套 prefetch（tap 路径在 prefetch 模块里独立处理）。
+     只预热站内页，外链与 #锚点不碰。动效本身（过渡动画、淡入）不受影响。 */
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'hover',
+  },
   /* sitemap：/search/ 是客户端渲染的薄内容页，无独立检索价值，排除出收录（404/500 由插件默认排除） */
   integrations: [
     sitemap({
