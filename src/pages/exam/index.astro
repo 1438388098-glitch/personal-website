@@ -16,7 +16,8 @@ const articles = (await getCollection('exam', isVisible))
 const publicRepos = (await getCollection('toolbox')).length;
 
 // 备考一圈的先后顺序：先有计划与打卡这个底盘，客观题错题从竹马来，主观题刷完先自查再交 AI 判分收尾；产出数据均可溯源到对应案例页
-const stages = [
+// wide 标记尾部两环：AI 评测与工具制造是质量保障层的元环节，六宫格之后用两条通栏横排收尾，读法从上下堆变左中右
+const stages: { step: string; stage: string; tool: string; href: string; ai: string; output: string; wide?: boolean }[] = [
   {
     step: '01',
     stage: '计划打卡',
@@ -71,7 +72,8 @@ const stages = [
     tool: 'cn-judbench（法衡）',
     href: '/projects/cn-judbench/',
     ai: '评分标准提前公开，判分照标准机器来：AI 先测行不行，再进流程',
-    output: `${figure('cn-judbench', 'packs')} · ${figure('cn-judbench', 'questions')}`
+    output: `${figure('cn-judbench', 'packs')} · ${figure('cn-judbench', 'questions')}`,
+    wide: true
   },
   {
     step: '08',
@@ -79,7 +81,8 @@ const stages = [
     tool: 'Claude Code 等 AI 编码协作',
     href: '/toolbox/',
     ai: '上面每个工具都是这么造出来的：带测试、带数据、带失败记录',
-    output: `${publicRepos} 个公开仓库，全部可查`
+    output: `${publicRepos} 个公开仓库，全部可查`,
+    wide: true
   }
 ];
 ---
@@ -92,18 +95,18 @@ const stages = [
     </div>
     <div class="stage-grid">
       {stages.map((s) => (
-        <div class="card stage-card">
-          <p class="stage-head">
-            <span class="step mono" aria-hidden="true">{s.step}</span>
-            <span class="stage-name">{s.stage}</span>
-          </p>
-          <a
-            class="tool"
-            href={s.href}
-            target={s.href.startsWith('http') ? '_blank' : undefined}
-            rel={s.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-            aria-label={s.href.startsWith('http') ? `${s.tool}（在新窗口打开）` : undefined}
-          >{s.tool}</a>
+        <div class={`card stage-card${s.wide ? ' stage-card--wide' : ''}`}>
+          <span class="stage-no" aria-hidden="true">{s.step}</span>
+          <div class="stage-lead">
+            <p class="stage-name">{s.stage}</p>
+            <a
+              class="tool"
+              href={s.href}
+              target={s.href.startsWith('http') ? '_blank' : undefined}
+              rel={s.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+              aria-label={s.href.startsWith('http') ? `${s.tool}（在新窗口打开）` : undefined}
+            >{s.tool}</a>
+          </div>
           <p class="ai">{s.ai}</p>
           <p class="output mono">{s.output}</p>
         </div>
@@ -130,35 +133,44 @@ const stages = [
 <style>
   section { margin: var(--section-gap) 0; }
   .stage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
-  .stage-card { padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.45rem; }
-  /* 头部一行：编号框 + 环节名并排。编号框与 ProjectCard 的卡片序号同一套墨色描边方框，
-     蓝色留给区块编号 .sec-no；hover 反色是这张卡唯一的小图形反馈 */
-  .stage-head { display: flex; align-items: center; gap: 0.65rem; margin: 0; }
-  .step {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-width: 2rem; height: 1.5rem; padding: 0 0.4rem; margin: 0;
-    font-weight: 700; color: var(--text); font-size: 0.82rem;
-    border: 1.5px solid var(--border-strong);
-    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  .stage-card { position: relative; padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  /* 环节序号放大成描边幽灵数字：静态只有极淡的轮廓压住右上角，hover 填充强调蓝——
+     「编号」是设计规范里点名允许用蓝的小元素，这里让八个编号成为页面的主图形节奏 */
+  .stage-no {
+    position: absolute; top: 0.8rem; right: 1rem;
+    font-family: var(--font-display); font-weight: 900; font-size: 2.5rem; line-height: 1;
+    color: var(--border); user-select: none; pointer-events: none;
+    transition: color 0.18s ease, -webkit-text-stroke-color 0.18s ease;
   }
-  /* 反色用 --bg 而非白：暗色下强调蓝变浅蓝，白字对比不足 */
-  .stage-card:hover .step { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  @supports (-webkit-text-stroke: 1.5px #000) {
+    .stage-no { color: transparent; -webkit-text-stroke: 1.5px var(--border); }
+  }
+  .stage-card:hover .stage-no { color: var(--accent); -webkit-text-stroke-color: var(--accent); }
+  .stage-lead { display: flex; flex-direction: column; align-items: flex-start; gap: 0.1rem; }
   /* 700：Noto Sans SC 无 800 面，显式 800 会回落 900，与全站小标题口径一致 */
   .stage-name { margin: 0; font-weight: 700; font-size: var(--fs-card-title); }
-  /* 工具名不再描框：中文工具名装进英文等宽描边框里两头不是，降为 ProjectCard repo 行
-     同语言的 meta 链接（muted，hover 转蓝）；min-height 保留 ≥44px 触控目标 */
+  /* 工具名回归全站链接蓝（a 本色），hover 加下划线；min-height 保留 ≥44px 触控目标 */
   .tool {
     align-self: flex-start; font-size: 0.9rem;
     min-height: 44px; display: inline-flex; align-items: center;
-    color: var(--text-muted);
+    color: var(--accent);
     transition: color 0.15s ease;
   }
-  .tool:hover { color: var(--accent); text-decoration: none; }
+  .tool:hover { text-decoration: underline; text-underline-offset: 4px; }
   .ai { margin: 0; color: var(--text); font-size: 0.95rem; }
   /* 数据行钉底：与 ProjectCard 的 metrics 脚注同一套（margin-top:auto + 细上边线），
      同排卡片不管描述几行，数据基线都落在同一条线上，不再出现下半张空白 */
   .output { margin: auto 0 0; padding-top: 0.7rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.82rem; }
+  /* 尾环（工具制造）是元环节：通栏横排，读法从上下堆变左中右；
+     padding-right 给幽灵数字留出专属列，数据行不再钉底改居右 */
+  .stage-card--wide { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 2rem; padding-right: 6.5rem; }
+  .stage-card--wide .stage-lead { flex: 0 0 15rem; }
+  .stage-card--wide .ai { flex: 1; }
+  .stage-card--wide .output { margin: 0; padding: 0; border-top: none; white-space: nowrap; }
   @media (max-width: 720px) {
     .stage-grid { grid-template-columns: 1fr; }
+    /* 窄屏通栏尾环回到上下堆，数据行重新钉底 */
+    .stage-card--wide { flex-direction: column; align-items: flex-start; gap: 0.45rem; padding-right: 1.4rem; }
+    .stage-card--wide .output { margin: auto 0 0; padding-top: 0.7rem; border-top: 1px solid var(--border); white-space: normal; align-self: stretch; }
   }
 </style>
