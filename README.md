@@ -53,6 +53,9 @@ Node ≥ 22.12（开发环境 22 LTS，见 .nvmrc）。
   统一过滤，到点自然出现在列表、详情、订阅源与 sitemap。
 - CI 每日构建（UTC 00:00，北京时间 08:00）只做「到日文章可正常产出」的验证，
   不部署：站点上线需手动 `npm run build` 后发布 dist/。
+- **推拉纪律**：本仓库曾出现两条并行线（同一份 main 在两地各自提交，2026-10-05 到 10-07 分叉成
+  本地 29 个 / 远端 18 个提交，线上跑的是远端线）。已于 2026-10-07 合并。动手前先 `git fetch` 并看
+  `git rev-list --left-right --count HEAD...origin/main`，非 0 0 就先合并再改，别在两条线上各写各的。
 - 换页走 View Transitions + hover 预取（`astro.config.mjs` 的 prefetch）。预取已经把重复传输
   省掉，但 HTML 仍是 `no-cache`，每次换页要回一次源站；想让点击真正零等待要改 nginx 的
   HTML 缓存头，方案与风险见 docs/perf-review-2026-10-07.md 第四节。
