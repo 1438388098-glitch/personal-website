@@ -19,7 +19,9 @@
     "check:content": "node scripts/check-content.mjs",
     "check:dist": "node scripts/check-dist.mjs",
     "check:scripts": "tsc -p tsconfig.scripts.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "check:golden": "node scripts/content-golden.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.0",

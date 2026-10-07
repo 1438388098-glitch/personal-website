@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { escapeHtml, highlight, makeSnippet, scoreDoc, jsonForScript } from './search';
+import { escapeHtml, highlight, makeSnippet, scoreDoc, jsonForScript, matchTerm } from './search';
 
 describe('jsonForScript', () => {
   it('把 < 转义成 \\u003c，正文含 </script> 时不残留裸闭合标签', () => {
@@ -81,5 +81,30 @@ describe('makeSnippet', () => {
     expect(out).toContain('…');
     // 前 160 字 + 省略号（无前置省略号，因锚点在开头）
     expect(out.length).toBe(161);
+  });
+});
+
+describe('matchTerm（en 词边界）', () => {
+  const doc = { title: 'Statute retrieval', description: 'recall@5 92.0%', tags: [], text: 'the art of starting small' };
+
+  it('纯 ASCII 词按词边界匹配，art 不命中 starting', () => {
+    expect(matchTerm('the art of starting small', 'art')).toBe(true);
+    expect(matchTerm('start small', 'start')).toBe(true);
+    expect(matchTerm('starting small', 'start')).toBe(false);
+    expect(scoreDoc(doc, ['art'])).not.toBeNull();
+    expect(scoreDoc(doc, ['statute'])).not.toBeNull();
+    /* art 不应因 starting 里的子串而多命中（词边界内只在 the art 处命中一次） */
+    expect(scoreDoc(doc, ['art'])).toBe(1);
+  });
+
+  it('中文词保持子串语义', () => {
+    expect(matchTerm('法条检索底座', '检索')).toBe(true);
+    expect(scoreDoc({ title: '法条检索', description: '', tags: [], text: '' }, ['检索'])).toBe(10);
+  });
+
+  it('makeSnippet 锚点按词边界定位', () => {
+    const s = makeSnippet('the art of starting small and other things to fill the snippet length beyond forty characters for sure', ['art']);
+    expect(s).toContain('art');
+    expect(s.startsWith('…')).toBe(false);
   });
 });
