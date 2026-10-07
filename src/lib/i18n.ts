@@ -432,7 +432,7 @@ const en: Strings = {
     writing: { h2: 'Writing', en: '', link: 'All posts →' },
     explore: { h2: 'Explore', en: '' },
     exploreCards: [
-      { title: 'Toolbox', desc: 'Legal tools with public GitHub repos: one click away.', href: '/en/toolbox/' },
+      { title: 'Toolbox', desc: 'Legal tools with public GitHub repos: one click away.', href: '/toolbox/' },
     ],
     band: null,
     now: { link: 'See this month →' },
