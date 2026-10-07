@@ -377,6 +377,7 @@ const zh = {
     client: {
       loaded: '{n} 条内容，找关键词直达。',
       results: '{n} 条结果',
+      resultsOne: '{n} 条结果',
       capped: '（只显示前 20 条，换个更具体的词）',
       none: '没有匹配的内容，换个词试试。',
       err: '索引加载失败，请检查网络后重试。',
@@ -662,6 +663,7 @@ const en: Strings = {
     client: {
       loaded: '{n} documents. Type to search.',
       results: '{n} results',
+      resultsOne: '{n} result',
       capped: ' (showing the first 20; try more specific terms)',
       none: 'Nothing matches. Try another term.',
       err: 'Index failed to load. Check your network and retry.',

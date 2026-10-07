@@ -29,6 +29,7 @@ const indexPath = lang === 'en' ? '/en/search-index.json' : SITE_PATHS.searchInd
   type ClientStrings = {
     loaded: string;
     results: string;
+    resultsOne: string;
     capped: string;
     none: string;
     err: string;
@@ -88,7 +89,9 @@ const indexPath = lang === 'en' ? '/en/search-index.json' : SITE_PATHS.searchInd
       .sort((a, b) => b.score - a.score)
       .slice(0, 20);
 
-    count.textContent = hits.length ? fillN(msg.results, hits.length) + (hits.length >= 20 ? msg.capped : '') : msg.none;
+    /* 英文单复数：1 条时用 resultsOne（否则「1 results」） */
+    const hitText = fillN(hits.length === 1 ? msg.resultsOne : msg.results, hits.length);
+    count.textContent = hits.length ? hitText + (hits.length >= 20 ? msg.capped : '') : msg.none;
 
     list.innerHTML = hits.map((h) => {
       const snippet = makeSnippet(h.text, terms);

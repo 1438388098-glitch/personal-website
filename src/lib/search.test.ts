@@ -37,10 +37,11 @@ describe('search.client 必须可 JSON 序列化', () => {
     }
   });
 
-  it.each(['zh', 'en'] as const)('%s 的 loaded/results 都带 {n} 占位符', (lang) => {
+  it.each(['zh', 'en'] as const)('%s 的 loaded/results/resultsOne 都带 {n} 占位符', (lang) => {
     const client = strings(lang).search.client;
     expect(client.loaded).toContain('{n}');
     expect(client.results).toContain('{n}');
+    expect(client.resultsOne).toContain('{n}');
     expect(fillN(client.results, 7)).toContain('7');
     expect(fillN(client.loaded, 7)).not.toContain('{n}');
   });
