@@ -41,7 +41,10 @@
      这类静态包才是不带后缀的 'Space Mono'。写成 'Archivo' 不会报错、不会回退到别的地方，
      只是永远匹配不上——浏览器静默改用系统字体，字体文件白下载。改名前先看 wght.css 的 font-family。 */
   --font-display: 'Archivo Variable', 'Noto Sans SC Variable', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  --font-mono: 'Space Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+  /* 等宽栈里的中文：Space Mono、ui-monospace、Consolas 都没有中文字形，单位（条 / 包 / 题 / 万行）
+     过去落到系统字体（Windows 雅黑，macOS PingFang），与同一行的等宽数字不同族，笔画一粗一细，
+     数值行看着像两种字拼起来的。接上自家展示字族，中文回退到 Noto Sans SC，数字仍走 Space Mono。 */
+  --font-mono: 'Space Mono', 'Noto Sans SC Variable', ui-monospace, 'Cascadia Code', Consolas, monospace;
 }
 html[data-theme='dark'] {
   --bg: #151513;
