@@ -1,11 +1,10 @@
 ---
-import { langOf, strings, href, tagLabel, categoryLabel } from '../lib/i18n';
+import { langOf, href, tagLabel, categoryLabel } from '../lib/i18n';
 import { formatDate } from '../lib/format';
 import type { AnyPost } from '../lib/posts';
 interface Props { post: AnyPost; }
 const { post } = Astro.props;
 const lang = langOf(Astro.url.pathname);
-const t = strings(lang);
 const { title, description, category, pubDate, tags } = post.data;
 ---
 <article class="post-card">

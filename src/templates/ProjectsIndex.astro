@@ -12,7 +12,7 @@ const { lang } = Astro.props;
 const t = strings(lang);
 
 const projects = await getProjects(lang);
-const groups = ['法律主线', '法律工具', '工程侧证', '实验'] as const;
+const groups = ['法律主线', '法律工具', '量化研究', '工程侧证', '实验'] as const;
 /* 分区按页面顺序重编号（只数非空分组），过滤 + 重编号走 lib 层单源实现 */
 const sections = buildSections(projects, groups, (p) => p.data.group);
 ---

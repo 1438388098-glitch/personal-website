@@ -59,11 +59,14 @@ export const EN_TAG: Record<string, string> = {
   求职: 'Job hunting',
   踩坑记: 'Debugging notes',
   数学: 'Mathematics',
+  量化: 'Quant',
+  数据工程: 'Data engineering',
 };
 
 export const EN_GROUP: Record<string, string> = {
   法律主线: 'Legal Core',
   法律工具: 'Legal Tools',
+  量化研究: 'Quant Research',
   工程侧证: 'Engineering Side',
   实验: 'Experiments',
   /* 工具箱的分类与项目分组共用一张表：工程小件只出现在 toolbox */
@@ -120,8 +123,8 @@ const zh = {
     title: '胡圣炜 · Stoic',
     label: '法律 × 工程',
     h1: '法学在读，<br />业余<span class="hl">造工具</span>。',
-    lede: '法条检索、法考判分、司法评测，全部开源，数字可查。',
-    pills: ['备考法考中', '武汉', '全部开源'],
+    lede: '法条检索、法考判分、司法评测，法律工具全部开源、数字可查；A 股量化平台私有，规模与方法写在项目页。',
+    pills: ['备考法考中', '武汉', '法律工具全部开源'],
     ctas: { primary: '看项目', about: '关于我', contact: '联系我' },
     numbersAria: '关键数字',
     panel: [
@@ -129,6 +132,7 @@ const zh = {
       { projectId: 'statute-rag', metricLabel: '语料规模', k: '入库法条', note: '' },
       { projectId: 'cn-judbench', metricLabel: '评测规模', k: '评测规模 · 法衡', note: '' },
       { projectId: 'fakao-grader', metricLabel: '判定口径', k: '判分口径 · 逐采分点', note: '按官方采分点逐点判定，不整体给分' },
+      { projectId: 'stock-db', metricLabel: '数据规模', k: '量化数据规模', note: '' },
     ],
     featured: { h2: '精选项目', en: 'Selected Work', link: '全部项目 →' },
     writing: { h2: '最近写作', en: 'Writing', link: '全部文章 →' },
@@ -165,6 +169,7 @@ const zh = {
     intro: [
       '我是胡圣炜，广东韶关人，中南财经政法大学法学与经济学双学位本科生， 成长于粤北多语言环境（普通话、粤语、客家话），这让我习惯在不同语境间准确转译， 也让我对「表述精确」有职业级的执念。',
       '我的方向是法律与 AI 的交叉地带：法律文本的结构化、检索与评估。 我相信法律场景的 AI 输出不能靠蒙，所以我的项目都围着同一件事转： 让模型的每句话可复核、可评估、可追溯。工具上重度使用 Claude Code 等 AI 编码协作， 并把工程纪律（测试、指标、失败案例）带进每一个法律项目。',
+      '经济学方向的数理统计、概率论与计量经济学课程给了我建模与检验的训练， 这套方法用在自己搭的 A 股量化平台上，做因子挖掘、回测与截面 IC 评估（见<a href="/projects/stock-db/">量化项目</a>）。',
     ],
     factsAria: '关键信息',
     facts: [
@@ -276,6 +281,7 @@ const zh = {
         skills: [
           { k: '法律检索', html: '北大法宝、中国裁判文书网、Westlaw；课程论文《竞业限制的滥用与规制》引用熊晖、王瑞宏对 556 份裁判文书的统计等实证材料（见<a href="/notes/non-compete/">笔记栏</a>）' },
           { k: '工程', html: 'Python、JavaScript/TypeScript、SQLite/FTS5、RAG 与评测管线、多 Agent 编排、Git/CI（全部有公开仓库背书，见<a href="/projects/">项目栏</a>）' },
+          { k: '量化与数据', html: 'A 股数据管线（5,824 只股票、约 1,674 万行日线，34 字段）、GP 因子挖掘与回测管线、每期 Top20 的中期选股链（规模与方法见<a href="/projects/stock-db/">量化项目</a>）' },
           { k: '技能证书', html: '计算机二级（MS Office）、C1 驾驶证' },
           { k: '社媒活动', html: '小红书自媒体运营：浏览量累计 <strong class="mono">18 万+</strong>，获赞及收藏近 <strong class="mono">5000</strong>' },
           { k: '兴趣爱好', html: '羽毛球、骑行、健身' },
@@ -423,8 +429,8 @@ const en: Strings = {
     title: 'HU Shengwei · Stoic',
     label: 'Law × Engineering',
     h1: 'Law student,<br />building <span class="hl">tools</span> on the side.',
-    lede: 'Statute retrieval, bar-exam grading, judicial benchmarks: all open source, every number checkable.',
-    pills: ['Prepping for the Chinese bar exam', 'Wuhan, China', 'All open source'],
+    lede: 'Statute retrieval, bar-exam grading, judicial benchmarks: the legal tools are all open source, every number checkable; the A-share quant platform is private, its scale and method on the project page.',
+    pills: ['Prepping for the Chinese bar exam', 'Wuhan, China', 'Legal tools all open source'],
     ctas: { primary: 'See projects', about: 'About me', contact: 'Contact' },
     numbersAria: 'Key numbers',
     panel: [
@@ -432,6 +438,7 @@ const en: Strings = {
       { projectId: 'statute-rag', metricLabel: 'Corpus size', k: 'Statutes in corpus', note: '' },
       { projectId: 'cn-judbench', metricLabel: 'Benchmark size', k: 'Benchmark size · JudBench', note: '' },
       { projectId: 'fakao-grader', metricLabel: 'Judgement method', k: 'Grading · point by point', note: 'Each official scoring point judged separately, never a holistic score' },
+      { projectId: 'stock-db', metricLabel: 'Data scale', k: 'Quant data size', note: '' },
     ],
     featured: { h2: 'Selected Work', en: '', link: 'All projects →' },
     writing: { h2: 'Writing', en: '', link: 'All posts →' },
@@ -450,6 +457,7 @@ const en: Strings = {
     intro: [
       "I'm HU Shengwei, from Shaoguan, Guangdong. I'm a law and economics double-degree undergraduate at Zhongnan University of Economics and Law. I grew up between languages (Mandarin, Cantonese, Hakka), which trained me to translate precisely across contexts and left me professionally obsessed with exact wording.",
       'My direction is the overlap of law and AI: structuring, retrieving and evaluating legal text. I don\'t believe AI output in legal settings should ever be taken on faith, so all my projects revolve around one thing: making every sentence a model produces checkable, evaluable and traceable. On the tooling side I work heavily with AI coding assistants such as Claude Code, and I bring engineering discipline (tests, metrics, failure cases) into every legal project.',
+      'Coursework in mathematical statistics, probability and econometrics trained me in modelling and testing; I apply that method on a self-built A-share quant platform, doing factor mining, backtesting and cross-sectional IC evaluation (see the <a href="/en/projects/stock-db/">quant project</a>).',
     ],
     factsAria: 'Key facts',
     facts: [
@@ -561,6 +569,7 @@ const en: Strings = {
         skills: [
           { k: 'Legal research', html: 'pkulaw, China Judgments Online, Westlaw; my course paper on the abuse of non-compete clauses draws on empirical work by Xiong Hui and Wang Ruihong covering 556 judgments (<a href="/notes/non-compete/">paper notes</a>, in Chinese)' },
           { k: 'Engineering', html: 'Python, JavaScript/TypeScript, SQLite/FTS5, RAG and evaluation pipelines, multi-agent orchestration, Git/CI (all backed by public repositories, see <a href="/en/projects/">projects</a>)' },
+          { k: 'Quant & data', html: 'A-share data pipeline (5,824 stocks, about 16.74M daily rows, 34 fields), a GP factor-mining and backtesting pipeline, and a mid-term Top20 selection chain (scale and method on the <a href="/en/projects/stock-db/">quant project page</a>)' },
           { k: 'Certificates', html: 'NCRE Level 2 (MS Office), C1 driving licence' },
           { k: 'Social media', html: 'Xiaohongshu (RED) account: <strong class="mono">180k+</strong> cumulative views and nearly <strong class="mono">5,000</strong> likes and saves' },
           { k: 'Interests', html: 'Badminton, cycling, gym' },

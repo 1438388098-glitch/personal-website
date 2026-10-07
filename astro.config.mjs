@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import { satteri } from '@astrojs/markdown-satteri';
 import sitemap from '@astrojs/sitemap';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -114,8 +115,10 @@ export default defineConfig({
     anchorLinks(),
   ],
   markdown: {
-    // 关闭 smartypants：防止把正文里的 CLI 旗标（如 node --test）转成排版破折号
-    smartypants: false,
+    /* Astro 7 起 smartypants（智能标点）归属 markdown 处理器：默认处理器 Sätteri 的
+       smartPunctuation 默认开着，会把正文里的 CLI 旗标（如 node --test）转成排版破折号，
+       故显式关掉。旧的顶层 markdown.smartypants 在 7 里已废弃，将在下个大版本移除。 */
+    processor: satteri({ features: { smartPunctuation: false } }),
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' }
     }

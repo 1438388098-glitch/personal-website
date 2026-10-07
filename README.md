@@ -4,7 +4,7 @@
 设计文档见 docs/superpowers/specs/，实施计划见 docs/superpowers/plans/。
 
 ## 如何运行
-Node ≥ 20.3（开发环境 22 LTS，见 .nvmrc）。
+Node ≥ 22.12（开发环境 22 LTS，见 .nvmrc）。
     npm install
     npm run dev      # 本地开发 http://localhost:4321
     npm run build    # 产出 dist/

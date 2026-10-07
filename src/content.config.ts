@@ -1,4 +1,6 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+/* z 从 astro/zod 取：astro:content 的 re-export 在 Astro 7 已废弃，8 将移除 */
+import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 import { POST_CATEGORIES, TAG_VOCAB } from './lib/categories';
 
@@ -9,16 +11,16 @@ import { POST_CATEGORIES, TAG_VOCAB } from './lib/categories';
 const projectsSchema = z.object({
   title: z.string(),
   summary: z.string().max(160),
-  group: z.enum(['法律主线', '法律工具', '工程侧证', '实验']),
+  group: z.enum(['法律主线', '法律工具', '量化研究', '工程侧证', '实验']),
   date: z.coerce.date(),
   featured: z.boolean().default(false),
   order: z.number().default(99),
   metrics: z
     .array(z.object({ label: z.string(), value: z.string(), detail: z.string().optional() }))
     .default([]),
-  links: z.array(z.object({ label: z.string(), url: z.string().url() })).default([]),
+  links: z.array(z.object({ label: z.string(), url: z.url() })).default([]),
   /* 相关博文：存 post 的 id（去掉 .md 的文件名），由详情页映射为 /blog/${id}/。
-     不用 links 存相对路径：links.url 走 z.string().url()（astro:content 的 z 是 zod 3，没有 z.url()），站内相对路径过不了校验。 */
+     不用 links 存相对路径：links.url 走 z.url()（绝对 URL 校验），站内相对路径过不了校验。 */
   relatedPosts: z.array(z.string()).default([]),
   disclaimer: z.string().default('本项目仅用于技术研究，输出不构成法律意见。')
 });
@@ -66,7 +68,7 @@ const nowSchema = z.object({
 
 const toolboxSchema = z.object({
   name: z.string(),
-  url: z.string().url(),
+  url: z.url(),
   description: z.string(),
   category: z.enum(['法律工具', '工程小件']),
   /** 站内回链：同名项目案例页与相关博文，避免两个栏目互为孤岛 */

@@ -1,10 +1,10 @@
 ---
 title: "stock-db: an A-share quant platform"
 summary: "A personal A-share quant platform: data pipeline to multi-leg model to production picks, plus a GP factor-mining line; honest numbers are the floor."
-group: 工程侧证
-date: 2026-09-14
-featured: false
-order: 0
+group: 量化研究
+date: 2026-09-28
+featured: true
+order: 4
 disclaimer: A personal quant research project; the repository is private and not public. Nothing on this page is investment advice.
 metrics:
   - label: Data scale
@@ -19,6 +19,9 @@ metrics:
   - label: Quality gate
     value: 'IC threshold 0.10'
     detail: "VERIFY_GATE has actually blocked the platform's own E5 line: signal quality below the bar means the export is refused; the gate plays no favorites"
+relatedPosts:
+  - 2026-09-17-gate-rejected-my-signal-line
+  - 2026-09-17-six-silent-trading-days
 links: []
 ---
 
@@ -32,7 +35,7 @@ Three lines, each in its place. The freq30 mid-term chain is the live authority:
 
 ## Verification
 
-Correctness rests on the test baseline and the gate's real interception record. Test baseline: 688 passed, 0 failed (measured 2026-09-15; in the earlier "554 + 8 known failures", 7 cases of the retired E2 chain were re-marked xfail and 3 rechunk tests had their parameters fixed, bringing failures to zero, with the reasoning recorded in the commit history of 2026-09-09 and 09-14), plus 52 standalone tests for the factor_mining module. core/paths.py is the repository's single path authority, and hardcoded absolute paths are caught on the spot by gate tests. The hardest evidence that the gate plays no favorites: it blocked the platform's own line, refusing E5's export (full IC 0.0756, 2026 IC 0.0461, both under the 0.10 threshold). Signal quality below the house bar means no stock list leaves the building.
+Correctness rests on the test baseline and the gate's real interception record. Test baseline: 688 passed, 0 failed (measured 2026-09-15; in the earlier "554 + 8 known failures", 7 cases of the retired E2 chain were re-marked xfail and 3 rechunk tests had their parameters fixed, bringing failures to zero, with the reasoning recorded in the commit history of 2026-09-09 and 09-14), plus 59 test_ files and 552 def test_ functions in the factor_mining/tests module (counted by file and function definitions, measured 2026-10-06). core/paths.py is the repository's single path authority, and hardcoded absolute paths are caught on the spot by gate tests. The hardest evidence that the gate plays no favorites: it blocked the platform's own line, refusing E5's export (full IC 0.0756, 2026 IC 0.0461, both under the 0.10 threshold). Signal quality below the house bar means no stock list leaves the building.
 
 ## Known failures
 

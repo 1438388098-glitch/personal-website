@@ -17,7 +17,7 @@ export async function getPublishedPosts(lang: Lang = 'zh'): Promise<AnyPost[]> {
     lang === 'en'
       ? await getCollection('postsEn', isPublished)
       : await getCollection('posts', isPublished);
-  return list.sort(byDateDesc((p) => p.data.pubDate));
+  return list.sort(byDateDesc((p) => p.data.pubDate, (p) => p.id));
 }
 
 /** 相邻文章（较新 / 较旧），基于已按时间降序排列的列表；任一侧不存在则为 undefined。

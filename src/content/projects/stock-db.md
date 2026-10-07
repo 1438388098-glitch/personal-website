@@ -1,10 +1,10 @@
 ---
 title: stock-db：A 股量化平台
 summary: 自用 A 股量化平台：数据管线到双链模型再到生产选股，外加 GP 因子挖掘研究线。私有仓库，单人加 AI agent 协作，数据是资产、模型是产物、诚实数字是底线。
-group: 工程侧证
-date: 2026-09-14
-featured: false
-order: 0
+group: 量化研究
+date: 2026-09-28
+featured: true
+order: 4
 disclaimer: 个人量化研究项目，仓库私有不公开；页面描述不构成任何投资建议。
 metrics:
   - label: 数据规模
@@ -20,6 +20,9 @@ metrics:
     value: 'IC 阈值 0.10'
     detail: VERIFY_GATE 实测拦下自家 E5 线：信号质量跌破门槛即拒绝导出，门禁不分内外
 links: []
+relatedPosts:
+  - 2026-09-17-gate-rejected-my-signal-line
+  - 2026-09-17-six-silent-trading-days
 ---
 
 ## 问题与边界
@@ -32,7 +35,7 @@ links: []
 
 ## 验证
 
-正确性靠测试基线和门禁的实测拦截记录撑住。测试基线 688 passed 加 0 failed（2026-09-15 实测；此前的「554 + 8 已知失败」里，E2 废弃链 7 例改标 xfail、rechunk 测试 3 例修好参数，失败数清零，判定过程记录在 2026-09-09 与 09-14 的提交历史里），另有 factor_mining 模块独立测试 52 个。core/paths.py 是全仓唯一的路径权威，硬编码绝对路径会被门禁测试当场拦下。门禁不分内外最硬的证据是它拦过自家线：VERIFY_GATE 实测拒绝 E5 对照线的导出（full IC 0.0756、2026 年 IC 0.0461，都低于 0.10 阈值），信号质量跌破自家门槛就不许出清单。
+正确性靠测试基线和门禁的实测拦截记录撑住。测试基线 688 passed 加 0 failed（2026-09-15 实测；此前的「554 + 8 已知失败」里，E2 废弃链 7 例改标 xfail、rechunk 测试 3 例修好参数，失败数清零，判定过程记录在 2026-09-09 与 09-14 的提交历史里），另有 factor_mining/tests 模块 59 个 test_ 文件、552 个 def test_ 函数（按文件数与函数定义计数，2026-10-06 实测）。core/paths.py 是全仓唯一的路径权威，硬编码绝对路径会被门禁测试当场拦下。门禁不分内外最硬的证据是它拦过自家线：VERIFY_GATE 实测拒绝 E5 对照线的导出（full IC 0.0756、2026 年 IC 0.0461，都低于 0.10 阈值），信号质量跌破自家门槛就不许出清单。
 
 ## 已知失败
 

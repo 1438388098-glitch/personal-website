@@ -6,7 +6,7 @@ import { getPublishedPosts } from '../../lib/posts';
 /** 英文订阅源：只收英文集合（postsEn/projectsEn/toolboxEn），exam/notes 不译不进。
     @param {import('astro').APIContext} context */
 export async function GET(context) {
-  const [posts, projects, tools] = await Promise.all([
+  const [posts, projects] = await Promise.all([
     getPublishedPosts('en'),
     getCollection('projectsEn'),
     getCollection('toolboxEn')

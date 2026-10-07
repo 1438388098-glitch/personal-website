@@ -88,7 +88,7 @@ const enPath = lang === 'en' ? selfPath : alternate;
   <link rel="preload" as="font" type="font/woff2" crossorigin href={href} />
 ))}
 {/* 字体声明非阻塞加载：print 样式不拦首绘，加载完翻转为 all；无 JS 环境由 noscript 兜底 */}
-<link rel="stylesheet" href={fontsCssUrl} media="print" onload="this.media='all'" />
+<link rel="stylesheet" href={fontsCssUrl} media="print" onload="this.setAttribute('media','all')" />
 <noscript><link rel="stylesheet" href={fontsCssUrl} /></noscript>
 <ClientRouter />
 <script is:inline>
