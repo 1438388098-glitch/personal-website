@@ -10,7 +10,7 @@ export async function getStaticPaths() {
   const byTag = groupByTag(await getPublishedPosts('zh'));
   /* 对方语言对应页存在性：en 标签页只覆盖有英文译文的标签 */
   const enPosts = await getCollection('postsEn');
-  const enTagSet = new Set(enPosts.flatMap((p) => p.data.tags));
+  const enTagSet = new Set<string>(enPosts.flatMap((p) => p.data.tags));
   return [...byTag.entries()].map(([tag, posts]) => ({
     params: { tag },
     props: {

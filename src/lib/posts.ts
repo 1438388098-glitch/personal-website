@@ -12,11 +12,12 @@ export type AnyPost = Post | PostEn;
     列表、详情、RSS、标签、搜索等所有出口统一走这里，避免同一条发布口径散落多处而漂移。
     lang='en' 时取英文集合（译文子集），口径与 zh 完全一致。 */
 export async function getPublishedPosts(lang: Lang = 'zh'): Promise<AnyPost[]> {
-  const posts =
+  /* 先赋给 AnyPost[] 再排序：zh/en 两个集合的数组类型不同，联合后 .sort 的逆变会让比较器失配 */
+  const list: AnyPost[] =
     lang === 'en'
       ? await getCollection('postsEn', isPublished)
       : await getCollection('posts', isPublished);
-  return posts.sort(byDateDesc((p) => p.data.pubDate));
+  return list.sort(byDateDesc((p) => p.data.pubDate));
 }
 
 /** 相邻文章（较新 / 较旧），基于已按时间降序排列的列表；任一侧不存在则为 undefined。
