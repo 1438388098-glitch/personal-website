@@ -6,6 +6,7 @@ import { byDateDesc } from '../../lib/sort';
 import { isVisible } from '../../lib/publish';
 import { EXAM_AGG } from '../../lib/exam-progress';
 import { figure } from '../../lib/metrics';
+import { SELF_CHECK_AGG } from '../../data/self-check';
 import { githubRepoUrl } from '../../lib/site';
 import EntryCard from '../../components/EntryCard.astro';
 
@@ -15,7 +16,7 @@ const articles = (await getCollection('exam', isVisible))
 /* 输出数字从 lib 层单源取结构化 figures，不在此页复述字面量 */
 const publicRepos = (await getCollection('toolbox')).length;
 
-// 备考一圈的先后顺序：先有计划与打卡这个底盘，客观题错题从竹马来，主观题刷题判分收尾；产出数据均可溯源到对应案例页
+// 备考一圈的先后顺序：先有计划与打卡这个底盘，客观题错题从竹马来，主观题刷完先自查再交 AI 判分收尾；产出数据均可溯源到对应案例页
 const stages = [
   {
     step: '01',
@@ -51,6 +52,14 @@ const stages = [
   },
   {
     step: '05',
+    stage: '主观题自查',
+    tool: '主观题采分点自查清单',
+    href: '/exam/checklist/',
+    ai: '答完先自查再交 AI：按结论 / 依据 / 分析三类点逐条过，没勾的就是丢分点',
+    output: `${SELF_CHECK_AGG.items} 条自查项 · ${SELF_CHECK_AGG.subjects} 个科目，勾选只存本机`
+  },
+  {
+    step: '06',
     stage: '主观题判分',
     tool: 'fakao-grader',
     href: '/projects/fakao-grader/',
@@ -58,7 +67,7 @@ const stages = [
     output: '✓ / △ / ✗ 三级判定，±3 分考场预估带'
   },
   {
-    step: '06',
+    step: '07',
     stage: 'AI 能力评测',
     tool: 'cn-judbench（法衡）',
     href: '/projects/cn-judbench/',
@@ -66,7 +75,7 @@ const stages = [
     output: `${figure('cn-judbench', 'packs')} · ${figure('cn-judbench', 'questions')}`
   },
   {
-    step: '07',
+    step: '08',
     stage: '工具制造',
     tool: 'Claude Code 等 AI 编码协作',
     href: '/toolbox/',
@@ -75,12 +84,12 @@ const stages = [
   }
 ];
 ---
-<BaseLayout title="法考 × AI" description="把备考拆成七个环节，每个环节一个自建 AI 工具：计划打卡、错题变笔记、法条检索必带条文引用、主观题自练自判、AI 先评测再上岗，产出数据全部公开可查。">
+<BaseLayout title="法考 × AI" description="把备考拆成八个环节，每个环节一个自建 AI 工具：计划打卡、错题变笔记、法条检索必带条文引用、主观题自练自查自判、AI 先评测再上岗，产出数据全部公开可查。">
   <h1>法考 × AI</h1>
   <section aria-label="备考环节与自建工具">
     <div class="sec-head">
       <span class="sec-no">01</span>
-      <h2>七个环节，按备考顺序<span class="sec-en">Workflow</span></h2>
+      <h2>八个环节，按备考顺序<span class="sec-en">Workflow</span></h2>
     </div>
     <div class="stage-grid">
       {stages.map((s) => (

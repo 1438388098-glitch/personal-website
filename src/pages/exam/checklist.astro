@@ -1,0 +1,181 @@
+---
+/**
+ * 主观题采分点自查清单：答完一问、对 AI 判分前，按采分点三类逐条自查。
+ * 结构复用 fakao-grader 判分规则（结论/依据/分析三类点、✓△✗ 口径），内容人工整理。
+ * 勾选进度只存本机 localStorage，可打印成考前清单。
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SELF_CHECK, SELF_CHECK_AGG } from '../../data/self-check';
+---
+<BaseLayout
+  title="主观题采分点自查清单"
+  description={`把 AI 判分规则翻译成 ${SELF_CHECK_AGG.items} 条自查项：主观题答完先按结论、依据、分析三类点逐条过，没勾的就是丢分点；勾选只存本机，可打印。`}
+>
+  <article class="checklist">
+    <p class="crumb"><a href="/exam/">← 法考 × AI</a></p>
+    <h1>主观题采分点自查清单</h1>
+    <p class="lede">
+      结构复用自 <a href="/projects/fakao-grader/">fakao-grader</a>
+      的按点判分规则：每问的采分点分「结论 / 依据 / 分析」三类，答完一问先自己过一遍，
+      没勾上的就是大概率丢分点；自查完再交给 AI 按官方采分点严格判分。
+      内容为人工整理的备考方法论，不含真题原文与任何平台评分数据。
+    </p>
+    <div class="toolbar">
+      <p class="progress mono" aria-live="polite">
+        已勾 <span id="done-total">0</span> / {SELF_CHECK_AGG.items} 条
+      </p>
+      <div class="actions">
+        <button type="button" id="btn-print">打印清单</button>
+        <button type="button" id="btn-reset">清空勾选</button>
+      </div>
+    </div>
+    {SELF_CHECK.map((s) => (
+      <section class="subject" aria-labelledby={`h-${s.id}`}>
+        <div class="subject-head">
+          <h2 id={`h-${s.id}`}>{s.name}</h2>
+          <p class="subject-progress mono" aria-hidden="true">
+            <span class="done" data-subject-done>0</span> / {s.groups.reduce((n, g) => n + g.items.length, 0)}
+          </p>
+        </div>
+        {s.note && <p class="subject-note">{s.note}</p>}
+        {s.groups.map((g) => (
+          <div class="group">
+            <h3>{g.title}</h3>
+            <ul class="items">
+              {g.items.map((i) => (
+                <li class="item">
+                  <label>
+                    <input type="checkbox" data-id={i.id} />
+                    <span class="text">
+                      {i.text}
+                      {i.hint && <span class="hint">{i.hint}</span>}
+                    </span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </section>
+    ))}
+    <p class="colophon">
+      口径说明：三类点（结论 / 依据 / 分析）与「✓ 满分 · △ 半分 · ✗ 不倒扣」的判分规则复用自
+      <a href="/projects/fakao-grader/">fakao-grader</a>
+      的判分设计；条目为人工整理的备考方法论，不含真题原文与任何平台评分数据，也不含具体条文号——条号由你在作答里自己写准。
+      勾选进度只存本机浏览器 localStorage，不上传任何地方。
+    </p>
+  </article>
+</BaseLayout>
+<script>
+  const KEY = 'fakao-self-check:v1';
+  const boxes = Array.from(document.querySelectorAll<HTMLInputElement>('input[data-id]'));
+  const doneTotal = document.getElementById('done-total');
+
+  function load(): Record<string, boolean> {
+    try {
+      return JSON.parse(localStorage.getItem(KEY) ?? '{}');
+    } catch {
+      return {};
+    }
+  }
+
+  function apply(): void {
+    const state = load();
+    let done = 0;
+    for (const b of boxes) {
+      b.checked = state[b.dataset.id ?? ''] === true;
+      if (b.checked) done += 1;
+    }
+    for (const sec of document.querySelectorAll<HTMLElement>('.subject')) {
+      const total = sec.querySelectorAll('input[data-id]').length;
+      const checked = sec.querySelectorAll('input[data-id]:checked').length;
+      const el = sec.querySelector<HTMLElement>('[data-subject-done]');
+      if (el) el.textContent = String(checked);
+      sec.classList.toggle('is-complete', total > 0 && checked === total);
+    }
+    if (doneTotal) doneTotal.textContent = String(done);
+  }
+
+  for (const b of boxes) {
+    b.addEventListener('change', () => {
+      const state = load();
+      if (b.checked) state[b.dataset.id ?? ''] = true;
+      else delete state[b.dataset.id ?? ''];
+      localStorage.setItem(KEY, JSON.stringify(state));
+      apply();
+    });
+  }
+
+  document.getElementById('btn-reset')?.addEventListener('click', () => {
+    if (!confirm('清空全部勾选记录？')) return;
+    localStorage.removeItem(KEY);
+    apply();
+  });
+  document.getElementById('btn-print')?.addEventListener('click', () => window.print());
+
+  apply();
+</script>
+<style>
+  .checklist { max-width: 46rem; margin: 0 auto; }
+  .crumb { margin: 0 0 1.2rem; }
+  .lede { color: var(--text); }
+  .toolbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    border-top: 1.5px solid var(--border-strong); border-bottom: 1px solid var(--border);
+    padding: 0.7rem 0; margin: 1.6rem 0 0;
+  }
+  .progress { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+  .progress #done-total { color: var(--accent); font-weight: 700; }
+  .actions { display: flex; gap: 0.5rem; }
+  .actions button {
+    font: inherit; font-size: 0.85rem; color: var(--text);
+    background: transparent; border: 1px solid var(--border);
+    padding: 0.4rem 0.8rem; cursor: pointer;
+    min-height: 44px;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .actions button:hover { border-color: var(--accent); color: var(--accent); }
+  .subject { margin-top: var(--section-gap); }
+  .subject-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+    border-bottom: 1px solid var(--border); padding-bottom: 0.4rem;
+  }
+  .subject-head h2 { margin: 0; }
+  .subject-progress { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+  .subject.is-complete .subject-progress .done { color: var(--accent); }
+  .subject-note { color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0 0; }
+  .group { margin-top: 1.4rem; }
+  .group h3 { margin: 0 0 0.5rem; font-size: 1rem; }
+  .items { list-style: none; margin: 0; padding: 0; }
+  .item { border-top: 1px solid var(--border); }
+  .item:last-child { border-bottom: 1px solid var(--border); }
+  .item label {
+    display: flex; gap: 0.7rem; align-items: flex-start;
+    padding: 0.65rem 0.2rem; cursor: pointer;
+    min-height: 44px;
+  }
+  .item input {
+    appearance: none; margin: 0.25rem 0 0; width: 1.15rem; height: 1.15rem; flex: none;
+    border: 1.5px solid var(--border-strong); background: var(--surface);
+    cursor: pointer;
+  }
+  .item input:checked { background: var(--accent); border-color: var(--accent); }
+  .item input:checked::after {
+    content: '✓'; display: block; color: var(--bg);
+    font-size: 0.8rem; line-height: 1.05; text-align: center; font-weight: 700;
+  }
+  .item input:checked ~ .text { color: var(--text-muted); }
+  .text { font-size: 0.95rem; }
+  .hint { display: block; color: var(--text-muted); font-size: 0.82rem; margin-top: 0.15rem; }
+  .colophon {
+    margin-top: var(--section-gap); padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted); font-size: 0.85rem;
+  }
+  @media print {
+    .toolbar, .actions { display: none; }
+    .crumb { display: none; }
+    .subject { break-inside: avoid-page; }
+    .item input:checked ~ .text { color: var(--text); }
+  }
+</style>
