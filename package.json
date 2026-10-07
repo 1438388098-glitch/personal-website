@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/trim-dist.mjs",
+    "build": "astro build && node scripts/trim-dist.mjs && node scripts/subset-fonts.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "check:links": "node scripts/check-links.mjs",
@@ -21,7 +21,8 @@
     "check:scripts": "tsc -p tsconfig.scripts.json",
     "test": "vitest run",
     "check:i18n": "node scripts/check-i18n.mjs",
-    "check:golden": "node scripts/content-golden.mjs"
+    "check:golden": "node scripts/content-golden.mjs",
+    "fonts:budget": "node scripts/font-budget.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.0",
@@ -34,6 +35,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@emnapi/runtime": "^1.11.3",
+    "subset-font": "^2.9.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.11"
   }

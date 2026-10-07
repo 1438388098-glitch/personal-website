@@ -3,7 +3,7 @@
 // 2016 年后的浏览器全部走 woff2，woff 属于永不下载的死重，约占部署体积一半）。
 // 扫描为**递归**：Astro 可能把字体/CSS 放进 _astro 子目录，只扫顶层会漏删。
 import { readdirSync, readFileSync, writeFileSync, unlinkSync, statSync } from 'node:fs';
-import { join, basename, resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 
 const dir = resolve('dist/_astro');
 
@@ -49,30 +49,11 @@ try {
   }
   console.log(`trim-dist: 已改写 ${rewritten} 个 CSS 的 .woff 悬挂引用。`);
 
-  /* 非 CJK 切片（中文站永不命中 unicode-range）：删文件并从 CSS 抹掉对应 @font-face 块。
-     latin 保留：数字与西文展示位在用。
-     只匹配文件名，不吃含目录的绝对路径：否则检出目录名恰好含 greek/vietnamese 等字样时，
-     会把该目录下所有 woff2 当非 CJK 静默删除。 */
-  const nonCjk = /(cyrillic|vietnamese|greek|latin-ext)/;
-  let sliced = 0;
-  for (const f of files) {
-    if (f.endsWith('.woff2') && nonCjk.test(basename(f))) {
-      unlinkSync(f);
-      sliced++;
-    }
-  }
-  let blocks = 0;
-  for (const p of cssFiles) {
-    const css = readFileSync(p, 'utf8');
-    const next = css.replace(/@font-face\s*\{[^}]*\}\s*/g, (m) => (nonCjk.test(m) ? (blocks++, '') : m));
-    if (next !== css) writeFileSync(p, next);
-  }
-  if (sliced !== blocks) {
-    /* 不变式：删掉的切片文件数必须等于抹掉的声明块数，脱钩说明有块漏删（引用已删文件）或多删 */
-    console.error(`trim-dist: 切片文件 ${sliced} 个 ≠ 声明块 ${blocks} 个，CSS 与产物文件脱钩，请核对`);
-    process.exit(1);
-  }
-  console.log(`trim-dist: 已剔除 ${sliced} 个非 CJK 切片、${blocks} 个对应 @font-face 块。`);
+  /* 非 CJK 切片（cyrillic/greek/vietnamese/latin-ext 等）不在本步删。
+     早先按文件名正则删，依据是「中文站永不命中」——这个前提是错的：
+     项目页里写着 α/κ/γ，Noto 的 greek 切片正是它们的唯一覆盖来源，按名字删会让这几个字母
+     掉进系统字体。改由 subset-fonts 按「站内实际用到哪些字符」决定：零命中的分片连
+     @font-face 块一起删掉，命中的压成极小文件。判据从文件名换成真实用量，不再依赖假设。 */
 
   /* public/ 会被逐字部署：dist 里出现 .md 说明把内部工作笔记当静态资产发了，直接失败 */
   const strays = [];

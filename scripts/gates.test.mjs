@@ -10,6 +10,7 @@ import { parseLinks, decodeLink, linkTargetExists } from './check-links.mjs';
 import { scanSecrets } from './check-secrets.mjs';
 import { scanStyle } from './check-style.mjs';
 import { slugDate, frontDate, checkEntries } from './check-content.mjs';
+import { parseUnicodeRange, formatUnicodeRange, intersect, parseFaces } from './subset-fonts.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -17,7 +18,7 @@ describe('门禁脚本导入安全', () => {
   /* 少了 import 守卫，import 本身就会跑一遍 CLI：仓库恰好干净时静默通过，
      一旦有红线就 process.exit 把测试文件的加载带崩。这里在子进程里只做 import，
      退出码与 stderr 都必须干净，才证明扫描没有在导入时发生。 */
-  for (const name of ['check-style.mjs', 'check-links.mjs', 'check-secrets.mjs']) {
+  for (const name of ['check-style.mjs', 'check-links.mjs', 'check-secrets.mjs', 'subset-fonts.mjs']) {
     it(`${name} 被 import 时不执行扫描`, () => {
       const target = pathToFileURL(join(repoRoot, 'scripts', name)).href;
       const r = spawnSync(process.execPath, ['--input-type=module', '-e', `await import(${JSON.stringify(target)})`], {
@@ -173,5 +174,42 @@ describe('scanStyle 文风红线', () => {
     expect(labels).toContain('底层逻辑');
     expect(labels).toContain('沉淀');
     expect(labels).toContain('颗粒度');
+  });
+});
+
+describe('字体子集化的 range 解析与收窄', () => {
+  it('解析单码位、区间与混合写法', () => {
+    expect(parseUnicodeRange('U+23,U+3d')).toEqual([[0x23, 0x23], [0x3d, 0x3d]]);
+    expect(parseUnicodeRange('U+4e00-4e10, U+5b')).toEqual([[0x4e00, 0x4e10], [0x5b, 0x5b]]);
+  });
+
+  it('把码位集合压回 range 文本：连续段合并，离散段分开', () => {
+    expect(formatUnicodeRange([0x23])).toBe('U+23');
+    expect(formatUnicodeRange([0x4e00, 0x4e01, 0x4e02])).toBe('U+4e00-4e02');
+    expect(formatUnicodeRange([0x4e00, 0x4e05])).toBe('U+4e00,U+4e05');
+    expect(formatUnicodeRange([])).toBe('');
+  });
+
+  it('format ∘ parse 往返稳定（收窄后的 CSS 再解析结果不变）', () => {
+    const cps = [0x23, 0x4e00, 0x4e01, 0x4e02, 0x9fff];
+    expect(parseUnicodeRange(formatUnicodeRange(cps))).toEqual([[0x23, 0x23], [0x4e00, 0x4e02], [0x9fff, 0x9fff]]);
+  });
+
+  it('intersect 只留落在 range 内的码位', () => {
+    const used = new Set([0x41, 0x4e00, 0x9fff]);
+    expect(intersect([[0x4e00, 0x4e10]], used)).toEqual([0x4e00]);
+    expect(intersect([[0x100, 0x200]], used)).toEqual([]);
+  });
+
+  it('parseFaces 只认本地 woff2，外链字体与无 range 的块不参与', () => {
+    const css = '.a{color:red}@font-face{font-family:X;src:url(/_astro/a.woff2) format("woff2");unicode-range:U+4e00-4e10}'
+      + '@font-face{font-family:Y;src:url(https://cdn.example.com/b.woff2);unicode-range:U+41}'
+      + '@font-face{font-family:Z;src:url(/_astro/c.woff2) format("woff2")}';
+    const faces = parseFaces(css);
+    expect(faces.length).toBe(3);
+    expect(faces[0].url).toBe('/_astro/a.woff2');
+    expect(faces[0].ranges).toEqual([[0x4e00, 0x4e10]]);
+    expect(faces[1].url).toBeNull();
+    expect(faces[2].ranges).toEqual([]);
   });
 });
