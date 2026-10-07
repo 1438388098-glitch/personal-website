@@ -1,5 +1,5 @@
 ---
-title: "Standing at the eve of the tech explosion, part 3: a machine wrote 722 math manuscripts, no ignition yet"
+title: "Standing at the eve of the tech explosion, part 3: a machine wrote 722 math manuscripts"
 description: "Three hours of Pro-tier compute per manuscript, 162 Lean-verified, 560 still in human hands. Still before RSI."
 category: 杂谈
 tags: [大模型, RSI, 数学]
