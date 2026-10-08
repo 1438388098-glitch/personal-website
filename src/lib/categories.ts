@@ -39,3 +39,14 @@ export const TAG_VOCAB = [
   '量化',
   '数据工程',
 ] as const;
+
+/** exam 板块 type 枚举（content.config 与 i18n 守卫共用单源） */
+export const EXAM_TYPES = ['方法论', '错题笔记', '周记'];
+
+/** notes 板块 category/status 枚举 */
+export const NOTE_CATEGORIES = ['课程论文', '文献研读', '读书笔记'];
+export const NOTE_STATUS = ['已完成', '写作中', '在读'];
+
+/** projects 分组与 toolbox 分类的受控值（EN_GROUP 映射表的两条来源） */
+export const PROJECT_GROUPS = ['法律主线', '法律工具', '量化研究', '工程侧证', '实验'];
+export const TOOLBOX_CATEGORIES = ['法律工具', '工程小件'];

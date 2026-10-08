@@ -2,7 +2,7 @@ import { defineCollection } from 'astro:content';
 /* z 从 astro/zod 取：astro:content 的 re-export 在 Astro 7 已废弃，8 将移除 */
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
-import { POST_CATEGORIES, TAG_VOCAB } from './lib/categories';
+import { EXAM_TYPES, NOTE_CATEGORIES, NOTE_STATUS, POST_CATEGORIES, PROJECT_GROUPS, TAG_VOCAB, TOOLBOX_CATEGORIES } from './lib/categories';
 
 /* schema 先抽成常量：zh 集合与 en 集合逐字段共用同一份定义。
    en 集合（src/content-en/）存英文译文，文件名与 zh 同名配对；
@@ -11,7 +11,7 @@ import { POST_CATEGORIES, TAG_VOCAB } from './lib/categories';
 const projectsSchema = z.object({
   title: z.string(),
   summary: z.string().max(160),
-  group: z.enum(['法律主线', '法律工具', '量化研究', '工程侧证', '实验']),
+  group: z.enum(PROJECT_GROUPS),
   date: z.coerce.date(),
   featured: z.boolean().default(false),
   order: z.number().default(99),
@@ -43,7 +43,7 @@ const examSchema = z.object({
   title: z.string(),
   /* 上限口径同 postsSchema.description：en 完整转述约需 zh 的两倍字符数 */
   description: z.string().max(300),
-  type: z.enum(['方法论', '错题笔记', '周记']),
+  type: z.enum(EXAM_TYPES),
   date: z.coerce.date(),
   draft: z.boolean().default(false)
 });
@@ -51,9 +51,9 @@ const examSchema = z.object({
 const notesSchema = z.object({
   title: z.string(),
   description: z.string().max(300),
-  category: z.enum(['课程论文', '文献研读', '读书笔记']),
+  category: z.enum(NOTE_CATEGORIES),
   date: z.coerce.date(),
-  status: z.enum(['已完成', '写作中', '在读']).default('已完成'),
+  status: z.enum(NOTE_STATUS).default('已完成'),
   draft: z.boolean().default(false)
 });
 
@@ -78,7 +78,7 @@ const toolboxSchema = z.object({
   name: z.string(),
   url: z.url(),
   description: z.string(),
-  category: z.enum(['法律工具', '工程小件']),
+  category: z.enum(TOOLBOX_CATEGORIES),
   /** 站内回链：同名项目案例页与相关博文，避免两个栏目互为孤岛 */
   related: z
     .array(z.object({ label: z.string(), url: z.string().refine((u) => u.startsWith('/'), '站内回链必须以 / 开头') }))

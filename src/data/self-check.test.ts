@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { SELF_CHECK, SELF_CHECK_AGG } from './self-check';
+import { SELF_CHECK_EN } from './self-check-en';
 
 /** 内容金样：改内容必须有意为之——科目数、条目数与两个案例页/卡片引用的口径锁在一起。 */
 describe('self-check 数据完整性', () => {
@@ -35,6 +36,17 @@ describe('self-check 数据完整性', () => {
         }
       }
     }
+  });
+
+  it('en 数据集与 zh 严格同构：id 序列一致、三层条数一致（en 页工具栏与明细同源才能对上）', () => {
+    const ids = (data: typeof SELF_CHECK) => data.flatMap((s) => s.groups.flatMap((g) => g.items.map((i) => i.id)));
+    expect(ids(SELF_CHECK_EN)).toEqual(ids(SELF_CHECK));
+    const shape = (data: typeof SELF_CHECK) => ({
+      subjects: data.length,
+      groups: data.reduce((n, s) => n + s.groups.length, 0),
+      items: data.reduce((n, s) => n + s.groups.reduce((m, g) => m + g.items.length, 0), 0),
+    });
+    expect(shape(SELF_CHECK_EN)).toEqual(shape(SELF_CHECK));
   });
 
   it('不引入具体条文号（自查项只负责提示「要引依据」，条号由作答者现场写）', () => {

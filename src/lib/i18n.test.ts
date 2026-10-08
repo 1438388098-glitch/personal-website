@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { EN_CATEGORY, EN_GROUP, EN_TAG, STRINGS, langOf, prefix, href } from './i18n';
-import { POST_CATEGORIES, TAG_VOCAB } from './categories';
+import { EN_CATEGORY, EN_EXAM_TYPE, EN_GROUP, EN_STATUS, EN_TAG, STRINGS, langOf, prefix, href } from './i18n';
+import { EXAM_TYPES, NOTE_CATEGORIES, NOTE_STATUS, POST_CATEGORIES, PROJECT_GROUPS, TAG_VOCAB, TOOLBOX_CATEGORIES } from './categories';
 
 /** 深走键位：zh 与 en 的对象树必须逐键对齐（en 多键少键都算漂移） */
 function keyPaths(obj: unknown, path = ''): string[] {
@@ -23,23 +23,38 @@ function uniqKeyPaths(obj: unknown): string[] {
 
 describe('i18n 字典', () => {
   it('zh 与 en 键位完全平齐', () => {
-    /* home.band 豁免：zh 首页的法考通栏在 en 是 null（法考栏目不译），类型允许单侧可空 */
-    const strip = (paths: string[]) => paths.filter((p) => !p.startsWith('home.band'));
-    expect(strip(uniqKeyPaths(STRINGS.en))).toEqual(strip(uniqKeyPaths(STRINGS.zh)));
+    expect(uniqKeyPaths(STRINGS.en)).toEqual(uniqKeyPaths(STRINGS.zh));
   });
 
-  it('分类受控词表全部有英文对照', () => {
-    for (const c of POST_CATEGORIES) expect(EN_CATEGORY[c], `缺对照: ${c}`).toBeTruthy();
-  });
-
-  it('标签受控词表全部有英文对照', () => {
-    for (const t of TAG_VOCAB) expect(EN_TAG[t], `缺对照: ${t}`).toBeTruthy();
-  });
-
-  it('项目分组与工具箱分类全部有英文对照', () => {
-    for (const g of ['法律主线', '法律工具', '量化研究', '工程侧证', '实验', '工程小件']) {
-      expect(EN_GROUP[g], `缺对照: ${g}`).toBeTruthy();
+  it('分类受控词表全部有英文对照，映射表无词表外孤儿（EN_CATEGORY 同时服务博客 7 分类与 notes 3 分类）', () => {
+    const vocab = [...POST_CATEGORIES, ...NOTE_CATEGORIES];
+    for (const c of vocab) expect(EN_CATEGORY[c], `缺对照: ${c}`).toBeTruthy();
+    for (const k of Object.keys(EN_CATEGORY)) {
+      expect(vocab, `EN_CATEGORY 孤儿键: ${k}`).toContain(k);
     }
+  });
+
+  it('标签受控词表全部有英文对照，映射表无词表外孤儿', () => {
+    for (const t of TAG_VOCAB) expect(EN_TAG[t], `缺对照: ${t}`).toBeTruthy();
+    for (const k of Object.keys(EN_TAG)) {
+      expect(TAG_VOCAB, `EN_TAG 孤儿键: ${k}`).toContain(k);
+    }
+  });
+
+  it('项目分组与工具箱分类全部有英文对照，映射表无词表外孤儿', () => {
+    const vocab = [...PROJECT_GROUPS, ...TOOLBOX_CATEGORIES];
+    for (const g of vocab) expect(EN_GROUP[g], `缺对照: ${g}`).toBeTruthy();
+    for (const k of Object.keys(EN_GROUP)) {
+      expect(vocab, `EN_GROUP 孤儿键: ${k}`).toContain(k);
+    }
+  });
+
+  it('exam 类型与 notes 分类/状态全部有英文对照，映射表无词表外孤儿', () => {
+    for (const t of EXAM_TYPES) expect(EN_EXAM_TYPE[t], `缺对照: ${t}`).toBeTruthy();
+    for (const c of NOTE_CATEGORIES) expect(EN_CATEGORY[c], `notes 分类缺对照: ${c}`).toBeTruthy();
+    for (const s of NOTE_STATUS) expect(EN_STATUS[s], `缺对照: ${s}`).toBeTruthy();
+    for (const k of Object.keys(EN_EXAM_TYPE)) expect(EXAM_TYPES, `EN_EXAM_TYPE 孤儿键: ${k}`).toContain(k);
+    for (const k of Object.keys(EN_STATUS)) expect(NOTE_STATUS, `EN_STATUS 孤儿键: ${k}`).toContain(k);
   });
 
   it('en 导航与 zh 七项一一对应（exam/notes 已出英文版），且链接带 /en 前缀', () => {
