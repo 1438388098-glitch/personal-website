@@ -183,6 +183,14 @@ describe('字体子集化的 range 解析与收窄', () => {
     expect(parseUnicodeRange('U+4e00-4e10, U+5b')).toEqual([[0x4e00, 0x4e10], [0x5b, 0x5b]]);
   });
 
+  it('解析 lightningcss 的通配问号写法（U+?? = 0000-00FF；半通配 U+30?? = 3000-30FF）', () => {
+    /* 曾因 parseInt('??') 得 NaN 使基础拉丁区命中失败，Archivo/Space Mono 的 latin 片被整块误删 */
+    expect(parseUnicodeRange('U+??')).toEqual([[0x0000, 0x00ff]]);
+    expect(parseUnicodeRange('U+????')).toEqual([[0x0000, 0xffff]]);
+    expect(parseUnicodeRange('U+30??')).toEqual([[0x3000, 0x30ff]]);
+    expect(parseUnicodeRange('U+??,U+131')).toEqual([[0x0000, 0x00ff], [0x131, 0x131]]);
+  });
+
   it('把码位集合压回 range 文本：连续段合并，离散段分开', () => {
     expect(formatUnicodeRange([0x23])).toBe('U+23');
     expect(formatUnicodeRange([0x4e00, 0x4e01, 0x4e02])).toBe('U+4e00-4e02');

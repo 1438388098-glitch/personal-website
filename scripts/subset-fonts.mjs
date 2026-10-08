@@ -74,6 +74,14 @@ export function parseUnicodeRange(value) {
     .filter(Boolean)
     .map((r) => {
       const [a, z] = r.replace(/^U\+/i, '').split('-');
+      /* lightningcss 把 U+0000-00FF 压缩成通配问号（U+??），也可半通配（U+30?? = U+3000-30FF）；
+         parseInt('??') 是 NaN，会让整个基础拉丁区命中失败、@font-face 被整块误删 */
+      const wild = /^([0-9a-f]*)(\?+)$/i.exec(a);
+      if (wild) {
+        const span = 16 ** wild[2].length;
+        const lo = (wild[1] ? parseInt(wild[1], 16) : 0) * span;
+        return /** @type {[number, number]} */ ([lo, lo + span - 1]);
+      }
       const lo = parseInt(a, 16);
       return /** @type {[number, number]} */ ([lo, z ? parseInt(z, 16) : lo]);
     });
