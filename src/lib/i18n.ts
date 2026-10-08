@@ -139,7 +139,7 @@ const zh = {
   },
   feedPath: '/feed.xml',
   home: {
-    title: '胡圣炜 · Stoic',
+    title: SITE.title,
     label: '法律 × 工程',
     h1: '用 <span class="hl">AI</span> 加速进步。',
     /* 分号后手动断行：两行各对应一层信息（开源工具/量化私有），避免词被拆断 */
@@ -165,7 +165,7 @@ const zh = {
       { title: '笔记', desc: '课程论文与文献研读', href: '/notes/' },
       { title: '工具箱', desc: '公开在 GitHub 的法律工具，一键到仓库', href: '/toolbox/' },
     ],
-    /* zh 首页的法考通栏；en 首页不译法考栏目，置 null 整块收起 */
+    /* zh 首页的法考通栏；en 首页同构出英文版（见下方 en.home.band） */
     band: {
       label: '法考 × AI',
       en: 'Exam Workflow',
@@ -371,7 +371,6 @@ const zh = {
     relatedPosts: '相关博文：',
     allProjects: '← 全部项目',
     repo: '仓库',
-    repoAria: '仓库（在新窗口打开）',
     breadcrumbHome: '首页',
     breadcrumbProjects: '项目',
   },
@@ -415,7 +414,6 @@ const zh = {
     blog: '看博客',
     search: '搜索',
   },
-  anchor: '本节锚点',
   tocAria: '本篇目录',
 };
 
@@ -452,7 +450,7 @@ const en: Strings = {
   },
   feedPath: '/en/feed.xml',
   home: {
-    title: 'Samwaye Woo · Stoic',
+    title: SITE.titleEn,
     label: 'Law × Engineering',
     /* 与 zh 主标题「用 AI 加速进步。」同一价值主张 */
     h1: 'Use <span class="hl">AI</span> to accelerate progress.',
@@ -680,7 +678,6 @@ const en: Strings = {
     relatedPosts: 'Related posts: ',
     allProjects: '← All projects',
     repo: 'Repo',
-    repoAria: 'Repository (opens in new window)',
     breadcrumbHome: 'Home',
     breadcrumbProjects: 'Projects',
   },
@@ -721,7 +718,6 @@ const en: Strings = {
     blog: 'Blog',
     search: 'Search',
   },
-  anchor: 'Anchor for this section',
   tocAria: 'On this page',
 };
 

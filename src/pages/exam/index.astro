@@ -16,7 +16,7 @@ const articles = (await getCollection('exam', isVisible))
 const publicRepos = (await getCollection('toolbox')).length;
 
 // 备考一圈的先后顺序：先有计划与打卡这个底盘，客观题错题从竹马来，主观题刷完先自查再交 AI 判分收尾；产出数据均可溯源到对应案例页
-// wide 标记尾部两环：AI 评测与工具制造是质量保障层的元环节，六宫格之后用两条通栏横排收尾，读法从上下堆变左中右
+// wide 标记尾部两环：AI 评测与工具制造是质量保障层的元环节，排在前六环之后以两条通栏横排收尾，读法从上下堆变左中右
 const stages: { step: string; stage: string; tool: string; href: string; ai: string; output: string; wide?: boolean }[] = [
   {
     step: '01',
