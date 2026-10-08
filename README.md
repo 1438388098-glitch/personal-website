@@ -1,5 +1,7 @@
 # 胡圣炜的个人网站
 
+线上地址：https://iweistoicqc5.top
+
 「法律 × AI」个人品牌站：项目案例、技术写作、法考备考、读书笔记。
 设计文档见 docs/superpowers/specs/，实施计划见 docs/superpowers/plans/。
 
