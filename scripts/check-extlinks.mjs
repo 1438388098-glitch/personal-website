@@ -7,9 +7,11 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const dist = resolve('dist');
-/* 域名唯一事实源：从 src/lib/site.ts 提取（.mjs 不能直接 import .ts） */
+/* 域名唯一事实源：从 src/lib/site.ts 提取（.mjs 不能直接 import .ts）。
+   锚 ORIGIN 常量行——旧正则锚 `url: '` 在 site.ts 改用 const ORIGIN 后就失配了，
+   本门禁从此一直报「无法提取」静默报废（2026-10-08 修复）。 */
 const siteTs = readFileSync(resolve('src/lib/site.ts'), 'utf8');
-const siteMatch = /url:\s*'([^']+)'/.exec(siteTs);
+const siteMatch = /const ORIGIN = '([^']+)'/.exec(siteTs) || /url:\s*'([^']+)'/.exec(siteTs);
 if (!siteMatch) {
   console.error('无法从 src/lib/site.ts 提取站点域名');
   process.exit(1);

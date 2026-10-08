@@ -1,5 +1,6 @@
 ---
 import { SITE, SITE_PATHS, THEME_COLORS } from '../lib/site';
+
 import { langOf, strings } from '../lib/i18n';
 import { ClientRouter } from 'astro:transitions';
 import fontsCssUrl from '../styles/fonts.css?url';
@@ -26,7 +27,7 @@ const fontNotoBrandShards = [fontNotoSans57, fontNotoSans112, fontNotoSans113];
 /* hero 文案独有分片：仅中文首页 preload */
 const fontNotoHeroShards = [fontNotoSans116, fontNotoSans118, fontNotoSans119];
 interface Props { title: string; description?: string; type?: 'website' | 'article'; image?: string; noindex?: boolean; publishedTime?: Date; alternate?: string | null; }
-const { title, type = 'website', image = SITE_PATHS.ogImage, noindex = false, publishedTime, alternate = null } = Astro.props;
+const { title, type = 'website', image: imageProp, noindex = false, publishedTime, alternate = null } = Astro.props;
 /* 语言只从 URL 判；描述缺省值随语言切换（SITE 双语描述是唯一事实源） */
 const lang = langOf(Astro.url.pathname);
 const t = strings(lang);
@@ -34,11 +35,13 @@ const description = Astro.props.description ?? (lang === 'en' ? SITE.description
 const bareTitle = title === SITE.title || title === SITE.titleEn;
 const siteTitle = lang === 'en' ? SITE.titleEn : SITE.title;
 const pageTitle = bareTitle ? title : `${title} · ${siteTitle}`;
+/* 默认 og 图随语言：og-default.png 是中文文案图，en 页共用会在分享卡露中文 */
+const image = imageProp ?? (lang === 'en' ? SITE_PATHS.ogImageEn : SITE_PATHS.ogImage);
 /* 域名单一事实源：astro.config.mjs 的 site 字段（经 Astro.site 注入） */
 const siteUrl = Astro.site ?? new URL(SITE.url);
 const ogImage = new URL(image, siteUrl);
 /* 尺寸只对已知的默认 og 图输出：自定义 image 尺寸未知，硬写 1200x630 会误导抓取器 */
-const isDefaultOgImage = image === SITE_PATHS.ogImage;
+const isDefaultOgImage = !imageProp;
 /* hreflang 双向 + x-default（指向 zh 版）：只在两侧页面都真实存在时输出，
    模板传 null（无对应页）就不发，避免把搜索引擎指到一个不存在的「译文」。 */
 const selfPath = Astro.url.pathname;
@@ -46,12 +49,12 @@ const zhPath = lang === 'zh' ? selfPath : (alternate ?? '');
 const enPath = lang === 'en' ? selfPath : alternate;
 ---
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-<link rel="alternate" type="application/rss+xml" title={SITE.title} href={new URL(t.feedPath, siteUrl)} />
+<link rel="alternate" type="application/rss+xml" title={siteTitle} href={new URL(t.feedPath, siteUrl)} />
 <link rel="sitemap" href={SITE_PATHS.sitemap} />
 <meta name="generator" content={Astro.generator} />
 <title>{pageTitle}</title>
 <meta name="description" content={description} />
-<meta name="author" content={SITE.author} />
+<meta name="author" content={t.authorName} />
 {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={new URL(selfPath, siteUrl)} />}
 <meta property="og:locale" content={t.ogLocale} />
 {alternate && <meta property="og:locale:alternate" content={t.ogLocaleAlternate} />}
@@ -63,7 +66,7 @@ const enPath = lang === 'en' ? selfPath : alternate;
 {isDefaultOgImage && <meta property="og:image:width" content="1200" />}
 {isDefaultOgImage && <meta property="og:image:height" content="630" />}
 <meta property="og:image:alt" content={pageTitle} />
-<meta property="og:site_name" content={SITE.title} />
+<meta property="og:site_name" content={siteTitle} />
 {type === 'article' && publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
 {/* 手机浏览器地址栏随明暗主题着色（与 global.css 的 --bg 同源）；模板内不能用裸 CSS 注释，会被当文本输出截断 head */}
 <meta name="theme-color" content={THEME_COLORS.light} media="(prefers-color-scheme: light)" />
@@ -80,7 +83,9 @@ const enPath = lang === 'en' ? selfPath : alternate;
     crossorigin 必须带：字体一律以 CORS 模式请求，缺了会二次下载。分片选择依据见 frontmatter 注释。
     品牌名分片（57/112/113）全站每页注入：页头 .brand「胡圣炜」每页可见；
     hero 分片仅中文首页注入：其余页面几乎无人命中，却抢走高优先级带宽 */}
-{fontNotoBrandShards.map((href) => (
+{/* 品牌名分片只注入 zh 页：en 页页头品牌行是「Samwaye Woo」（拉丁字面，走 Archivo），
+    预载的三个 Noto 分片在 en 页无人命中，白抢高优先级带宽 */}
+{lang === 'zh' && fontNotoBrandShards.map((href) => (
   <link rel="preload" as="font" type="font/woff2" crossorigin href={href} />
 ))}
 {selfPath === '/' && fontNotoHeroShards.map((href) => (

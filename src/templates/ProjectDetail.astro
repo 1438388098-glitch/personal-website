@@ -37,7 +37,7 @@ const jsonLd = {
   applicationCategory: 'BusinessApplication',
   applicationSubCategory: groupLabel(lang, group),
   inLanguage: lang === 'en' ? 'en' : 'zh-CN',
-  author: { '@type': 'Person', name: SITE.author, url: new URL('/about/', SITE.url).toString() }
+  author: { '@type': 'Person', name: t.authorName, url: new URL(href(lang, '/about/'), SITE.url).toString() }
 };
 const breadcrumb = {
   '@context': 'https://schema.org',

@@ -17,7 +17,7 @@ const { post, lang, alternate } = Astro.props;
 const t = strings(lang);
 const { Content, headings } = await render(post);
 const { title, description, category, pubDate, tags, image } = post.data;
-const shareImage = new URL(image ?? SITE_PATHS.ogImage, SITE.url).toString();
+const shareImage = new URL(image ?? (lang === 'en' ? SITE_PATHS.ogImageEn : SITE_PATHS.ogImage), SITE.url).toString();
 /* 相邻文章按发布日期排序：新一篇 / 旧一篇（含定时发布过滤）；en 只在自己的子集里相邻 */
 const sorted = await getPublishedPosts(lang);
 const { newer, older } = getAdjacent(sorted, post.id);
@@ -55,7 +55,7 @@ const jsonLd = {
   inLanguage: lang === 'en' ? 'en' : 'zh-CN',
   /* 栏目写进 articleSection，供富结果与聚合器识别；站点分组即博客分类 */
   articleSection: categoryLabel(lang, category),
-  author: { '@type': 'Person', name: SITE.author, url: new URL('/about/', SITE.url).toString() },
+  author: { '@type': 'Person', name: t.authorName, url: new URL(href(lang, '/about/'), SITE.url).toString() },
   publisher: { '@type': 'Organization', name: SITE.title, url: SITE.url },
   keywords: tags.map(tagLabelOf).join(', ')
 };

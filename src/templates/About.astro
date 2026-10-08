@@ -13,7 +13,7 @@ const t = strings(lang);
 const person = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: SITE.author,
+  name: t.authorName,
   url: new URL(href(lang, '/about/'), SITE.url).toString(),
   jobTitle: t.about.jsonLdJobTitle,
   /* sameAs 用于把站内 Person 与外部身份对齐，当前唯一可公开的外部主页是 GitHub */
