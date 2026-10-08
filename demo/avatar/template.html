@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face {
+    font-family: 'Archivo';
+    src: url(data:font/woff2;base64,__FONT_B64__) format('woff2-variations');
+    font-weight: 100 900; font-display: block;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1320px; background: #ffffff;
+    font-family: 'Archivo', 'Segoe UI', sans-serif;
+    color: #17160f; padding: 30px 36px 34px;
+  }
+  h1 { font-size: 21px; font-weight: 800; letter-spacing: -0.01em; }
+  .sub { font-size: 12.5px; color: #6b6a63; margin-top: 5px; }
+  .sub b { color: #17160f; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 24px; margin-top: 20px; }
+  .card { border: 1px solid #e2e0d8; padding: 13px 15px 11px; }
+  .name { font-size: 14px; font-weight: 800; }
+  .note { font-size: 11.5px; color: #6b6a63; line-height: 1.45; margin-top: 3px; min-height: 50px; }
+  .row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+  .av { display: block; flex: none; }
+  .av svg { display: block; width: 100%; height: 100%; }
+  .sq { border-radius: 0; overflow: hidden; }
+  .ci { border-radius: 50%; overflow: hidden; }
+  .b160 { width: 160px; height: 160px; }
+  .tag { font-size: 10px; color: #9b9a92; text-align: center; margin-top: 3px; letter-spacing: 0.02em; }
+  .mins { display: flex; align-items: flex-end; gap: 12px; margin-top: 11px; padding-top: 10px; border-top: 1px solid #efeee7; }
+  .mins .cell { text-align: center; }
+  .b44 { width: 44px; height: 44px; } .b20 { width: 20px; height: 20px; } .b16 { width: 16px; height: 16px; }
+  .strip { margin-top: 24px; padding-top: 15px; border-top: 2px solid #17160f; }
+  .strip h2 { font-size: 13px; font-weight: 800; }
+  .strip .line { display: flex; align-items: flex-start; gap: 16px; margin-top: 12px; }
+  .strip .k { font-size: 11px; color: #6b6a63; text-align: center; width: 64px; margin-top: 4px; }
+  .b64 { width: 64px; height: 64px; }
+  .ctx { display: flex; align-items: center; gap: 14px; margin-top: 22px; padding: 15px 20px; border: 1px solid #e2e0d8; }
+  .ctx .who { font-size: 22px; font-weight: 800; }
+  .ctx .bio { font-size: 13px; color: #6b6a63; margin-top: 2px; }
+</style>
+</head>
+<body>
+  <h1>GitHub 头像候选 · 6 版</h1>
+  <div class="sub">全部用站点自身的令牌：暖白 <b>#faf9f6</b>、墨 <b>#17160f</b>、强调蓝 <b>#2745f0</b>；零圆角；Archivo 900。左列为 GitHub 实际裁切形状（圆形），右列为完整方图。</div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="strip">
+    <h2>并看（64px，接近侧栏与信息流里的实际观感）· 最左为上一版</h2>
+    <div class="line" id="strip">
+      <!-- now-tile:start -->
+      <div>
+        <div class="av ci b64"><img src="data:image/png;base64,__NOW_B64__" style="display:block;width:100%;height:100%"></div>
+        <div class="k">上一版</div>
+      </div>
+      <!-- now-tile:end -->
+    </div>
+  </div>
+
+  <div class="ctx">
+    <div class="av ci b64" id="ctxav"></div>
+    <div>
+      <div class="who">Stoic</div>
+      <div class="bio">LL.B. candidate @ ZUEL × self-taught engineer · 法律 × AI</div>
+    </div>
+  </div>
+
+<script>
+/*__MARKS__*/
+
+const grid = document.getElementById('grid');
+marks.forEach(m => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="name">${m.name}</div>
+    <div class="note">${m.note}</div>
+    <div class="row">
+      <div><div class="av ci b160">${svgOf(m)}</div><div class="tag">GitHub 裁切</div></div>
+      <div><div class="av sq b160">${svgOf(m)}</div><div class="tag">完整方图</div></div>
+    </div>
+    <div class="mins">
+      <div class="cell"><div class="av ci b44">${svgOf(m)}</div><div class="tag">44px</div></div>
+      <div class="cell"><div class="av ci b20">${svgOf(m)}</div><div class="tag">20px</div></div>
+      <div class="cell"><div class="av ci b16">${svgOf(m)}</div><div class="tag">16px</div></div>
+    </div>`;
+  grid.appendChild(card);
+});
+const strip = document.getElementById('strip');
+marks.forEach(m => {
+  const c = document.createElement('div');
+  c.innerHTML = `<div class="av ci b64">${svgOf(m)}</div><div class="k">${m.key}</div>`;
+  strip.appendChild(c);
+});
+document.getElementById('ctxav').innerHTML = svgOf(marks[0]);
+</script>
+</body>
+</html>
