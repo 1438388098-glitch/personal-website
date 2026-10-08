@@ -42,7 +42,7 @@ The calibration is restrained. The judge did not club foundation models to death
 
 In my spare time I have been building retrieval aids for legal provisions, grappling with large-model hallucination at close quarters every day. This year I built a tool called [legal-hallu-guard](/en/projects/legal-hallu-guard/) on a deliberately simple idea: shatter the statutes in an AI reply into fragments and slam each one, head-on, against a database holding 14,212 rows of statute corpus.
 
-Invented provision numbers, patchwork legal jargon, baseless inferential assertions — all intercepted by deterministic rule logic, with no large model anywhere in the loop. Across 550 nasty test cases, the interception rate for the three fabrication classes is 100%, with zero false kills on legitimate provisions.
+Invented provision numbers, patchwork legal jargon, baseless inferential assertions — all intercepted by deterministic rule logic, with no LLM anywhere in the loop. Across 550 nasty test cases, the interception rate for the three fabrication classes is 100%, with zero false kills on legitimate provisions.
 
 While writing the code I keep turning one question over: how exactly should hallucination be defined in law?
 

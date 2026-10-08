@@ -6,7 +6,7 @@ tags: [法考, Agent, 工程方法]
 pubDate: 2026-08-22
 ---
 
-When preparing for the Chinese bar exam, the wrong-answer book is the most valuable personal asset a candidate holds. My Zhuma bar-prep account had accumulated 1,655 wrong answers, but drilling them directly inside the app is a fragmented experience: the questions sprawl by attempt time or chapter, the same test point may sit scattered across dozens of questions, and the explanations are folded under a click layer — flipping back and forth never builds a coherent memory system.
+When preparing for the Chinese bar exam, the wrong-answer book is the most valuable personal asset a candidate holds. My Zhuma bar-prep account had accumulated 1,655 wrong answers, but drilling them directly inside the app is a fragmented experience: the questions are scattered across attempt dates and chapters, the same test point may sit scattered across dozens of questions, and the explanations are folded under a click layer — flipping back and forth never builds a coherent memory system.
 
 So I wrote `zhuma-fakao-review`, an automated pipeline that scrapes, clusters and distills the whole wrong-answer bank, and finally typesets it into per-subject PDFs you can print and recite from directly.
 
@@ -23,16 +23,16 @@ These four steps are the human-facing trunk; internally the agents are actually 
 
 ## Built for recitation, so it tolerates zero errors
 
-For notes a candidate will recite, one hallucinated passage from a large model, or one statute pinned on the wrong article, means endless trouble downstream.
+For notes a candidate will recite, one hallucinated passage from an LLM, or one statute pinned on the wrong article, means endless trouble downstream.
 
 In the generation stage I designed a subject-by-dimension cross review: the finished content is dispatched to different sub-agents, each watching one of six dimensions — **statute accuracy, answer consistency, key-point coverage, typesetting format, study-profile fit, chapter cohesion**. Each review node has a single duty, and any P0-level legal error it finds forces a mandatory return, rewrite and re-review.
 
-Here I also added an "anti-fake-green-light" gate for myself: the easiest mistake for automation scripts to make is for an upstream stage to throw an exception or fail format parsing while the aggregation script treats it as "no problems" and skips right along. I hardcoded the check into the merge logic: **as long as any downstream report has not been parsed completely, the script immediately hard-crashes with a non-zero exit code — a deceptively serene fake report is never allowed to be produced.**
+Here I also added an "anti-fake-green-light" gate for myself: the easiest mistake for automation scripts to make is for an upstream stage to throw an exception or fail format parsing while the aggregation script treats it as "no problems" and skips right along. I hardcoded the check into the merge logic: **as long as any downstream report has not been parsed completely, the script immediately hard-crashes with a non-zero exit code — a deceptively serene fake report is the one thing it must never produce.**
 
 ## Running inside the compliance and safety boundary
 
-After finishing the project, I did my customary round of self-review, and it slapped me on the spot: I found the early login script had saved state containing a 256-bit auth token in plaintext inside a redundant temporary file. Nothing ever went out, but it was a pure security hole; rated high severity, deleted immediately, with the auth state fully confined to the local isolated profile. I had originally given myself a high mark of 95; after the re-check I docked it to 90 in the audit document on my own initiative.
+After finishing the project, I did my customary round of self-review, and it promptly humbled me: I found the early login script had saved state containing a 256-bit auth token in plaintext inside a redundant temporary file. Nothing ever went out, but it was a pure security hole; rated high severity, deleted immediately, with the auth state fully confined to the local isolated profile. I had originally given myself a high mark of 95; after the re-check I docked it to 90 in the audit document on my own initiative.
 
 The boundary sits just as clearly in the README: the tool only processes wrong answers from my own legitimate account, the endpoints are strictly read-only; the generated notes are for personal offline study only, and no original question-bank content gets redistributed.
 
-The biggest takeaway from building this pipeline: in application engineering on top of large models, do not put faith in the "one-prompt generation" black-box miracle. Constrain the boundaries, slice the process fine, make failures explicit — only then is the output something you truly dare feed to a printer.
+The biggest takeaway from building this pipeline: in application engineering on top of LLMs, do not put faith in the "one-prompt generation" black-box miracle. Constrain the boundaries, slice the process fine, make failures explicit — only then is the output something you truly dare feed to a printer.

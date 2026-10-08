@@ -1,12 +1,12 @@
 ---
 title: "A 'judicial exam' for large language models"
-description: "12 task packages, 323 hands-on questions: machine grading and a preregistered protocol to benchmark large models on judicial workflow capability."
+description: "12 task packages, 323 hands-on questions: machine grading and a preregistered protocol to benchmark LLMs on judicial workflow capability."
 category: 技术笔记
 tags: [评测, 司法]
 pubDate: 2026-07-21
 ---
 
-Legal retrieval, case-fact sorting, litigation-fee arithmetic — more and more judicial support work is being stuffed into large models. But how exactly should we judge whether a model can take this work? And in which link does the danger hide?
+Legal retrieval, case-fact sorting, litigation-fee arithmetic — more and more judicial support work is being stuffed into LLMs. But how exactly should we judge whether a model can take this work? And in which link does the danger hide?
 
 Most existing Chinese legal benchmarks are still at the stage of "grinding bar-exam multiple choice". Top models have already crammed those single-choice scores past 80 and 90, with no gap between them; worse, a model that cites a repealed statute in its analysis and miscalculates the limitations period can still guess the right multiple-choice option and slip into a glossy total score.
 

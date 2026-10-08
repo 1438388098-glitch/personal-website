@@ -1,5 +1,5 @@
 ---
-title: "From LIKE to hybrid retrieval: two evolution lines of a statute foundation's recall"
+title: "From LIKE to hybrid retrieval: two evolution lines of statute recall"
 description: "What FTS5 unicode61 does to Chinese, synthetic vs real golden sets, what 44.7% vs 98.9% mean. Postscript: the current numbers."
 category: 技术笔记
 tags: [检索, 评测]
@@ -26,11 +26,11 @@ Grow the real-question golden set, wire in a Chinese embedding channel (v0.2 roa
 
 Those two evolution lines later grew several more layers; the current state is recorded here, with the historical numbers above left as written, accurate at the time.
 
-The corpus had a blood transfusion first: the earliest 14,212 rows were actually page blocks sliced by length from two-column gazette PDFs, later replaced wholesale with verified provision-level text, then two more rounds added missing statutes; it now stands at 25,987 provisions across 444 statutes.
+The corpus itself was rebuilt first: the earliest 14,212 rows were actually page blocks sliced by length from two-column gazette PDFs, later replaced wholesale with verified provision-level text, then two more rounds added missing statutes; it now stands at 25,987 provisions across 444 statutes.
 
 Retrieval gained two layers on top of hybrid. One is semantic reranking: two Chinese embedding models each rank the whole library, the better rank per provision brings the top 50 into the recall pool, and a cross-encoder reorders the front ten. The other is the LLM precision layer: the pipeline's top 50 candidates go to the model with the question, which lifts the 5 most relevant to the top. Both layers keep the same contract: reorder only, never invent provisions; on API trouble, fall back to the original order.
 
-The numbers: real questions, 38 of them, went from 52.6% to 71.1% recall@5; the deciding set is the blind holdout (100 questions, writers fully isolated from the system), where the local pipeline hits 66 and the precision layer lifts it to 92. The precision layer's judge started as a free-tier LLM, about 4k tokens per query at zero cost, and the free and paid tiers measured the same 92.0%; but the free tier's tail requests time out (429 rate limits), so production now runs the judge model Jev (paid tier, about 1.3 s and $0.00037 per question). Along the way one systematic optimization ran to nothing: 15 algorithm variants all flat or worse, with the diagnosis that the bottleneck is the ranker's power to tell "semantic neighbor" from "actual answer", the edge of local small models; what actually pushed it up was swapping in a judge that reads the original text.
+The numbers: real questions, 38 of them, went from 52.6% to 71.1% recall@5; the deciding set is the blind holdout (100 questions, writers fully isolated from the system), where the local pipeline hits 66 of the 100 and the precision layer lifts it to 92. The precision layer's judge started as a free-tier LLM, about 4k tokens per query at zero cost, and the free and paid tiers measured the same 92.0%; but the free tier's tail requests time out (429 rate limits), so production now runs the judge model Jev (paid tier, about 1.3 s and $0.00037 per question). Along the way one systematic optimization came up empty: 15 algorithm variants all flat or worse, with the diagnosis that the bottleneck is the ranker's power to tell "semantic neighbor" from "actual answer", the edge of local small models; what actually pushed it up was swapping in a judge that reads the original text.
 
 The four "next steps": the real-question golden set grew (to 38 questions, done); the Chinese embedding channel exists, it is the semantic layer above; provision/article/paragraph chunking and citation jump-back verification are still undone.
 

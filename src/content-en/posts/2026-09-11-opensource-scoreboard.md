@@ -6,7 +6,7 @@ tags: [开源, 大模型]
 pubDate: 2026-09-11
 ---
 
-From August into September, the open-source cadence of Chinese large models got too dense to chase: Qwen's Qwen3.8-Max opened its weights for the first time, 2.4 trillion total parameters; Zhipu shipped GLM-5.3; Tencent Hunyuan open-sourced Hy4; and on September 8 ModelBest, together with OpenBMB, open-sourced MiniCPM5-2B. Flip back two more months and Moonshot's Kimi K3 had opened weights at 2.8 trillion parameters, the first open-source model in the 3T class; and back in April, DeepSeek-V4's preview launch open-sourced the flagship right along with it.
+From August into September, the open-source cadence of Chinese LLMs got too dense to chase: Qwen's Qwen3.8-Max opened its weights for the first time, 2.4 trillion total parameters; Zhipu shipped GLM-5.3; Tencent Hunyuan open-sourced Hy4; and on September 8 ModelBest, together with OpenBMB, open-sourced MiniCPM5-2B. Flip back two more months and Moonshot's Kimi K3 had opened weights at 2.8 trillion parameters, the first open-source model in the 3T class; and back in April, DeepSeek-V4's preview launch open-sourced the flagship right along with it.
 
 Watching the spectacle is easy; reading the substance means swapping in a new pair of eyes first: in this open-source wave, the scoreboard for comparison has already been replaced.
 

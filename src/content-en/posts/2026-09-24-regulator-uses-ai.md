@@ -12,7 +12,7 @@ Put the two news items together and the signal is clear: after a year or two of 
 
 ## An instruction manual written for itself
 
-First, the NMPA's task list for itself: in review and approval, dedicated large models and agents do intelligent screening of application dossiers and automatic report generation; in production, for high-risk categories such as vaccines and blood products, agents dynamically monitor production video and IoT sensor data; in distribution, upgrade whole-catalog, whole-process traceability; on the government-services side, intelligent Q&A and smart pre-filling; on the enforcement side, use big data to grade risk levels and run precision inspections, rolling out mobile enforcement built on "scan the code when entering a firm".
+First, the NMPA's task list for itself: in review and approval, dedicated LLMs and agents do intelligent screening of application dossiers and automatic report generation; in production, for high-risk categories such as vaccines and blood products, agents dynamically monitor production video and IoT sensor data; in distribution, upgrade whole-catalog, whole-process traceability; on the government-services side, intelligent Q&A and smart pre-filling; on the enforcement side, use big data to grade risk levels and run precision inspections, rolling out mobile enforcement built on "scan the code when entering a firm".
 
 The timetable is set too: by 2030, initially build an innovation system fusing regulation with AI; by 2035, basically form a smart governance pattern driven by data and intelligence.
 

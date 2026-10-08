@@ -8,7 +8,7 @@ pubDate: 2026-10-04
 
 ## In one sentence
 
-My statute retrieval foundation, statute-rag, has always run its rerank layer as "throw the candidate provisions at a large model and let it lift the best 5 to the front". On 100 isolated blind-written questions this pushed Recall@5 from 66.0% to 92.0%, at the cost of 3 to 4 seconds per call and a tail that could spike to 23 seconds. This round I swapped the judge for TypeSafe's judge model Jev: Recall@5 stays at 92.0%, the share of answers ranked first moves from 82.0% to 84.0%, the median is 1.3 seconds per question, and the cost is $0.00037 per question.
+My statute retrieval foundation, statute-rag, has always run its rerank layer as "throw the candidate provisions at an LLM and let it lift the best 5 to the front". On 100 isolated blind-written questions this pushed Recall@5 from 66.0% to 92.0%, at the cost of 3 to 4 seconds per call and a tail that could spike to 23 seconds. This round I swapped the judge for TypeSafe's judge model Jev: Recall@5 stays at 92.0%, the share of answers ranked first moves from 82.0% to 84.0%, the median is 1.3 seconds per question, and the cost is $0.00037 per question.
 
 ## What Jev is: it writes no essays, it only judges
 

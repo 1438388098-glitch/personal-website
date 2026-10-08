@@ -6,7 +6,7 @@ tags: [大模型, 法律AI, 判例]
 pubDate: 2026-04-27
 ---
 
-On April 23, a press briefing at the Beijing Chaoyang District Court disclosed the details of the "Comic Transform Effect" case. The case carries two "firsts in the country": the first AI model infringement case, and the first case to explicitly protect the structure and parameters of an AI model. The outcome is a very concrete number: the defendants were ordered to pay 1.6 million yuan in total for economic losses and reasonable expenses, upheld on second-instance appeal.
+On April 23, a press briefing at the Beijing Chaoyang District Court disclosed the details of the "Comic Transform Effect" case. The case carries two national firsts: the first AI model infringement case, and the first case to explicitly protect the structure and parameters of an AI model. The outcome is a very concrete number: the defendants were ordered to pay 1.6 million yuan in total for economic losses and reasonable expenses, upheld on second-instance appeal.
 
 The case in one sentence: the plaintiff built a "comic transform" effect, the defendant built a "shojo-comic" effect, the imaging results of the two effects were highly similar, and the court found this constituted a substantive substitution of the plaintiff's competitive interest — unfair competition established.
 
@@ -14,7 +14,7 @@ The case in one sentence: the plaintiff built a "comic transform" effect, the de
 
 First, a question of legal technique: when a model gets copied, why did it take such a long detour to reach a verdict?
 
-Copyright law protects expression; model parameters are a pile of floating-point numbers and do not amount to a work. Patents require a grant and public disclosure of the technical solution, and most model training routes either never apply or cannot qualify. The trade-secret route demands confidentiality measures, which open-source or service-facing models can hardly satisfy. Of the traditional IP drawers, not one fits a set of model weights.
+Copyright law protects expression; model parameters are a pile of floating-point numbers and do not amount to a work. Patents require a grant and public disclosure of the technical solution, and most model training routes either never apply or cannot qualify. The trade-secret route demands confidentiality measures, which open-source or service-facing models can hardly satisfy. Not one of these three drawers fits a set of model weights.
 
 The Chaoyang court's solution is the general clause of the Anti-Unfair Competition Law: model parameters and structure formed through data training, optimization and tuning can deliver innovative advantage and business gains, and constitute a competitive interest the law protects. Translated: when a copied model puts a substantive substitute into the market, that is appropriating someone else's business results without the labor — and the Anti-Unfair Competition Law reaches it.
 
@@ -28,8 +28,8 @@ The model-related assets among my small tools fall into two kinds: pure program 
 
 This judgment gives a new angle: the law protects "competitive interest", premised on the substitution causing market harm. Weights released open-source — the author has given up exclusivity, so there is no harm to speak of. But the tuning behind a closed-source service, once scraped wholesale and made into a rival product, now has 1.6 million yuan to cite as a price anchor. "A model is an asset" has just received its first RMB-denominated quote from a judgment.
 
-The damages logic deserves a note: what the court compared was the similarity of the "imaging results", asking whether the output end formed a substantive substitution; layer-by-layer code comparison receded to second place. This matches the forensics intuition of model infringement: weights are hard to compare layer by layer, behavioral features are the fingerprint.
+The damages logic deserves a note: what the court compared was the similarity of the "imaging results", asking whether the output end formed a substantive substitution; layer-by-layer code comparison receded to second place. This matches the evidence-gathering intuition of model infringement: weights are hard to compare layer by layer, behavioral features are the fingerprint.
 
 ## Closing
 
-Do not over-read the price of a first case: 1.6 million is this case's price, not the industry's price list. But it has nailed one sentence into precedent: model parameters and structure are a competitive interest, and copying them means paying. For people who build models, this is the most affordable piece of legal news this year.
+Do not over-read the price of a first case: 1.6 million is this case's price, not the industry's price list. But it has nailed one sentence into precedent: model parameters and structure are a competitive interest, and copying them means paying. For people who build models, this is the cheapest legal lesson of the year.
