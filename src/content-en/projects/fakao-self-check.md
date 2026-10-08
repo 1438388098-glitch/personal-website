@@ -18,7 +18,7 @@ metrics:
     detail: "Tick progress lives in browser localStorage; no account, no server, one-click clear"
 links:
   - label: Use it online
-    url: https://iweistoicqc5.top/exam/checklist/
+    url: https://iweistoicqc5.top/en/exam/checklist/
 ---
 
 ## Problem and boundary

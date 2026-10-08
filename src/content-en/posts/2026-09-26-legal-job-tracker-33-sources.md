@@ -1,6 +1,6 @@
 ---
 title: "Job-hunting season: I set a scraper to watch 33 official sites"
-description: "Scouting and wiring 33 official recruitment sources: strict dedup, fake green lights, the daily two-to-five-minute run."
+description: "33 official job sources: dedup that would rather miss than merge wrongly, fake green lights, the daily two-to-five-minute run."
 category: 技术笔记
 tags: [求职, 工程方法, 检索]
 pubDate: 2026-09-26

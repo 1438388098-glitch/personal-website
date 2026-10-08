@@ -7,5 +7,5 @@ related:
   - label: "Case study: project page"
     url: /en/projects/zhuma-fakao-review/
   - label: "Exam log: the pipeline write-up"
-    url: /exam/2026-09-18-wrong-question-pipeline/
+    url: /en/exam/2026-09-18-wrong-question-pipeline/
 ---

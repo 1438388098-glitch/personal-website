@@ -1,6 +1,6 @@
 ---
 title: "From one apology letter to the Supreme Court's 24 articles"
-description: "March: a court orders Baidu to apologize for an AI hallucination; September: the Supreme Court issues 24 articles."
+description: "March: a Baidu apology for an AI hallucination. September: 24 Supreme Court articles. Cases set the price, rules the boundary."
 category: 法学随笔
 tags: [AI幻觉, 司法]
 pubDate: 2026-09-09

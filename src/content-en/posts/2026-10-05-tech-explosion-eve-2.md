@@ -1,6 +1,6 @@
 ---
 title: "Standing at the eve of the tech explosion, part 2: a year of progress in five weeks"
-description: "Hinton and Bengio turn recursive self-improvement into arithmetic: r of 1.2 to 1.9, a year of progress in five weeks."
+description: "Hinton and Bengio among 22 authors: recursive self-improvement as arithmetic, r of 1.2 to 1.9, millions of shadow researchers."
 category: 杂谈
 tags: [大模型, RSI, AI监管]
 pubDate: 2026-10-05
@@ -10,7 +10,7 @@ On September 28, a fourteen-page paper landed on [arxiv.org/abs/2609.36054](http
 
 The byline outweighs the title. Geoffrey Hinton and Yoshua Bengio, two Turing Award winners often called the "godfathers of AI"; Andrew Barto, a founder of reinforcement learning and 2024 Turing laureate; OpenAI chief scientist Jakub Pachocki; Anthropic co-founder Jack Clark; Microsoft chief scientist Eric Horvitz. Twenty-two authors from nine universities, four companies and a string of policy institutes. The people who build the models, the people who criticize them, and the people who write government evaluation reports, on one document.
 
-The paper opens with a number: measured as a share of US GDP, the capital flowing into frontier labs already exceeds the Manhattan Project and the Apollo Program combined. And their goal is public: automate AI R&D. In the [previous piece](/blog/2026-09-29-tech-explosion-eve/) I wrote that recursive self-improvement (RSI) is turning from a sci-fi premise into an engineering problem. What this paper does is lay out the evidence behind that intuition, item by item, with numbers and parameters attached.
+The paper opens with a number: measured as a share of US GDP, the capital flowing into frontier labs already exceeds the Manhattan Project and the Apollo Program combined. And their goal is public: automate AI R&D. In the [previous piece](/en/blog/2026-09-29-tech-explosion-eve/) I wrote that recursive self-improvement (RSI) is turning from a sci-fi premise into an engineering problem. What this paper does is lay out the evidence behind that intuition, item by item, with numbers and parameters attached.
 
 ## Three numbers first
 

@@ -1,6 +1,6 @@
 ---
 title: "From LIKE to hybrid retrieval: two evolution lines of a statute foundation's recall"
-description: "What FTS5 unicode61 does to Chinese, why synthetic and real golden sets must be read apart, what 44.7% vs 98.9% mean."
+description: "What FTS5 unicode61 does to Chinese, synthetic vs real golden sets, what 44.7% vs 98.9% mean. Postscript: the current numbers."
 category: 技术笔记
 tags: [检索, 评测]
 pubDate: 2026-07-28
