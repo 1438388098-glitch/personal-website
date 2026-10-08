@@ -172,9 +172,9 @@ const zh = {
     metaDescription: '胡圣炜的个人介绍与简历：法学与经济学双学位、三段法律实习、法律 × AI 工程实践。',
     h1: '关于',
     intro: [
-      '我是胡圣炜，广东韶关人，中南财经政法大学法学与经济学双学位本科生， 成长于粤北多语言环境（普通话、粤语、客家话），这让我习惯在不同语境间准确转译， 也让我对「表述精确」有职业级的执念。',
-      '我的方向是法律与 AI 的交叉地带：法律文本的结构化、检索与评估。 我相信法律场景的 AI 输出不能靠蒙，所以我的项目都围着同一件事转： 让模型的每句话可复核、可评估、可追溯。工具上重度使用 Claude Code 等 AI 编码协作， 并把工程纪律（测试、指标、失败案例）带进每一个法律项目。',
-      '经济学方向的数理统计、概率论与计量经济学课程给了我建模与检验的训练， 这套方法用在自己搭的 A 股量化平台上，做因子挖掘、回测与截面 IC 评估（见<a href="/projects/stock-db/">量化项目</a>）。',
+      '我是胡圣炜，广东韶关人，中南财经政法大学法学与经济学双学位本科生，成长于粤北多语言环境（普通话、粤语、客家话），这让我习惯在不同语境间准确转译，也让我对「表述精确」有职业级的执念。',
+      '我的方向是法律与 AI 的交叉地带：法律文本的结构化、检索与评估。我相信法律场景的 AI 输出不能靠蒙，所以我的项目都围着同一件事转：让模型的每句话可复核、可评估、可追溯。工具上重度使用 Claude Code 等 AI 编码协作，并把工程纪律（测试、指标、失败案例）带进每一个法律项目。',
+      '经济学方向的数理统计、概率论与计量经济学课程给了我建模与检验的训练，这套方法用在自己搭的 A 股量化平台上，做因子挖掘、回测与截面 IC 评估（见<a href="/projects/stock-db/">量化项目</a>）。',
     ],
     factsAria: '关键信息',
     facts: [
@@ -282,7 +282,6 @@ const zh = {
         en: 'Skills',
         edu: [],
         entries: [],
-        skillNote: '技能写具体事实，不做「精通/高级」自评分级：分级无信息量且是面试第一个被挑战的点',
         skills: [
           { k: '法律检索', html: '北大法宝、中国裁判文书网、Westlaw；课程论文《竞业限制的滥用与规制》引用熊晖、王瑞宏对 556 份裁判文书的统计等实证材料（见<a href="/notes/non-compete/">笔记栏</a>）' },
           { k: '工程', html: 'Python、JavaScript/TypeScript、SQLite/FTS5、RAG 与评测管线、多 Agent 编排、Git/CI（全部有公开仓库背书，见<a href="/projects/">项目栏</a>）' },
@@ -298,14 +297,13 @@ const zh = {
         edu: [],
         entries: [],
         contactHtml: `<a href="${SITE.github}" target="_blank" rel="noopener noreferrer" aria-label="GitHub（在新窗口打开）">GitHub</a> · <a href="mailto:${SITE.email}">${SITE.email}</a>。此刻在做什么见 <a href="/now/">Now</a> 页。`,
-        resumeHtml: '简历可<a href="mailto:sww00316@163.com?subject=%E7%AE%80%E5%8E%86%E7%B4%A2%E5%8F%96">来信索取</a>。',
+        resumeHtml: `简历可<a href="mailto:${SITE.email}?subject=%E7%AE%80%E5%8E%86%E7%B4%A2%E5%8F%96">来信索取</a>。`,
       },
     ] as Array<{
       title: string;
       en?: string;
       edu?: { strong: string; note: string }[];
       entries?: { date: string; org: string; role: string; bullets: string[] }[];
-      skillNote?: string;
       skills?: { k: string; html: string }[];
       contactHtml?: string;
       resumeHtml?: string;
@@ -571,7 +569,6 @@ const en: Strings = {
         en: 'Skills',
         edu: [],
         entries: [],
-        skillNote: 'Skills are stated as concrete facts, with no self-graded "expert/advanced" levels: levels carry no information and are the first thing interviews challenge.',
         skills: [
           { k: 'Legal research', html: 'pkulaw, China Judgments Online, Westlaw; my course paper on the abuse of non-compete clauses draws on empirical work by Xiong Hui and Wang Ruihong covering 556 judgments (<a href="/notes/non-compete/">paper notes</a>, in Chinese)' },
           { k: 'Engineering', html: 'Python, JavaScript/TypeScript, SQLite/FTS5, RAG and evaluation pipelines, multi-agent orchestration, Git/CI (all backed by public repositories, see <a href="/en/projects/">projects</a>)' },
@@ -587,14 +584,13 @@ const en: Strings = {
         edu: [],
         entries: [],
         contactHtml: `<a href="${SITE.github}" target="_blank" rel="noopener noreferrer" aria-label="GitHub (opens in new window)">GitHub</a> · <a href="mailto:${SITE.email}">${SITE.email}</a>. What I\'m doing right now: the <a href="/en/now/">Now</a> page.`,
-        resumeHtml: 'For my CV, <a href="mailto:sww00316@163.com?subject=CV%20request">email me</a>.',
+        resumeHtml: `For my CV, <a href="mailto:${SITE.email}?subject=CV%20request">email me</a>.`,
       },
     ] as Array<{
       title: string;
       en?: string;
       edu?: { strong: string; note: string }[];
       entries?: { date: string; org: string; role: string; bullets: string[] }[];
-      skillNote?: string;
       skills?: { k: string; html: string }[];
       contactHtml?: string;
       resumeHtml?: string;
