@@ -91,7 +91,7 @@ const breadcrumb = {
       )}
       {related.length > 0 && (
         <section class="related" aria-label={t.post.relatedAria}>
-          <div class="sec-head"><h2>{t.post.related}{lang === 'zh' && <span class="sec-en">Related</span>}</h2></div>
+          <div class="sec-head"><h2>{t.post.related}{lang === 'zh' && <span class="sec-en" lang="en">Related</span>}</h2></div>
           <ul>
             {related.map((r) => (
               <li>

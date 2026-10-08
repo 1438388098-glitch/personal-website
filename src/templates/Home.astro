@@ -40,7 +40,7 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
 <BaseLayout title={lang === 'en' ? SITE.titleEn : SITE.title} alternate={lang === 'zh' ? '/en/' : '/'}>
   <section class="hero">
     <div>
-      <p class="label fade-up">{t.home.label}{lang === 'zh' && <span class="sec-en">Law × Engineering</span>}</p>
+      <p class="label fade-up">{t.home.label}{lang === 'zh' && <span class="sec-en" lang="en">Law × Engineering</span>}</p>
       <h1 class="fade-up d1" set:html={t.home.h1} />
       <p class="lede fade-up d2" set:html={t.home.lede} />
       <div class="pills fade-up d2">
@@ -65,7 +65,7 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
     <section data-reveal>
       <div class="sec-head">
         <span class="sec-no">01</span>
-        <h2>{t.home.featured.h2}{lang === 'zh' && <span class="sec-en">{t.home.featured.en}</span>}</h2>
+        <h2>{t.home.featured.h2}{lang === 'zh' && <span class="sec-en" lang="en">{t.home.featured.en}</span>}</h2>
         <a href={href(lang, '/projects/')}>{t.home.featured.link}</a>
       </div>
       <div class="work-grid">
@@ -80,7 +80,7 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
     <section data-reveal>
       <div class="sec-head">
         <span class="sec-no">02</span>
-        <h2>{t.home.writing.h2}{lang === 'zh' && <span class="sec-en">{t.home.writing.en}</span>}</h2>
+        <h2>{t.home.writing.h2}{lang === 'zh' && <span class="sec-en" lang="en">{t.home.writing.en}</span>}</h2>
         <a href={href(lang, '/blog/')}>{t.home.writing.link}</a>
       </div>
       {posts.map((p) => <PostCard post={p} />)}
@@ -90,7 +90,7 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
   <section data-reveal>
     <div class="sec-head">
       <span class="sec-no">03</span>
-      <h2>{t.home.explore.h2}{lang === 'zh' && <span class="sec-en">{t.home.explore.en}</span>}</h2>
+      <h2>{t.home.explore.h2}{lang === 'zh' && <span class="sec-en" lang="en">{t.home.explore.en}</span>}</h2>
     </div>
     <div class="featured-grid">
       {t.home.exploreCards.map((c) => (
@@ -106,7 +106,7 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
     <section class="band" aria-label={t.home.band.label} data-reveal>
       <div class="band-inner">
         <div>
-          <p class="label">{t.home.band.label}<span class="sec-en">{t.home.band.en}</span></p>
+          <p class="label">{t.home.band.label}<span class="sec-en" lang="en">{t.home.band.en}</span></p>
           <h2>{t.home.band.h2}</h2>
           <p class="band-text">{t.home.band.text}</p>
           <p class="band-figures mono">{t.home.band.figures(EXAM_AGG.subjects, EXAM_AGG.wrongQuestions)}</p>
@@ -120,7 +120,7 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
     <section class="now-strip" data-reveal>
       <div class="sec-head">
         <span class="sec-no">04</span>
-        <h2>Now{lang === 'zh' && <span class="sec-en">{nowEntry.data.period}</span>}</h2>
+        <h2>Now{lang === 'zh' && <span class="sec-en" lang="en">{nowEntry.data.period}</span>}</h2>
         <a href={href(lang, '/now/')}>{t.home.now.link}</a>
       </div>
       <div class="now-chips">
@@ -246,7 +246,7 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
      而是换成比页底更深一层的实色，区块重量与两角的 accent 记号都留着。 */
   .band { background: var(--band-bg); color: var(--band-fg); position: relative; border-block: 1px solid var(--band-line); }
   .band::before, .band::after {
-    content: '+'; position: absolute; font-family: var(--font-mono);
+    content: '+' / ''; position: absolute; font-family: var(--font-mono);
     font-size: 1.1rem; color: var(--band-mark); top: 8px;
   }
   .band::before { left: 12px; }

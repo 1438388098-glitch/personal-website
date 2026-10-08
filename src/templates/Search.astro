@@ -17,7 +17,7 @@ const indexPath = lang === 'en' ? '/en/search-index.json' : SITE_PATHS.searchInd
   <p class="intro" id="intro">{t.search.intro}</p>
   <noscript><p class="noscript" set:html={t.search.noscriptHtml} /></noscript>
   <div class="searchbox">
-    <input id="q" type="search" placeholder={t.search.placeholder} autocomplete="off" aria-label={t.search.searchAria} />
+    <input id="q" type="search" placeholder={t.search.placeholder} autocomplete="off" aria-label={`${t.search.searchAria}，${t.search.placeholder}`} />
     <p class="count" id="count" aria-live="polite"></p>
   </div>
   <ul id="results"></ul>
@@ -75,7 +75,7 @@ const indexPath = lang === 'en' ? '/en/search-index.json' : SITE_PATHS.searchInd
     } catch {
       dataPromise = null; /* 失败不缓存，下一次输入可重试 */
       if (id !== runId) return;
-      count.textContent = '';
+      count.textContent = msg.err; /* 错误也要进 live region，否则读屏听不到 */
       list.innerHTML = `<li class="err">${msg.err}</li>`;
       return;
     }

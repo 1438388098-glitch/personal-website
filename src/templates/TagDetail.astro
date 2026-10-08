@@ -16,7 +16,7 @@ const label = tagLabel(lang, tag);
   <p class="intro">{t.tags.detailIntro(posts.length)}<a href={href(lang, '/tags/')}>{t.tags.allTags}</a></p>
   {/* 补 h2：PostCard 标题是 h3，h1 直连 h3 会跳级；沿用全站区块头语言 */}
   <div class="sec-head">
-    <h2>{t.tags.postsHeading}{lang === 'zh' && <span class="sec-en">{t.tags.postsEn}</span>}</h2>
+    <h2>{t.tags.postsHeading}{lang === 'zh' && <span class="sec-en" lang="en">{t.tags.postsEn}</span>}</h2>
   </div>
   {posts.map((p) => <PostCard post={p} />)}
 </BaseLayout>

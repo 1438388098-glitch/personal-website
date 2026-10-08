@@ -10,7 +10,7 @@ const t = strings(langOf(Astro.url.pathname));
 ---
 {items.length >= 2 && (
   <nav class="toc" aria-label={t.tocAria}>
-    <p class="toc-title">On this page</p>
+    <p class="toc-title" lang="en">On this page</p>
     <ul>
       {items.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
     </ul>

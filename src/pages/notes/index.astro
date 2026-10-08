@@ -23,7 +23,7 @@ const sections = buildSections(notes, categories, (n) => n.data.category);
     <section>
       <div class="sec-head">
         <span class="sec-no">{s.no}</span>
-        <h2>{s.name}<span class="sec-en">{s.en}</span></h2>
+        <h2>{s.name}<span class="sec-en" lang="en">{s.en}</span></h2>
       </div>
       {s.items.map((n) => (
         <EntryCard

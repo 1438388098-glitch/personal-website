@@ -39,9 +39,9 @@ import { SELF_CHECK, SELF_CHECK_AGG } from '../../data/self-check';
           </p>
         </div>
         {s.note && <p class="subject-note">{s.note}</p>}
-        {s.groups.map((g) => (
-          <div class="group">
-            <h3>{g.title}</h3>
+        {s.groups.map((g, gi) => (
+          <div class="group" role="group" aria-labelledby={`g-${s.id}-${gi}`}>
+            <h3 id={`g-${s.id}-${gi}`}>{g.title}</h3>
             <ul class="items">
               {g.items.map((i) => (
                 <li class="item">
