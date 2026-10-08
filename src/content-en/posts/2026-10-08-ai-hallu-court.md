@@ -34,7 +34,7 @@ Zheng summed up three tells: docket numbers with a formulaic pattern; facts tail
 
 ## Make verification the default
 
-Verification is, fittingly, an engineering problem. In the citation guard I built for my own legal-QA tooling, [legal-hallu-guard](/projects/legal-hallu-guard/), hallucinated citations are split into three classes and intercepted separately: a cited provision number that does not exist in the statute corpus; a quotation that does not match the provision's text; a key assertion with no source. All three checks are deterministic rules; no model sits in the loop. Across 550 adversarial test cases the interception rate is 100% for all three classes, with zero false kills on legitimate provisions.
+Verification is, fittingly, an engineering problem. In the citation guard I built for my own legal-QA tooling, [legal-hallu-guard](/en/projects/legal-hallu-guard/), hallucinated citations are split into three classes and intercepted separately: a cited provision number that does not exist in the statute corpus; a quotation that does not match the provision's text; a key assertion with no source. All three checks are deterministic rules; no model sits in the loop. Across 550 adversarial test cases the interception rate is 100% for all three classes, with zero false kills on legitimate provisions.
 
 The judge's three tells and my three rule classes are two faces of the same list: formulaic dockets match non-existent provisions; over-fitting matches unsourced assertions; hard-to-verify is what the guard does all day. The difference is who runs it and when: after filing, on judicial instinct, the cost lands on the courts; before filing, inside the tool, the cost is close to zero.
 
