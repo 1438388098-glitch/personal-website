@@ -78,6 +78,15 @@ Noto Sans SC 在 `@fontsource-variable` 里被切成 120 片、每片 45–77KB�
 | dist 字体总量 | 4441KB（98 个文件） | 700KB（55 个文件） |
 | 博文页命中 | 26 片 ≈ 1395KB | 27 个文件 ≈ 631KB（含 Archivo/Space Mono） |
 
+> **2026-10-09 勘误**：上表测于带缺陷的子集化管线——lightningcss 会把 `U+0000-00FF`
+> 压缩成通配写法 `U+??`，`subset-fonts` 的 range 解析当时算出 NaN，Archivo 与
+> Space Mono 的基础拉丁 @font-face 被整块误删，西文与等宽数字实际仍在回退系统字体
+> （§2.1 的「修复后 webfont 生效」只对中文分片成立）。解析已修复并有回归测试锁住
+> （`scripts/gates.test.mjs` 通配问号用例），当前口径：48 片 / 650KB，Archivo latin
+> 片恢复到 21KB/109 字形。另实测否决了「扩大首屏 preload」的路线（模拟 slow 4G 下
+> LCP 5.1→5.3s），真正的下一步是收窄 Noto 的 wght 轴（待拍板），详见
+> `src/components/BaseHead.astro` 注释。
+
 顺带修掉一个连带缺陷：`trim-dist` 原按文件名删 `greek` 类切片，
 但站点字体栈里没有任何字体包带 Greek 覆盖（Noto Sans SC 101 块 / Archivo 3 块 /
 Space Mono 400+700 各 3 块，全部 unicode-range 都不含 U+0370–03FF），
@@ -188,6 +197,9 @@ View Transitions 动画照旧播放。
   已发布字体的 unicode-range 内、字体总量不得超预算（防止子集化没跑）
 
 ## 七、未处理的历史遗留（与本次改造无关，留待站主决定）
+
+> 2026-10-09 核对：本节所列各项均在此后的提交中修复或清零（en 译文补齐、
+> 日期对齐、破折号清零），本节仅作存档。
 
 - `npm run check:i18n`：3 处违规（`projects/fakao-tracker.md` 日期不一致、
   `projects/fakao-self-check.md` 缺英文译文、10-07 博文英文版缺数字 1860）
