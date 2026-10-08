@@ -22,6 +22,8 @@ Node ≥ 22.12（开发环境 22 LTS，见 .nvmrc）。
     npm run check:style    # 文风红线扫描（破折号/黑话禁词/句式堆叠）
     npm run check:content  # 内容日期一致性（文件名前缀须等于 frontmatter 日期）
     npm run check:scripts  # scripts/*.mjs 的 JSDoc 类型检查（tsconfig.scripts.json，无需构建）
+    npm run check:i18n     # 双语配对门禁：同名文件配对、元数据一致、数字保真、汉字渗漏、长度比
+    npm run check:golden   # 内容金样：锁中文内容逐字节，防意外改动（有意改动后 --update 再生）
     npm run check:audit    # 依赖漏洞雷达（固定官方 registry；由定时任务跑，PR/push 不跑）
     npm run check:extlinks # 站外链接探活（网络门禁易抖动；由定时任务跑，PR/push 不跑）
     npm run fonts:budget   # 按页复算字体命中分片与字节数（判断「字体还能不能再压」的数字来源）
@@ -50,6 +52,18 @@ Node ≥ 22.12（开发环境 22 LTS，见 .nvmrc）。
 （M3 四栏目 exam/notes/now/toolbox 已上线，2026-09-29 验收通过）
     正文排版约定：一个自然段一行（不手工折行），2026-09 起的存量文章按此惯例。
 
+## 双语架构（2026-10-08 全量对齐）
+- 中文站根路径，英文站 `/en/` 前缀：posts/exam/notes/projects/toolbox 全栏目成对，
+  英文内容在 `src/content-en/`，文件名与中文版同名配对，URL 除前缀外完全一致。
+- 配对由 `check-i18n` 门禁强制：新增或改动中文文章必须同步英文版，否则构建后门禁报错
+  （检查配对、pubDate/category/tags 一致、正文数字保真、en 版汉字渗漏、中英长度比）。
+- 分类/标签/状态等受控枚举在 en frontmatter 里保持中文 ID，展示层经 `src/lib/i18n.ts`
+  的 EN_* 映射表翻译；映射表与词表的「全有对照 + 无孤儿」由 `i18n.test.ts` 锁住。
+- 署名分语种：中文站「胡圣炜」，英文站 Samwaye Woo（2026-10-08 拍板，见 `src/lib/site.ts`）。
+  JSON-LD 的 Person 实体单源在 `src/lib/person-jsonld.ts`，两版互以 sameAs 关联。
+- 首访语言协商：无 cookie 且落在根路径时按浏览器语言跳 /en/（bot/Lighthouse 不跳）；
+  页头语言切换与跳转共用 `site-lang` cookie。默认分享图双语分张（og-default-en.png）。
+
 ## 发布机制（定时发布）
 - 文章 pubDate 写未来时间是合法的：构建与 RSS 经 `src/lib/publish.ts` 的 `isPublished`
   统一过滤，到点自然出现在列表、详情、订阅源与 sitemap。
@@ -69,5 +83,7 @@ metrics 里的每个数字必须在正文「验证」一节可溯源。构建即
 
 ## 如何新增一篇文章
 在 src/content/posts/ 建 YYYY-MM-DD-<slug>.md，frontmatter 参照现有文章；
+**同时**在 src/content-en/posts/ 建同名文件写英文版（check-i18n 门禁强制配对）；
+正文有实质修订时加 `updatedDate` 字段，dateModified、「更新于」标注与 sitemap lastmod 会跟着走。
 发布前跑：
-    npm run build && npm run check:links && npm run check:secrets && npm run check:style
+    npm run build && npm run check:links && npm run check:secrets && npm run check:style && npm run check:i18n
