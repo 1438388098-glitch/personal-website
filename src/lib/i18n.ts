@@ -174,7 +174,7 @@ const zh = {
     intro: [
       '我是胡圣炜，广东韶关人，中南财经政法大学法学与经济学双学位本科生，成长于粤北多语言环境（普通话、粤语、客家话），这让我习惯在不同语境间准确转译，也让我对「表述精确」有职业级的执念。',
       '我的方向是法律与 AI 的交叉地带：法律文本的结构化、检索与评估。我相信法律场景的 AI 输出不能靠蒙，所以我的项目都围着同一件事转：让模型的每句话可复核、可评估、可追溯。工具上重度使用 Claude Code 等 AI 编码协作，并把工程纪律（测试、指标、失败案例）带进每一个法律项目。',
-      '经济学方向的数理统计、概率论与计量经济学课程给了我建模与检验的训练，这套方法用在自己搭的 A 股量化平台上，做因子挖掘、回测与截面 IC 评估（见<a href="/projects/stock-db/">量化项目</a>）。',
+      '经济学方向的数理统计、概率论与计量经济学，让我习惯把判断变成能检验的命题。这套习惯的练手场是自己搭的 A 股量化平台，做因子挖掘、回测与截面 IC 评估（见<a href="/projects/stock-db/">量化项目</a>）。',
     ],
     factsAria: '关键信息',
     facts: [
@@ -461,7 +461,7 @@ const en: Strings = {
     intro: [
       "I'm HU Shengwei, from Shaoguan, Guangdong. I'm a law and economics double-degree undergraduate at Zhongnan University of Economics and Law. I grew up between languages (Mandarin, Cantonese, Hakka), which trained me to translate precisely across contexts and left me professionally obsessed with exact wording.",
       'My direction is the overlap of law and AI: structuring, retrieving and evaluating legal text. I don\'t believe AI output in legal settings should ever be taken on faith, so all my projects revolve around one thing: making every sentence a model produces checkable, evaluable and traceable. On the tooling side I work heavily with AI coding assistants such as Claude Code, and I bring engineering discipline (tests, metrics, failure cases) into every legal project.',
-      'Coursework in mathematical statistics, probability and econometrics trained me in modelling and testing; I apply that method on a self-built A-share quant platform, doing factor mining, backtesting and cross-sectional IC evaluation (see the <a href="/en/projects/stock-db/">quant project</a>).',
+      'The economics side of my degree — mathematical statistics, probability, econometrics — trained me to turn judgments into testable propositions. My proving ground is a self-built A-share quant platform, doing factor mining, backtesting and cross-sectional IC evaluation (see the <a href="/en/projects/stock-db/">quant project</a>).',
     ],
     factsAria: 'Key facts',
     facts: [
