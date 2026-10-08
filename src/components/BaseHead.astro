@@ -10,7 +10,9 @@ import fontsCssUrl from '../styles/fonts.css?url';
      「胡」=112、「圣」=113、「炜」=57。
    - hero 分片（116/118/119）：被首页主标题「用 AI 加速进步。」额外命中
      （「速/步」=116、「用/加/进」=118、「。」=119；「AI」走 Archivo 无需 Noto），
-     仅中文首页 preload（/en/ 首页主标题是英文，走 Archivo，不需要 Noto 分片），
+     仅中文首页 preload。曾试过把首屏全部命中分片（导语/数字面板的 114/115/117 等，
+     约 +157KB）都加进来，模拟 slow 4G 下 LCP 反而 5.1→5.3s：总字节量才是瓶颈，
+     发现延迟不是；高优先级 preload 只会挤压其他资源。真正的下一步是收窄 wght 轴。
      其余页面注入纯属浪费高优先级带宽。
    其余上百个分片不 preload，仍按需加载；正文 400/700 不 preload（非首屏关键路径）。
    维护提示：换首页 hero 站名或主标题文案时，必须同步重新计算并更新这组分片（步骤：读
@@ -22,9 +24,12 @@ import fontNotoSans113 from '@fontsource-variable/noto-sans-sc/files/noto-sans-s
 import fontNotoSans116 from '@fontsource-variable/noto-sans-sc/files/noto-sans-sc-116-wght-normal.woff2?url';
 import fontNotoSans118 from '@fontsource-variable/noto-sans-sc/files/noto-sans-sc-118-wght-normal.woff2?url';
 import fontNotoSans119 from '@fontsource-variable/noto-sans-sc/files/noto-sans-sc-119-wght-normal.woff2?url';
+/* 西文展示族 Archivo 的基础拉丁片：页头品牌行（HU SHENGWEI / Samwaye Woo）每页可见，
+   全站每页 preload（en 页的 hero 主标题同样走它） */
+import fontArchivoLatin from '@fontsource-variable/archivo/files/archivo-latin-wght-normal.woff2?url';
 /* 品牌名分片：页头 .brand「胡圣炜」每页可见，全站每页 preload */
 const fontNotoBrandShards = [fontNotoSans57, fontNotoSans112, fontNotoSans113];
-/* hero 文案独有分片：仅中文首页 preload */
+/* 首屏文案分片：仅中文首页 preload */
 const fontNotoHeroShards = [fontNotoSans116, fontNotoSans118, fontNotoSans119];
 interface Props { title: string; description?: string; type?: 'website' | 'article'; image?: string; noindex?: boolean; publishedTime?: Date; alternate?: string | null; }
 const { title, type = 'website', image: imageProp, noindex = false, publishedTime, alternate = null } = Astro.props;
@@ -93,6 +98,7 @@ const enPath = lang === 'en' ? selfPath : alternate;
   <link rel="preload" as="font" type="font/woff2" crossorigin href={href} />
 ))}
 {/* 字体声明非阻塞加载：print 样式不拦首绘，加载完翻转为 all；无 JS 环境由 noscript 兜底 */}
+<link rel="preload" as="font" type="font/woff2" crossorigin href={fontArchivoLatin} />
 <link rel="stylesheet" href={fontsCssUrl} media="print" onload="this.setAttribute('media','all')" />
 <noscript><link rel="stylesheet" href={fontsCssUrl} /></noscript>
 <ClientRouter />
