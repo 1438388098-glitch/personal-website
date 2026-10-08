@@ -69,7 +69,11 @@ function contentLastmods() {
     for (const name of names) {
       if (!name.endsWith('.md')) continue;
       const text = readFileSync(join(base, name), 'utf8');
-      const m = new RegExp(`^${field}:\\s*["']?(\\d{4}-\\d{2}-\\d{2})`, 'm').exec(text);
+      /* posts 支持 updatedDate：有修订日期时 lastmod 跟修订走，否则退回发布日期 */
+      const m = (field === 'pubDate'
+        ? new RegExp(`^updatedDate:\\s*["']?(\\d{4}-\\d{2}-\\d{2})`, 'm').exec(text)
+        : null)
+        ?? new RegExp(`^${field}:\\s*["']?(\\d{4}-\\d{2}-\\d{2})`, 'm').exec(text);
       if (m) map.set(`${prefix}${name.slice(0, -3)}/`, m[1]);
     }
   }

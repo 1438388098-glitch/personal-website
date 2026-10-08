@@ -34,6 +34,8 @@ const postsSchema = z.object({
   category: z.enum(POST_CATEGORIES),
   tags: z.array(z.enum(TAG_VOCAB)).max(4).default([]),
   pubDate: z.coerce.date(),
+  /* 修订日期：正文有实质更新时填，驱动 JSON-LD dateModified、页面「更新于」与 sitemap lastmod */
+  updatedDate: z.coerce.date().optional(),
   draft: z.boolean().default(false),
   /* 社交分享图（站内绝对路径如 /og-my-post.png）；缺省用全站默认 og 图 */
   image: z.string().optional()

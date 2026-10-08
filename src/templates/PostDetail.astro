@@ -17,7 +17,7 @@ interface Props { post: AnyPost; lang: Lang; alternate: string | null; }
 const { post, lang, alternate } = Astro.props;
 const t = strings(lang);
 const { Content, headings } = await render(post);
-const { title, description, category, pubDate, tags, image } = post.data;
+const { title, description, category, pubDate, updatedDate, tags, image } = post.data;
 const shareImage = new URL(image ?? (lang === 'en' ? SITE_PATHS.ogImageEn : SITE_PATHS.ogImage), SITE.url).toString();
 /* 相邻文章按发布日期排序：新一篇 / 旧一篇（含定时发布过滤）；en 只在自己的子集里相邻 */
 const sorted = await getPublishedPosts(lang);
@@ -52,7 +52,7 @@ const jsonLd = {
   url: pageUrl,
   mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
   datePublished: pubDate.toISOString(),
-  dateModified: pubDate.toISOString(),
+  dateModified: (updatedDate ?? pubDate).toISOString(),
   inLanguage: lang === 'en' ? 'en' : 'zh-CN',
   /* 栏目写进 articleSection，供富结果与聚合器识别；站点分组即博客分类 */
   articleSection: categoryLabel(lang, category),
@@ -76,6 +76,7 @@ const breadcrumb = {
       <article class="prose">
         <p class="meta">
           {categoryLabel(lang, category)} · <span class="mono">{formatDate(pubDate, lang)}</span>
+          {updatedDate && formatDate(updatedDate, lang) !== formatDate(pubDate, lang) && <span class="mono"> · {t.post.updatedPrefix}{formatDate(updatedDate, lang)}</span>}
           {tags.length > 0 && <span class="tag-row"> · {tags.map((tg) => <a class="tag-link" href={href(lang, `/tags/${tg}/`)}>#{tagLabelOf(tg)}</a>)}</span>}
         </p>
         <h1>{title}</h1>
