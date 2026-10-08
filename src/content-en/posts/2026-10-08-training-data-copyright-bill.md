@@ -1,6 +1,6 @@
 ---
 title: "The copyright bill for training data arrives at the input end"
-description: "Munich held that a model memorizing lyrics is infringement; California split training from sourcing and Anthropic paid 1.5 billion dollars over roughly half a million works; Shanghai wrote LoRA fine-tuning into infringement. The bill for training data has traveled from the output end all the way back to the input."
+description: "The copyright bill for training data has reached the input end: Munich held model memorization is infringement, California split training from sourcing, Anthropic paid 1.5 billion dollars, and Shanghai wrote LoRA fine-tuning into infringement."
 category: 热点快评
 tags: [AIGC, 判例]
 pubDate: 2026-10-08
@@ -28,4 +28,4 @@ Rule supply is following. In March 2026, Li Jian, head of the Supreme People's C
 
 Read side by side, the three jurisdictions are doing the same thing: taking apart the intuition that "training equals learning". What falls out are three independent questions: where the data came from (lawful sources or pirate libraries), how it was used (memorizing reproduction or transformative use), and who answers for it (the vendor, the fine-tuner, or the platform). Munich answered the European version of the second question; California answered the first and the second separately; Shanghai brought the first question down to the individual.
 
-For anyone building products, the way to read this bill is plain: a dataset's source list will become standard issue, like an ingredients label. Before fine-tuning on your own captures, think of Medusa's 50,000 yuan; before weighing a training corpus, think of the 7 million books that compounded into 1.5 billion dollars. The era of unexamined inputs is over, and not because anyone suddenly turned virtuous, but because the bills have been delivered.
+For anyone building products, the way to read this bill is plain: a dataset's source list will become standard issue, like an ingredients label. Before fine-tuning on your own captures, think of Medusa's 50,000 yuan; before weighing a training corpus, think of the 7 million books that compounded into 1.5 billion dollars. The era of unexamined inputs is over. The reason is plain: the bills have been delivered.
