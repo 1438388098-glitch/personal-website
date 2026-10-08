@@ -401,6 +401,8 @@ const zh = {
       resultsOne: '{n} 条结果',
       capped: '（只显示前 20 条，换个更具体的词）',
       none: '没有匹配的内容，换个词试试。',
+      /* 零结果时渲染进结果区（textContent 的 count 放不下链接），给一个出口 */
+      noneHtml: '没有匹配的内容。换个词试试，或者逛逛<a href="/tags/">标签索引</a>。',
       err: '索引加载失败，请检查网络后重试。',
     },
   },
@@ -705,6 +707,7 @@ const en: Strings = {
       resultsOne: '{n} result',
       capped: ' (showing the first 20; try more specific terms)',
       none: 'Nothing matches. Try another term.',
+      noneHtml: 'Nothing matches. Try another term, or browse the <a href="/en/tags/">tag index</a>.',
       err: 'Index failed to load. Check your network and retry.',
     },
   },

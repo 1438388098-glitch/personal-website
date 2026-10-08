@@ -93,10 +93,13 @@ const indexPath = lang === 'en' ? '/en/search-index.json' : SITE_PATHS.searchInd
     const hitText = fillN(hits.length === 1 ? msg.resultsOne : msg.results, hits.length);
     count.textContent = hits.length ? hitText + (hits.length >= 20 ? msg.capped : '') : msg.none;
 
-    list.innerHTML = hits.map((h) => {
-      const snippet = makeSnippet(h.text, terms);
-      return `<li><span class="kind">${escapeHtml(h.kind)}</span><a href="${h.url}">${escapeHtml(h.title)}</a><p class="snippet">${highlight(snippet, terms)}</p></li>`;
-    }).join('');
+    /* 零结果不放走访客：给一个标签索引出口（与 noscript 态同一出口） */
+    list.innerHTML = hits.length
+      ? hits.map((h) => {
+          const snippet = makeSnippet(h.text, terms);
+          return `<li><span class="kind">${escapeHtml(h.kind)}</span><a href="${h.url}">${escapeHtml(h.title)}</a><p class="snippet">${highlight(snippet, terms)}</p></li>`;
+        }).join('')
+      : `<li class="empty">${msg.noneHtml}</li>`;
   };
 
   /* 元素级监听收敛为「每个页面实例只绑一次」：在 input 上打 data-search-bound 标记。
