@@ -9,6 +9,7 @@ relatedPosts:
   - 2026-08-31-legal-hallu-guard
   - 2026-09-14-baidu-ai-hallu-libel
   - 2026-09-09-supreme-court-ai-24
+  - 2026-10-08-ai-hallu-court
 metrics:
   - label: 假阳性率
     value: '0.0%'
