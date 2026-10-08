@@ -10,6 +10,7 @@ import { strings, href, groupLabel } from '../lib/i18n';
 import { formatDate } from '../lib/format';
 import type { AnyProject } from '../lib/projects';
 import { SITE, githubRepoUrl } from '../lib/site';
+import { personJsonLd } from '../lib/person-jsonld';
 
 interface Props {
   project: AnyProject;
@@ -37,7 +38,7 @@ const jsonLd = {
   applicationCategory: 'BusinessApplication',
   applicationSubCategory: groupLabel(lang, group),
   inLanguage: lang === 'en' ? 'en' : 'zh-CN',
-  author: { '@type': 'Person', name: t.authorName, url: new URL(href(lang, '/about/'), SITE.url).toString() }
+  author: personJsonLd(lang)
 };
 const breadcrumb = {
   '@context': 'https://schema.org',

@@ -6,18 +6,14 @@ import JsonLd from '../components/JsonLd.astro';
 import type { Lang } from '../lib/i18n';
 import { strings, href } from '../lib/i18n';
 import { SITE } from '../lib/site';
+import { personJsonLd } from '../lib/person-jsonld';
 
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const t = strings(lang);
 const person = {
   '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: t.authorName,
-  url: new URL(href(lang, '/about/'), SITE.url).toString(),
-  jobTitle: t.about.jsonLdJobTitle,
-  /* sameAs 用于把站内 Person 与外部身份对齐，当前唯一可公开的外部主页是 GitHub */
-  sameAs: [SITE.github]
+  ...personJsonLd(lang, t.about.jsonLdJobTitle)
 };
 ---
 <BaseLayout title={t.about.title} description={t.about.metaDescription} alternate={lang === 'zh' ? '/en/about/' : '/about/'}>

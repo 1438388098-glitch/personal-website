@@ -9,6 +9,7 @@ import type { Lang } from '../lib/i18n';
 import { strings, href } from '../lib/i18n';
 import { getCollection } from 'astro:content';
 import { SITE } from '../lib/site';
+import { personJsonLd } from '../lib/person-jsonld';
 import { EXAM_AGG } from '../lib/exam-progress';
 import { getPublishedPosts } from '../lib/posts';
 import { getProjects } from '../lib/projects';
@@ -132,8 +133,10 @@ const panelRows = t.home.panel.map((row) => ({ ...row, v: metricOf(row.projectId
     '@type': 'WebSite',
     name: t.home.title,
     description: lang === 'en' ? SITE.descriptionEn : SITE.description,
-    url: SITE.url,
-    author: { '@type': 'Person', name: t.authorName, jobTitle: t.home.jsonLdJobTitle, url: SITE.github },
+    /* en 版声明 /en/ 自己这个站点实体，不与中文版争同一 URL；inLanguage 标注语言 */
+    url: lang === 'en' ? new URL('/en/', SITE.url).toString() : SITE.url,
+    inLanguage: lang === 'en' ? 'en' : 'zh-CN',
+    author: personJsonLd(lang, t.home.jsonLdJobTitle),
     /* 站内搜索入口声明：让搜索引擎在站点结果里直接给出搜索框 */
     potentialAction: {
       '@type': 'SearchAction',

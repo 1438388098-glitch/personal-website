@@ -2,7 +2,7 @@
 import PostDetail from '../../../templates/PostDetail.astro';
 import { getPublishedPosts } from '../../../lib/posts';
 
-/* en 博文详情：只有译出的 5 篇；中文原文永远存在（同名文件配对），alternate 直连 */
+/* en 博文详情：33 篇全量配对（check-i18n 门禁强制双向），中文原文永远存在，alternate 直连 */
 export async function getStaticPaths() {
   const posts = await getPublishedPosts('en');
   return posts.map((p) => ({

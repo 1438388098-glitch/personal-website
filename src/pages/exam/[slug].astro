@@ -4,7 +4,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import JsonLd from '../../components/JsonLd.astro';
 import { formatDate } from '../../lib/format';
 import { isVisible } from '../../lib/publish';
-import { SITE } from '../../lib/site';
+import { SITE, SITE_PATHS } from '../../lib/site';
+import { personJsonLd } from '../../lib/person-jsonld';
 
 export async function getStaticPaths() {
   const articles = await getCollection('exam', isVisible);
@@ -20,10 +21,13 @@ const jsonLd = {
   headline: title,
   description,
   url: pageUrl,
+  /* 详情页无专属分享图，富结果 image 用全站默认 og 图 */
+  image: [new URL(SITE_PATHS.ogImage, SITE.url).toString()],
   datePublished: date.toISOString(),
+  dateModified: date.toISOString(),
   inLanguage: 'zh-CN',
   articleSection: type,
-  author: { '@type': 'Person', name: SITE.author, url: new URL('/about/', SITE.url).toString() }
+  author: personJsonLd('zh')
 };
 const breadcrumb = {
   '@context': 'https://schema.org',

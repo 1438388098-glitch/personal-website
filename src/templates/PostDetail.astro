@@ -11,6 +11,7 @@ import { formatDate } from '../lib/format';
 import type { AnyPost } from '../lib/posts';
 import { getPublishedPosts, getAdjacent } from '../lib/posts';
 import { SITE, SITE_PATHS } from '../lib/site';
+import { personJsonLd } from '../lib/person-jsonld';
 
 interface Props { post: AnyPost; lang: Lang; alternate: string | null; }
 const { post, lang, alternate } = Astro.props;
@@ -55,8 +56,8 @@ const jsonLd = {
   inLanguage: lang === 'en' ? 'en' : 'zh-CN',
   /* 栏目写进 articleSection，供富结果与聚合器识别；站点分组即博客分类 */
   articleSection: categoryLabel(lang, category),
-  author: { '@type': 'Person', name: t.authorName, url: new URL(href(lang, '/about/'), SITE.url).toString() },
-  publisher: { '@type': 'Organization', name: SITE.title, url: SITE.url },
+  author: personJsonLd(lang),
+  publisher: { '@type': 'Organization', name: lang === 'en' ? SITE.titleEn : SITE.title, url: SITE.url },
   keywords: tags.map(tagLabelOf).join(', ')
 };
 const breadcrumb = {

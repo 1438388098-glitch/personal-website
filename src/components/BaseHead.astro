@@ -75,9 +75,10 @@ const enPath = lang === 'en' ? selfPath : alternate;
 <meta name="twitter:title" content={pageTitle} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
-{zhPath && <link rel="alternate" hreflang="zh-CN" href={new URL(zhPath, siteUrl)} />}
-{enPath && <link rel="alternate" hreflang="en" href={new URL(enPath, siteUrl)} />}
-{zhPath && <link rel="alternate" hreflang="x-default" href={new URL(zhPath, siteUrl)} />}
+{/* noindex 页（搜索/404）不发 hreflang：Google 忽略 noindex 页上的 hreflang，发了只是噪音 */}
+{!noindex && zhPath && <link rel="alternate" hreflang="zh-CN" href={new URL(zhPath, siteUrl)} />}
+{!noindex && enPath && <link rel="alternate" hreflang="en" href={new URL(enPath, siteUrl)} />}
+{!noindex && zhPath && <link rel="alternate" hreflang="x-default" href={new URL(zhPath, siteUrl)} />}
 {/* 首屏字体分片 preload：preload 的是 woff2 文件本身（不是 CSS），高优先级与 HTML 解析并行取回，
     字体 CSS 异步生效后立即可用，省去「CSS 生效后才按需发现分片」的串行等待。
     crossorigin 必须带：字体一律以 CORS 模式请求，缺了会二次下载。分片选择依据见 frontmatter 注释。
