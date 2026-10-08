@@ -13,25 +13,28 @@ const dist = resolve('dist');
    覆盖断言看不出来，只有字节数会立刻爆表。 */
 const FONT_BUDGET_KB = 1400;
 
-/* 必需资产：运营与分发依赖它们，构建成功不等于它们在 */
-const required = [
-  'feed.xml',
-  'sitemap-index.xml',
-  '404.html',
-  'og-default.png',
-  'search/index.html',
-  /* robots.txt 由 src/pages/robots.txt.js 端点生成，仍落在 dist 根 */
-  'robots.txt',
-  'favicon.svg',
-  'site.webmanifest',
-  'apple-touch-icon.png',
-  /* 搜索索引独立成端点后必须是非空 JSON 数组；空数组/字段漂移会让站点静默「搜不到东西」 */
-  'search-index.json',
-  /* en 版必需资产（双语骨架）：英文首页、英文订阅源、英文搜索索引 */
-  'en/index.html',
-  'en/feed.xml',
-  'en/search-index.json',
-];
+  /* 必需资产：运营与分发依赖它们，构建成功不等于它们在 */
+  const required = [
+    'feed.xml',
+    'sitemap-index.xml',
+    '404.html',
+    'og-default.png',
+    'og-default-en.png',
+    'search/index.html',
+    /* robots.txt 由 src/pages/robots.txt.js 端点生成，仍落在 dist 根 */
+    'robots.txt',
+    'favicon.svg',
+    'site.webmanifest',
+    'apple-touch-icon.png',
+    /* 搜索索引独立成端点后必须是非空 JSON 数组；空数组/字段漂移会让站点静默「搜不到东西」 */
+    'search-index.json',
+    /* en 版必需资产（双语骨架）：英文首页、英文订阅源、英文搜索索引，以及 exam/notes 两个板块的入口 */
+    'en/index.html',
+    'en/feed.xml',
+    'en/search-index.json',
+    'en/exam/index.html',
+    'en/notes/index.html',
+  ];
 
 /* 字体管线断言：trim-dist 应把 dist/_astro 下的 .woff 全删（递归，含子目录）。
    产物里还有 .woff 说明 trim-dist 未生效或目录结构变了。 */

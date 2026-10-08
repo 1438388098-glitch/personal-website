@@ -1,0 +1,44 @@
+---
+/* en 论文与研读索引：与 zh（/notes/）同构。分区沿用 zh 的 category 枚举（中文名做键），
+   展示名用 en 对照（buildSections 的 GroupDef 自带 en 字段，en 页直接以 en 为主标题）。 */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { formatDate } from '../../../lib/format';
+import { byDateDesc } from '../../../lib/sort';
+import { isVisible } from '../../../lib/publish';
+import { buildSections } from '../../../lib/sections';
+import { EN_STATUS } from '../../../lib/i18n';
+import EntryCard from '../../../components/EntryCard.astro';
+
+const notes = (await getCollection('notesEn', isVisible))
+  .sort(byDateDesc((n) => n.data.date, (n) => n.id));
+const categories = [
+  { name: '课程论文', en: 'Course Papers' },
+  { name: '文献研读', en: 'Readings' },
+  { name: '读书笔记', en: 'Book Notes' }
+] as const;
+/* 分区按页面顺序重编号（只数非空分组），过滤 + 重编号走 lib 层单源实现 */
+const sections = buildSections(notes, categories, (n) => n.data.category);
+---
+<BaseLayout title="Notes & Readings" description="Archives of course papers and reading lists in law: full papers stay off-site, each entry records the research question, the thesis and the key materials." alternate="/notes/">
+  <h1>Notes &amp; Readings</h1>
+  {sections.map((s) => (
+    <section>
+      <div class="sec-head">
+        <span class="sec-no">{s.no}</span>
+        <h2>{s.en}</h2>
+      </div>
+      {s.items.map((n) => (
+        <EntryCard
+          href={`/en/notes/${n.id}/`}
+          meta={`${EN_STATUS[n.data.status] ?? n.data.status} · ${formatDate(n.data.date, 'en')}`}
+          title={n.data.title}
+          description={n.data.description}
+        />
+      ))}
+    </section>
+  ))}
+</BaseLayout>
+<style>
+  section { margin: var(--section-gap) 0; }
+</style>

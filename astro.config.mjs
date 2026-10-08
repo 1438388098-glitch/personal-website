@@ -58,6 +58,8 @@ function contentLastmods() {
     { root: contentRoot, dir: 'notes', prefix: '/notes/', field: 'date' },
     { root: contentRoot, dir: 'projects', prefix: '/projects/', field: 'date' },
     { root: contentRootEn, dir: 'posts', prefix: '/en/blog/', field: 'pubDate' },
+    { root: contentRootEn, dir: 'exam', prefix: '/en/exam/', field: 'date' },
+    { root: contentRootEn, dir: 'notes', prefix: '/en/notes/', field: 'date' },
     { root: contentRootEn, dir: 'projects', prefix: '/en/projects/', field: 'date' },
   ];
   for (const { root, dir, prefix, field } of collections) {
@@ -102,10 +104,12 @@ export default defineConfig({
     prefetchAll: true,
     defaultStrategy: 'hover',
   },
-  /* sitemap：/search/ 是客户端渲染的薄内容页，无独立检索价值，排除出收录（404/500 由插件默认排除） */
+  /* sitemap：/search/ 是客户端渲染的薄内容页，无独立检索价值，排除出收录。
+     /en/404/ 也要排除：zh 的 404 由 Astro 特判成 404.html（插件默认排除），en 的 404
+     却按目录格式产出 en/404/index.html（200 可访问），不显式排除就会带着 noindex 进 sitemap 自相矛盾。 */
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/search/'),
+      filter: (page) => !page.includes('/search/') && !page.includes('/404'),
       /* 每条 URL 反查内容日期补 lastmod：无对应内容的页面（列表页、静态页）保持原样 */
       serialize: (item) => {
         const lastmod = lastmods.get(new URL(item.url).pathname);

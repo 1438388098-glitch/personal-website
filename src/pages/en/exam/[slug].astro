@@ -1,0 +1,53 @@
+---
+/* en 法考实录详情：与 zh（/exam/[slug]）同构；en 集合与 zh 同名配对，alternate 直连中文原文。 */
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import JsonLd from '../../../components/JsonLd.astro';
+import { formatDate } from '../../../lib/format';
+import { isVisible } from '../../../lib/publish';
+import { strings, EN_EXAM_TYPE } from '../../../lib/i18n';
+import { SITE } from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('examEn', isVisible);
+  return articles.map((a) => ({ params: { slug: a.id }, props: { post: a } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, description, type, date } = post.data;
+const t = strings('en');
+const pageUrl = new URL(Astro.url.pathname, SITE.url).toString();
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  url: pageUrl,
+  datePublished: date.toISOString(),
+  inLanguage: 'en',
+  articleSection: EN_EXAM_TYPE[type] ?? type,
+  author: { '@type': 'Person', name: t.authorName, url: new URL('/en/about/', SITE.url).toString() }
+};
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/en/', SITE.url).toString() },
+    { '@type': 'ListItem', position: 2, name: 'Bar Exam × AI', item: new URL('/en/exam/', SITE.url).toString() },
+    { '@type': 'ListItem', position: 3, name: title, item: pageUrl }
+  ]
+};
+---
+<BaseLayout title={title} description={description} type="article" publishedTime={date} alternate={`/exam/${post.id}/`}>
+  <article class="prose">
+    <p class="meta">{EN_EXAM_TYPE[type] ?? type} · <span class="mono">{formatDate(date, 'en')}</span></p>
+    <h1>{title}</h1>
+    <Content />
+    <p><a href="/en/exam/">← Bar Exam × AI</a></p>
+  </article>
+  <JsonLd data={jsonLd} />
+  <JsonLd data={breadcrumb} />
+</BaseLayout>
+<style>
+  .meta { color: var(--text-muted); }
+</style>

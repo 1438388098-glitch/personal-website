@@ -1,0 +1,57 @@
+---
+/* en 论文与研读详情：与 zh（/notes/[slug]）同构；en 集合与 zh 同名配对，alternate 直连中文原文。 */
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Toc from '../../../components/Toc.astro';
+import JsonLd from '../../../components/JsonLd.astro';
+import { formatDate } from '../../../lib/format';
+import { isVisible } from '../../../lib/publish';
+import { strings, categoryLabel, EN_STATUS } from '../../../lib/i18n';
+import { SITE } from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('notesEn', isVisible);
+  return articles.map((a) => ({ params: { slug: a.id }, props: { post: a } }));
+}
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const { title, description, category, status, date } = post.data;
+const t = strings('en');
+const pageUrl = new URL(Astro.url.pathname, SITE.url).toString();
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  url: pageUrl,
+  datePublished: date.toISOString(),
+  inLanguage: 'en',
+  articleSection: categoryLabel('en', category),
+  author: { '@type': 'Person', name: t.authorName, url: new URL('/en/about/', SITE.url).toString() }
+};
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/en/', SITE.url).toString() },
+    { '@type': 'ListItem', position: 2, name: 'Notes & Readings', item: new URL('/en/notes/', SITE.url).toString() },
+    { '@type': 'ListItem', position: 3, name: title, item: pageUrl }
+  ]
+};
+---
+<BaseLayout title={title} description={description} type="article" publishedTime={date} alternate={`/notes/${post.id}/`}>
+  <div class="doc">
+    <article class="prose">
+      <p class="meta">{categoryLabel('en', category)} · {EN_STATUS[status] ?? status} · <span class="mono">{formatDate(date, 'en')}</span></p>
+      <h1>{title}</h1>
+      <Content />
+      <p><a href="/en/notes/">← Notes &amp; Readings</a></p>
+    </article>
+    <Toc headings={headings} />
+  </div>
+  <JsonLd data={jsonLd} />
+  <JsonLd data={breadcrumb} />
+</BaseLayout>
+<style>
+  .meta { color: var(--text-muted); }
+</style>

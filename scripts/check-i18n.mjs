@@ -15,7 +15,7 @@ import { pathToFileURL } from 'node:url';
 const ZH = 'src/content';
 const EN = 'src/content-en';
 /** zh→en 要求双向全覆盖的集合；posts 只要求 en⊆zh（只译代表作子集） */
-const FULL_PAIR_DIRS = ['projects', 'toolbox', 'now'];
+const FULL_PAIR_DIRS = ['projects', 'toolbox', 'now', 'exam', 'notes'];
 const PAIR_DIRS = [...FULL_PAIR_DIRS, 'posts'];
 
 /** 剥 frontmatter：返回 { frontmatter, body }。首行必须是 ---（与 check-style 同一约定）。
@@ -60,12 +60,17 @@ export function extractZhNumbers(zhBody) {
   const nums = new Set();
   /** @param {number} n */
   const add = (n) => { if (Number.isFinite(n)) nums.add(String(Math.round(n))); };
-  /* (?!\d) 阻断回溯：否则「200 万」会被退火成「20」命中 */
-  for (const m of zhBody.matchAll(/\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d{2,}(?!\d)(?![ \t]*(?:万|亿|月))/g)) {
+  /* (?!\d) 阻断回溯：否则「200 万」会被退火成「20」命中。
+   小数分支同样排除后随万/亿的形态：否则「1.8 万」的系数 1.8 会被单独记成 2，
+   en 的 18,000 永远命不中这个 2（曾逼出「(1.8 in the ten-thousands)」式括注）。 */
+  for (const m of zhBody.matchAll(/\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+(?![ \t]*(?:万|亿))|\d{2,}(?!\d)(?![ \t]*(?:万|亿|月))/g)) {
     add(parseFloat(m[0].replace(/,/g, '')));
   }
-  /* 量级词：50 万 → 500000；1.6 亿 → 160000000。与 en 的 500k / 160M 归一到绝对值再比对 */
-  for (const m of zhBody.matchAll(/(\d+(?:\.\d+)?)\s*万/g)) add(parseFloat(m[1]) * 1e4);
+  /* 量级词：50 万 → 500000；2.4 万亿 → 2.4e12；1.6 亿 → 160000000。
+     万亿必须先于万匹配、万加后瞻排除万亿，否则「2.4 万亿」会被拆成 24000（差 8 个数量级）。
+     与 en 的 500k / 2.4 trillion / 160M 归一到绝对值再比对 */
+  for (const m of zhBody.matchAll(/(\d+(?:\.\d+)?)\s*万亿/g)) add(parseFloat(m[1]) * 1e12);
+  for (const m of zhBody.matchAll(/(\d+(?:\.\d+)?)\s*万(?!\s*亿)/g)) add(parseFloat(m[1]) * 1e4);
   for (const m of zhBody.matchAll(/(\d+(?:\.\d+)?)\s*亿/g)) add(parseFloat(m[1]) * 1e8);
   for (const m of zhBody.matchAll(/第([零一二两三四五六七八九十百千]+)条/g)) {
     const n = chineseNumeralsToInt(m[1]);
@@ -85,10 +90,11 @@ export function extractEnNumbers(enBody) {
   for (const m of enBody.matchAll(/\d[\d,]*(?:\.\d+)?/g)) {
     add(parseFloat(m[0].replace(/,/g, '')));
   }
-  /* k/M/B 与数字之间允许空格或连字符（500k、100-million、1.2M 都要命中） */
+  /* k/M/B/T 与数字之间允许空格或连字符（500k、100-million、1.2M、2.4 trillion 都要命中） */
   for (const m of enBody.matchAll(/(\d+(?:\.\d+)?)[ \t-]*(?:k\b|thousand)/gi)) add(parseFloat(m[1]) * 1e3);
   for (const m of enBody.matchAll(/(\d+(?:\.\d+)?)[ \t-]*(?:m\b|million)/gi)) add(parseFloat(m[1]) * 1e6);
   for (const m of enBody.matchAll(/(\d+(?:\.\d+)?)[ \t-]*(?:b\b|billion)/gi)) add(parseFloat(m[1]) * 1e9);
+  for (const m of enBody.matchAll(/(\d+(?:\.\d+)?)[ \t-]*(?:t\b|trillion)/gi)) add(parseFloat(m[1]) * 1e12);
   return nums;
 }
 
@@ -193,9 +199,13 @@ export function checkPair(name, zhText, enText) {
   const zhRel = fmList(zh.frontmatter, 'relatedPosts').join('|');
   const enRel = fmList(en.frontmatter, 'relatedPosts').join('|');
   if (zhRel !== enRel) issues.push(`${name}: relatedPosts 不一致 zh=[${zhRel}] en=[${enRel}]`);
-  /* links 只比 URL（label 理应翻译）；related 回链指向 /en/ 属有意差异，不查 */
-  const zhUrls = linksUrls(zh.frontmatter).join('|');
-  const enUrls = linksUrls(en.frontmatter).join('|');
+  /* links 只比 URL（label 理应翻译）。比对前把两侧 URL 归一：剥掉站点起源再剥掉开头的 /en——
+     en 侧站内链接指向 /en/ 路径属有意差异（与 toolbox related 回链同一约定），
+     绝对 URL 形式（如在线工具地址）同样允许 en 指到 /en/ 子路径。 */
+  /** @param {string} u */
+  const normUrl = (u) => u.replace(/^https?:\/\/iweistoicqc5\.top/, '').replace(/^\/en(?=\/|$)/, '');
+  const zhUrls = linksUrls(zh.frontmatter).map(normUrl).join('|');
+  const enUrls = linksUrls(en.frontmatter).map(normUrl).join('|');
   if (zhUrls !== enUrls) issues.push(`${name}: links.url 不一致 zh=[${zhUrls}] en=[${enUrls}]`);
 
   /* 汉字渗漏：正文全查（白名单字面量豁免）；frontmatter 剥掉枚举/列表行后查散文 */

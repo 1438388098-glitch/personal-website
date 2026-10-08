@@ -33,6 +33,23 @@ export const EN_CATEGORY: Record<string, string> = {
   杂谈: 'Misc.',
   经济观察: 'Economics Watch',
   热点快评: 'Quick Takes',
+  /* notes 集合的分类（en 列表页与 en feed 共用一张表） */
+  课程论文: 'Course papers',
+  文献研读: 'Readings',
+  读书笔记: 'Book Notes',
+};
+
+/* exam 集合的 type 与 notes 集合的 status：frontmatter 存中文枚举 ID，en 展示层从这里映射 */
+export const EN_EXAM_TYPE: Record<string, string> = {
+  方法论: 'Method',
+  错题笔记: 'Wrong-answer notes',
+  周记: 'Journal',
+};
+
+export const EN_STATUS: Record<string, string> = {
+  已完成: 'Completed',
+  写作中: 'In progress',
+  在读: 'Reading',
 };
 
 export const EN_TAG: Record<string, string> = {
@@ -93,6 +110,8 @@ const zh = {
   htmlLang: 'zh-CN',
   ogLocale: 'zh_CN',
   ogLocaleAlternate: 'en_US',
+  /** 展示用姓名：JSON-LD author、meta author、页脚版权行共用；en 用英文署名 */
+  authorName: '胡圣炜',
   skipLink: '跳到主要内容',
   navAria: '主导航',
   /** zh 导航七项全量；en 是子集（见 en.navItems），顺序即展示顺序 */
@@ -407,11 +426,14 @@ const en: Strings = {
   htmlLang: 'en',
   ogLocale: 'en_US',
   ogLocaleAlternate: 'zh_CN',
+  authorName: 'Samwaye Woo',
   skipLink: 'Skip to main content',
   navAria: 'Main navigation',
   navItems: [
     { label: 'Projects', href: '/en/projects/' },
     { label: 'Blog', href: '/en/blog/' },
+    { label: 'Exam', href: '/en/exam/' },
+    { label: 'Notes', href: '/en/notes/' },
     { label: 'Now', href: '/en/now/' },
     { label: 'Toolbox', href: '/en/toolbox/' },
     { label: 'About', href: '/en/about/' },
@@ -430,9 +452,10 @@ const en: Strings = {
   },
   feedPath: '/en/feed.xml',
   home: {
-    title: 'HU Shengwei · Stoic',
+    title: 'Samwaye Woo · Stoic',
     label: 'Law × Engineering',
-    h1: 'Law student,<br />building <span class="hl">tools</span> on the side.',
+    /* 与 zh 主标题「用 AI 加速进步。」同一价值主张 */
+    h1: 'Use <span class="hl">AI</span> to accelerate progress.',
     lede: 'Statute retrieval, bar-exam grading, judicial benchmarks: the legal tools are all open source, every number checkable.<br />The A-share quant platform is private, its scale and method on the project page.',
     pills: ['Wuhan, China', 'Prepping for the Chinese bar exam'],
     ctas: { primary: 'See projects', about: 'About me', contact: 'Contact' },
@@ -448,18 +471,36 @@ const en: Strings = {
     writing: { h2: 'Writing', en: '', link: 'All posts →' },
     explore: { h2: 'Explore', en: '' },
     exploreCards: [
+      { title: 'Notes', desc: 'Course papers and close readings of legal literature.', href: '/notes/' },
       { title: 'Toolbox', desc: 'Legal tools with public GitHub repos: one click away.', href: '/toolbox/' },
     ],
-    band: null,
+    /* 法考通栏现在有英文版：exam 板块已出英文，不再置 null 收起 */
+    band: {
+      label: 'Bar Exam × AI',
+      en: 'Exam Workflow',
+      h2: 'Stitching AI into the exam workflow',
+      text: 'Wrong answers become recitation notes, essays get machine first-grading, statute retrieval always cites its sources: one self-built tool per step.',
+      figures: (subjects: number, wrong: number) => `${subjects} subjects / ${wrong} wrong answers`,
+      btn: 'See the exam workflow',
+      href: '/exam/',
+    } as null | {
+      label: string;
+      en: string;
+      h2: string;
+      text: string;
+      figures: (subjects: number, wrong: number) => string;
+      btn: string;
+      href: string;
+    },
     now: { link: 'See this month →' },
     jsonLdJobTitle: 'Law student · Legal × AI engineering',
   },
   about: {
     title: 'About',
-    metaDescription: 'HU Shengwei: law and economics double-degree undergraduate, three legal internships, and legal × AI engineering on the side.',
+    metaDescription: 'Samwaye Woo: law and economics double-degree undergraduate, three legal internships, and legal × AI engineering on the side.',
     h1: 'About',
     intro: [
-      "I'm HU Shengwei, from Shaoguan, Guangdong. I'm a law and economics double-degree undergraduate at Zhongnan University of Economics and Law. I grew up between languages (Mandarin, Cantonese, Hakka), which trained me to translate precisely across contexts and left me professionally obsessed with exact wording.",
+      "I'm Samwaye Woo, from Shaoguan, Guangdong. I'm a law and economics double-degree undergraduate at Zhongnan University of Economics and Law. I grew up between languages (Mandarin, Cantonese, Hakka), which trained me to translate precisely across contexts and left me professionally obsessed with exact wording.",
       'My direction is the overlap of law and AI: structuring, retrieving and evaluating legal text. I don\'t believe AI output in legal settings should ever be taken on faith, so all my projects revolve around one thing: making every sentence a model produces checkable, evaluable and traceable. On the tooling side I work heavily with AI coding assistants such as Claude Code, and I bring engineering discipline (tests, metrics, failure cases) into every legal project.',
       'The economics side of my degree — mathematical statistics, probability, econometrics — trained me to turn judgments into testable propositions. My proving ground is a self-built A-share quant platform, doing factor mining, backtesting and cross-sectional IC evaluation (see the <a href="/en/projects/stock-db/">quant project</a>).',
     ],
@@ -570,7 +611,7 @@ const en: Strings = {
         edu: [],
         entries: [],
         skills: [
-          { k: 'Legal research', html: 'pkulaw, China Judgments Online, Westlaw; my course paper on the abuse of non-compete clauses draws on empirical work by Xiong Hui and Wang Ruihong covering 556 judgments (<a href="/notes/non-compete/">paper notes</a>, in Chinese)' },
+          { k: 'Legal research', html: 'pkulaw, China Judgments Online, Westlaw; my course paper on the abuse of non-compete clauses draws on empirical work by Xiong Hui and Wang Ruihong covering 556 judgments (see the <a href="/en/notes/non-compete/">paper notes</a>)' },
           { k: 'Engineering', html: 'Python, JavaScript/TypeScript, SQLite/FTS5, RAG and evaluation pipelines, multi-agent orchestration, Git/CI (all backed by public repositories, see <a href="/en/projects/">projects</a>)' },
           { k: 'Quant & data', html: 'A-share data pipeline (5,824 stocks, about 16.74M daily rows, 34 fields), a GP factor-mining and backtesting pipeline, and a mid-term Top20 selection chain (scale and method on the <a href="/en/projects/stock-db/">quant project page</a>)' },
           { k: 'Certificates', html: 'NCRE Level 2 (MS Office), C1 driving licence' },
@@ -611,7 +652,7 @@ const en: Strings = {
     title: 'Blog',
     metaDescription: 'Engineering method, technical notes and essays on law × AI, plus game notes, miscellany, economics watch and quick takes.',
     all: 'All',
-    essayNoteHtml: 'Long-form legal papers live in the <a href="/notes/">Notes</a> section (in Chinese): the empirical study on non-compete clauses, Bracton and Roman law.',
+    essayNoteHtml: 'Long-form legal papers live in the <a href="/en/notes/">Notes</a> section: the empirical study on non-compete clauses, Bracton and Roman law.',
     emptyNote: 'Nothing published in this category yet. Try another one.',
   },
   post: {

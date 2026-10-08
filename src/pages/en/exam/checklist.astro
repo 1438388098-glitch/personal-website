@@ -1,36 +1,39 @@
 ---
 /**
- * 主观题采分点自查清单：答完一问、对 AI 判分前，按采分点三类逐条自查。
- * 结构复用 fakao-grader 判分规则（结论/依据/分析三类点、✓△✗ 口径），内容人工整理。
- * 勾选进度只存本机 localStorage，可打印成考前清单。
+ * Bar essay scoring-point self-check checklist — English counterpart of /exam/checklist/.
+ * Same layout and client script as the Chinese page; the data source swaps in SELF_CHECK_EN.
+ * Check progress lives only in this browser's localStorage; the sheet is printable before the exam.
  */
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { SELF_CHECK, SELF_CHECK_AGG } from '../../data/self-check';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { SELF_CHECK_AGG } from '../../../data/self-check';
+import { SELF_CHECK_EN } from '../../../data/self-check-en';
 ---
 <BaseLayout
-  title="主观题采分点自查清单"
-  description={`把 AI 判分规则翻译成 ${SELF_CHECK_AGG.items} 条自查项：主观题答完先按结论、依据、分析三类点逐条过，没勾的就是丢分点；勾选只存本机，可打印。`}
-  alternate="/en/exam/checklist/"
+  title="Bar Essay Self-Check Checklist"
+  description={`AI grading rules translated into ${SELF_CHECK_AGG.items} self-check items: after finishing each essay answer, run through the conclusion, authority, and analysis points one by one — whatever stays unchecked is where you are losing points. Checks are stored locally only; printable.`}
+  alternate="/exam/checklist/"
 >
   <article class="checklist">
-    <p class="crumb"><a href="/exam/">← 法考 × AI</a></p>
-    <h1>主观题采分点自查清单</h1>
+    <p class="crumb"><a href="/en/exam/">← Bar Exam × AI</a></p>
+    <h1>Bar Essay Self-Check Checklist</h1>
     <p class="lede">
-      结构复用自 <a href="/projects/fakao-grader/">fakao-grader</a>
-      的按点判分规则：每问的采分点分「结论 / 依据 / 分析」三类，答完一问先自己过一遍，
-      没勾上的就是大概率丢分点；自查完再交给 AI 按官方采分点严格判分。
-      内容为人工整理的备考方法论，不含真题原文与任何平台评分数据。
+      The structure is reused from the point-by-point grading rules of <a href="/en/projects/fakao-grader/">fakao-grader</a>:
+      the scoring points of every question fall into three types — conclusion, authority, analysis.
+      After finishing an answer, run through them yourself first; whatever stays unchecked is where you are
+      most likely losing points. Once the self-check is done, hand the answer to the AI for strict grading
+      against the official scoring points. The content is a hand-curated study method: no past-exam wording,
+      no scoring data from any question-bank platform.
     </p>
     <div class="toolbar">
       <p class="progress mono" aria-live="polite">
-        已勾 <span id="done-total">0</span> / {SELF_CHECK_AGG.items} 条
+        Checked <span id="done-total">0</span> / {SELF_CHECK_AGG.items} items
       </p>
       <div class="actions">
-        <button type="button" id="btn-print">打印清单</button>
-        <button type="button" id="btn-reset">清空勾选</button>
+        <button type="button" id="btn-print">Print checklist</button>
+        <button type="button" id="btn-reset">Clear checks</button>
       </div>
     </div>
-    {SELF_CHECK.map((s) => (
+    {SELF_CHECK_EN.map((s) => (
       <section class="subject" aria-labelledby={`h-${s.id}`}>
         <div class="subject-head">
           <h2 id={`h-${s.id}`}>{s.name}</h2>
@@ -60,10 +63,12 @@ import { SELF_CHECK, SELF_CHECK_AGG } from '../../data/self-check';
       </section>
     ))}
     <p class="colophon">
-      口径说明：三类点（结论 / 依据 / 分析）与「✓ 满分 · △ 半分 · ✗ 不倒扣」的判分规则复用自
-      <a href="/projects/fakao-grader/">fakao-grader</a>
-      的判分设计；条目为人工整理的备考方法论，不含真题原文与任何平台评分数据，也不含具体条文号，条号由你在作答里自己写准。
-      勾选进度只存本机浏览器 localStorage，不上传任何地方。
+      How it is scored: the three point types (conclusion / authority / analysis) and the grading rules —
+      checkmark full credit, half mark partial credit, cross no penalty — are reused from the grading design of
+      <a href="/en/projects/fakao-grader/">fakao-grader</a>.
+      The items are a hand-curated study method: no past-exam wording, no scoring data from any platform,
+      and no article numbers — you cite the exact numbers yourself in your answer.
+      Check progress is stored only in this browser's localStorage and is never uploaded anywhere.
     </p>
   </article>
 </BaseLayout>
@@ -108,7 +113,7 @@ import { SELF_CHECK, SELF_CHECK_AGG } from '../../data/self-check';
   }
 
   document.getElementById('btn-reset')?.addEventListener('click', () => {
-    if (!confirm('清空全部勾选记录？')) return;
+    if (!confirm('Clear all check marks?')) return;
     localStorage.removeItem(KEY);
     apply();
   });
@@ -160,8 +165,9 @@ import { SELF_CHECK, SELF_CHECK_AGG } from '../../data/self-check';
     border: 1.5px solid var(--border-strong); background: var(--surface);
     cursor: pointer;
   }
-  /* 勾选符号用内联 SVG 背景：input::after 在部分浏览器（Safari）不渲染；
-     data URI 里用不了 CSS 变量，对勾取两个主题 --bg 的对应色值各给一条 */
+  /* Check mark is an inline SVG background: input::after is not rendered in some browsers (Safari);
+     CSS variables cannot be used inside a data URI, so the tick gets one stroke per theme
+     matching the color that --bg resolves to in each. */
   .item input:checked {
     background: var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3L12.5 5' fill='none' stroke='%23faf9f6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 0.8rem no-repeat;
     border-color: var(--accent);
@@ -180,7 +186,9 @@ import { SELF_CHECK, SELF_CHECK_AGG } from '../../data/self-check';
   @media print {
     .toolbar, .actions { display: none; }
     .crumb { display: none; }
-    /* 一组最多 6 条，组级防断页必然放得下；科目级（10~12 条）接近整页高，浏览器要么强行断开要么留大片空白 */
+    /* A group holds at most 6 items, so a group-level break guarantee always fits;
+       a subject (10-12 items) is close to a full page, where the browser either forces a break
+       or leaves a large blank area. */
     .group { break-inside: avoid; }
     .item input:checked ~ .text { color: var(--text); }
   }

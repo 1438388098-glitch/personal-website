@@ -1,0 +1,171 @@
+---
+/* en 法考工作流页：与 zh（/exam/）同构。环节文案为英文，数字走同一批 lib 层单源
+   （EXAM_AGG / SELF_CHECK_AGG 数值共用，figureEn 取英文文案表）。 */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { formatDate } from '../../../lib/format';
+import { byDateDesc } from '../../../lib/sort';
+import { isVisible } from '../../../lib/publish';
+import { EXAM_AGG } from '../../../lib/exam-progress';
+import { figureEn } from '../../../lib/metrics';
+import { SELF_CHECK_AGG } from '../../../data/self-check';
+import { EN_EXAM_TYPE } from '../../../lib/i18n';
+import EntryCard from '../../../components/EntryCard.astro';
+
+const articles = (await getCollection('examEn', isVisible))
+  .sort(byDateDesc((e) => e.data.date, (e) => e.id));
+
+/* 输出数字从 lib 层单源取结构化 figures，不在此页复述字面量 */
+const publicRepos = (await getCollection('toolboxEn')).length;
+
+/* 与 zh 页 stages 同构：step/tool/output 数字完全一致，stage/ai 为英文文案 */
+const stages: { step: string; stage: string; tool: string; href: string; ai: string; output: string; wide?: boolean }[] = [
+  {
+    step: '01',
+    stage: 'Plan & check-ins',
+    tool: 'fakao-tracker',
+    href: '/en/projects/fakao-tracker/',
+    ai: 'What to study today is not yours to rearrange: a multi-stage plan ships built in, the schedule unrolls on first launch; tick tasks off and check in each evening. Live now, from phone or desktop',
+    output: `${figureEn('fakao-tracker', 'planStages')} laid out automatically, ${figureEn('fakao-tracker', 'dailySlots')}, data stays on this machine`
+  },
+  {
+    step: '02',
+    stage: 'Wrong answers',
+    tool: 'zhuma-fakao-review',
+    href: '/en/projects/zhuma-fakao-review/',
+    ai: 'Objective-phase wrong answers fetched automatically, reviewed and bound into recitable note PDFs by subject',
+    output: `${EXAM_AGG.wrongQuestions.toLocaleString('en-US')} wrong answers → ${EXAM_AGG.pdfBooklets} PDF booklets, about ${EXAM_AGG.minutesPerRound} minutes a round`
+  },
+  {
+    step: '03',
+    stage: 'Statute retrieval',
+    tool: 'statute-rag',
+    href: '/en/projects/statute-rag/',
+    ai: 'Returns only statute text with article numbers, and says so when nothing is found; live online, no install needed',
+    output: `${figureEn('statute-rag', 'questions')}, ${figureEn('statute-rag', 'hitRate')} hits the right provision`
+  },
+  {
+    step: '04',
+    stage: 'Essay practice',
+    tool: 'fakao-shuati',
+    href: '/en/projects/fakao-shuati/',
+    ai: 'Self-hosted essay practice platform: answers, reviews and the mistake book all live on your own machine',
+    output: 'Deep review reports generated automatically'
+  },
+  {
+    step: '05',
+    stage: 'Essay self-check',
+    tool: 'Bar essay self-check checklist',
+    href: '/en/exam/checklist/',
+    ai: 'Self-check before handing answers to the AI grader: walk the conclusion / authority / analysis points one by one — whatever is unticked is where points were lost',
+    output: `${SELF_CHECK_AGG.items} self-check items · ${SELF_CHECK_AGG.subjects} subjects, checks stay on this machine`
+  },
+  {
+    step: '06',
+    stage: 'Essay grading',
+    tool: 'fakao-grader',
+    href: '/en/projects/fakao-grader/',
+    ai: 'An independent grading agent: judged point by point against official scoring points, low-confidence verdicts forced back into review',
+    output: '✓ / △ / ✗ three-level verdicts, a ±3 exam-day estimate band'
+  },
+  {
+    step: '07',
+    stage: 'AI benchmarks',
+    tool: 'cn-judbench',
+    href: '/en/projects/cn-judbench/',
+    ai: 'Scoring standards published in advance, grading done by machine against them: AI gets tested before it enters the workflow',
+    output: `${figureEn('cn-judbench', 'packs')} · ${figureEn('cn-judbench', 'questions')}`,
+    wide: true
+  },
+  {
+    step: '08',
+    stage: 'Toolmaking',
+    tool: 'Claude Code and other AI coding tools',
+    href: '/en/toolbox/',
+    ai: 'Every tool above was built this way: with tests, with data, with failure logs',
+    output: `${publicRepos} public repositories, all checkable`,
+    wide: true
+  }
+];
+---
+<BaseLayout title="Bar Exam × AI" description="Exam prep split into eight steps, one self-built AI tool each: planning and check-ins, wrong answers into notes, statute retrieval that always cites its provisions, essay practice with self-check and machine grading, AI benchmarked before it enters the workflow — outputs public and checkable." alternate="/exam/">
+  <h1>Bar Exam × AI</h1>
+  <section aria-label="Exam-prep steps and self-built tools">
+    <div class="sec-head">
+      <span class="sec-no">01</span>
+      <h2>Eight steps, in exam-prep order</h2>
+    </div>
+    <div class="stage-grid">
+      {stages.map((s) => (
+        <div class={`card stage-card${s.wide ? ' stage-card--wide' : ''}`}>
+          <span class="stage-no" aria-hidden="true">{s.step}</span>
+          <div class="stage-lead">
+            <p class="stage-name">{s.stage}</p>
+            <a
+              class="tool"
+              href={s.href}
+              target={s.href.startsWith('http') ? '_blank' : undefined}
+              rel={s.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+              aria-label={s.href.startsWith('http') ? `${s.tool} (opens in new window)` : undefined}
+            >{s.tool}</a>
+          </div>
+          <p class="ai">{s.ai}</p>
+          <p class="output mono">{s.output}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+  {articles.length > 0 && (
+    <section>
+      <div class="sec-head">
+        <span class="sec-no">02</span>
+        <h2>Field notes</h2>
+      </div>
+      {articles.map((a) => (
+        <EntryCard
+          href={`/en/exam/${a.id}/`}
+          meta={`${EN_EXAM_TYPE[a.data.type] ?? a.data.type} · ${formatDate(a.data.date, 'en')}`}
+          title={a.data.title}
+          description={a.data.description}
+        />
+      ))}
+    </section>
+  )}
+</BaseLayout>
+<style>
+  section { margin: var(--section-gap) 0; }
+  .stage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
+  .stage-card { position: relative; padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  /* 环节序号放大成描边幽灵数字：与 zh 页同一套设计（样式镜像自 src/pages/exam/index.astro） */
+  .stage-no {
+    position: absolute; top: 0.8rem; right: 1rem;
+    font-family: var(--font-display); font-weight: 900; font-size: 2.5rem; line-height: 1;
+    color: var(--border); user-select: none; pointer-events: none;
+    transition: color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @supports (-webkit-text-stroke: 1.5px #000) {
+    .stage-no { color: transparent; -webkit-text-stroke: 1.5px var(--border); }
+  }
+  .stage-card:hover .stage-no { color: var(--accent); -webkit-text-stroke-color: var(--accent); }
+  .stage-lead { display: flex; flex-direction: column; align-items: flex-start; gap: 0.1rem; }
+  .stage-name { margin: 0; font-weight: 700; font-size: var(--fs-card-title); }
+  .tool {
+    align-self: flex-start; font-size: 0.9rem;
+    min-height: 44px; display: inline-flex; align-items: center;
+    color: var(--accent);
+    transition: color 0.15s ease;
+  }
+  .tool:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .ai { margin: 0; color: var(--text); font-size: 0.95rem; }
+  .output { margin: auto 0 0; padding-top: 0.7rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.82rem; }
+  .stage-card--wide { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 2rem; padding-right: 6.5rem; }
+  .stage-card--wide:hover { transform: none; box-shadow: none; }
+  .stage-card--wide .stage-lead { flex: 0 0 15rem; }
+  .stage-card--wide .ai { flex: 1; }
+  .stage-card--wide .output { margin: 0; padding: 0; border-top: none; white-space: nowrap; }
+  @media (max-width: 720px) {
+    .stage-grid { grid-template-columns: 1fr; }
+    .stage-card--wide { flex-direction: column; align-items: flex-start; gap: 0.45rem; padding-right: 1.4rem; }
+    .stage-card--wide .output { margin: auto 0 0; padding-top: 0.7rem; border-top: 1px solid var(--border); white-space: normal; align-self: stretch; }
+  }
+</style>

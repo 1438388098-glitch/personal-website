@@ -7,6 +7,7 @@
 import { getCollection } from 'astro:content';
 import { getPublishedPosts } from './posts';
 import { isVisible } from './publish';
+import { tagLabel, groupLabel } from './i18n';
 
 /** 一条可检索文档：字段与 src/lib/search.ts 的 SearchDoc 对齐，另带 url 与来源 kind。 */
 export interface SearchDocEntry {
@@ -54,17 +55,24 @@ export async function collectSearchDocs(): Promise<SearchDocEntry[]> {
   ];
 }
 
-/** 收集英文检索条目：只有译出的集合进英文索引；en 分类/分组标签映射成英文对照。 */
+/** 收集英文检索条目：英文版全量集合进英文索引（posts/exam/notes/projects/toolbox）。
+    frontmatter 里的中文枚举 ID（tags/group/category）在出口处映射成英文对照。 */
 export async function collectSearchDocsEn(): Promise<SearchDocEntry[]> {
   return [
     ...(await getPublishedPosts('en')).map((p): SearchDocEntry => ({
-      url: `/en/blog/${p.id}/`, title: p.data.title, description: p.data.description, tags: p.data.tags, text: toText(p.body), kind: 'Blog',
+      url: `/en/blog/${p.id}/`, title: p.data.title, description: p.data.description, tags: p.data.tags.map((t) => tagLabel('en', t)), text: toText(p.body), kind: 'Blog',
+    })),
+    ...(await getCollection('examEn', isVisible)).map((e): SearchDocEntry => ({
+      url: `/en/exam/${e.id}/`, title: e.data.title, description: e.data.description, tags: [], text: toText(e.body), kind: 'Exam log',
+    })),
+    ...(await getCollection('notesEn', isVisible)).map((n): SearchDocEntry => ({
+      url: `/en/notes/${n.id}/`, title: n.data.title, description: n.data.description, tags: [], text: toText(n.body), kind: 'Paper notes',
     })),
     ...((await getCollection('projectsEn')).sort((a, b) => a.data.order - b.data.order)).map((p): SearchDocEntry => ({
-      url: `/en/projects/${p.id}/`, title: p.data.title, description: p.data.summary, tags: [p.data.group], text: p.data.summary, kind: 'Project',
+      url: `/en/projects/${p.id}/`, title: p.data.title, description: p.data.summary, tags: [groupLabel('en', p.data.group)], text: p.data.summary, kind: 'Project',
     })),
     ...(await getCollection('toolboxEn')).map((t): SearchDocEntry => ({
-      url: `/en/toolbox/#${t.id}`, title: t.data.name, description: t.data.description, tags: [t.data.category], text: t.data.description, kind: 'Tool',
+      url: `/en/toolbox/#${t.id}`, title: t.data.name, description: t.data.description, tags: [groupLabel('en', t.data.category)], text: t.data.description, kind: 'Tool',
     })),
   ];
 }

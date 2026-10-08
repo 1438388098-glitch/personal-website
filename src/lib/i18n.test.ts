@@ -42,14 +42,14 @@ describe('i18n 字典', () => {
     }
   });
 
-  it('en 导航是不含法考/笔记的子集，且链接带 /en 前缀', () => {
+  it('en 导航与 zh 七项一一对应（exam/notes 已出英文版），且链接带 /en 前缀', () => {
     const zhHrefs = STRINGS.zh.navItems.map((n) => n.href);
     for (const item of STRINGS.en.navItems) {
       expect(zhHrefs).toContain(item.href.replace('/en', '').replace(/^$/, '/'));
       expect(item.href.startsWith('/en/')).toBe(true);
     }
-    expect(STRINGS.en.navItems.some((n) => n.href.includes('exam'))).toBe(false);
-    expect(STRINGS.en.navItems.some((n) => n.href.includes('notes'))).toBe(false);
+    /* en 不再是子集：exam/notes 英文版上线后导航全量对齐 */
+    expect(STRINGS.en.navItems.length).toBe(STRINGS.zh.navItems.length);
   });
 
   it('langOf/prefix/href', () => {

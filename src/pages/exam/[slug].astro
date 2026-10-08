@@ -35,7 +35,7 @@ const breadcrumb = {
   ]
 };
 ---
-<BaseLayout title={title} description={description} type="article" publishedTime={date}>
+<BaseLayout title={title} description={description} type="article" publishedTime={date} alternate={`/en/exam/${post.id}/`}>
   <article class="prose">
     <p class="meta">{type} · <span class="mono">{formatDate(date)}</span></p>
     <h1>{title}</h1>

@@ -27,7 +27,10 @@ const projectsSchema = z.object({
 
 const postsSchema = z.object({
   title: z.string(),
-  description: z.string().max(120),
+  /* 上限 300：zh 稿全部 ≤120 全角字符；en 同语义约需两倍半角字符（中文 120 字 ≈ 卡片上
+     240 个拉丁半角宽度），cap 必须容纳 en 的完整转述——否则会逼出截短版 description
+     （2026-10-07 曾因此把 4 篇 en 简介截出语义损失）。zh 稿不受影响。 */
+  description: z.string().max(300),
   category: z.enum(POST_CATEGORIES),
   tags: z.array(z.enum(TAG_VOCAB)).max(4).default([]),
   pubDate: z.coerce.date(),
@@ -36,27 +39,32 @@ const postsSchema = z.object({
   image: z.string().optional()
 });
 
+const examSchema = z.object({
+  title: z.string(),
+  /* 上限口径同 postsSchema.description：en 完整转述约需 zh 的两倍字符数 */
+  description: z.string().max(300),
+  type: z.enum(['方法论', '错题笔记', '周记']),
+  date: z.coerce.date(),
+  draft: z.boolean().default(false)
+});
+
+const notesSchema = z.object({
+  title: z.string(),
+  description: z.string().max(300),
+  category: z.enum(['课程论文', '文献研读', '读书笔记']),
+  date: z.coerce.date(),
+  status: z.enum(['已完成', '写作中', '在读']).default('已完成'),
+  draft: z.boolean().default(false)
+});
+
 const exam = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/exam' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().max(160),
-    type: z.enum(['方法论', '错题笔记', '周记']),
-    date: z.coerce.date(),
-    draft: z.boolean().default(false)
-  })
+  schema: examSchema
 });
 
 const notes = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/notes' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().max(160),
-    category: z.enum(['课程论文', '文献研读', '读书笔记']),
-    date: z.coerce.date(),
-    status: z.enum(['已完成', '写作中', '在读']).default('已完成'),
-    draft: z.boolean().default(false)
-  })
+  schema: notesSchema
 });
 
 const nowSchema = z.object({
@@ -104,6 +112,16 @@ const projectsEn = defineCollection({
   schema: projectsSchema
 });
 
+const examEn = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content-en/exam' }),
+  schema: examSchema
+});
+
+const notesEn = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content-en/notes' }),
+  schema: notesSchema
+});
+
 const postsEn = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content-en/posts' }),
   schema: postsSchema
@@ -119,4 +137,4 @@ const toolboxEn = defineCollection({
   schema: toolboxSchema
 });
 
-export const collections = { projects, posts, exam, notes, now, toolbox, projectsEn, postsEn, nowEn, toolboxEn };
+export const collections = { projects, posts, exam, notes, now, toolbox, projectsEn, postsEn, examEn, notesEn, nowEn, toolboxEn };
