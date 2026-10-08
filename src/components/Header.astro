@@ -1,5 +1,6 @@
 ---
 import { langOf, strings } from '../lib/i18n';
+import { SITE } from '../lib/site';
 interface Props { switchHref: string; }
 const { switchHref } = Astro.props;
 const lang = langOf(Astro.url.pathname);
@@ -8,7 +9,7 @@ const isActive = (href: string) => Astro.url.pathname === href || Astro.url.path
 ---
 <header class="site-header">
   <div class="container header-inner">
-    <a class="brand" href={lang === 'en' ? '/en/' : '/'}><span class="brand-mark" aria-hidden="true"></span>{lang === 'en' ? 'Samwaye Woo' : '胡圣炜'}{lang === 'zh' && <span class="en">HU SHENGWEI</span>}</a>
+    <a class="brand" href={lang === 'en' ? '/en/' : '/'}><span class="brand-mark" aria-hidden="true"></span>{t.authorName}{lang === 'zh' && <span class="en">{SITE.authorEn}</span>}</a>
     <nav aria-label={t.navAria}>
       {t.navItems.map((item) => (
         <a
@@ -29,7 +30,7 @@ const isActive = (href: string) => Astro.url.pathname === href || Astro.url.path
       <form class="header-search" action={t.searchAction} method="get" role="search">
         <input type="search" name="q" placeholder={t.searchPlaceholder} aria-label={t.searchAria} autocomplete="off" />
       </form>
-      <a class="lang-switch" href={switchHref} aria-label={t.langSwitch.aria}>{t.langSwitch.label}</a>
+      <a class="lang-switch" href={switchHref} data-lang={lang === 'zh' ? 'en' : 'zh'} aria-label={t.langSwitch.aria}>{t.langSwitch.label}</a>
       <button id="theme-toggle" type="button" aria-label={t.themeToggle.base} aria-pressed="false" data-label-dark={t.themeToggle.dark} data-label-light={t.themeToggle.light}>◐</button>
     </div>
   </div>

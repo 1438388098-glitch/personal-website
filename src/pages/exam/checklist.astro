@@ -69,7 +69,13 @@ import { SELF_CHECK, SELF_CHECK_AGG } from '../../data/self-check';
 </BaseLayout>
 <script>
   const KEY = 'fakao-self-check:v1';
+
+  /* astro:page-load 首次加载与每次换页后都触发：ClientRouter 换页会替换 DOM，
+     顶层绑定在返回本页后失灵（范式同 Search/tabs），装配放进回调按次重入。
+     非本页时boxes 为空集，直接返回不碰任何元素。 */
+  document.addEventListener('astro:page-load', () => {
   const boxes = Array.from(document.querySelectorAll<HTMLInputElement>('input[data-id]'));
+  if (boxes.length === 0) return;
   const doneTotal = document.getElementById('done-total');
 
   function load(): Record<string, boolean> {
@@ -115,6 +121,7 @@ import { SELF_CHECK, SELF_CHECK_AGG } from '../../data/self-check';
   document.getElementById('btn-print')?.addEventListener('click', () => window.print());
 
   apply();
+  });
 </script>
 <style>
   .checklist { max-width: 46rem; margin: 0 auto; }
