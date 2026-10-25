@@ -38,6 +38,6 @@
     "@emnapi/runtime": "^1.11.3",
     "subset-font": "^2.9.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   }
 }
