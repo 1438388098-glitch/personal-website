@@ -39,6 +39,10 @@ jobs:
       - run: npm run check:secrets
       - run: npm run check:style
       - run: npm run check:content
+      # 双语内容门禁：en↔zh 结构对齐 / 数字保真 / 汉字渗漏 / 长度比
+      - run: npm run check:i18n
+      # 中文内容金标：src/content/** 任何改动必须显式 --update 并入库清单
+      - run: npm run check:golden
       # scripts/*.mjs 的 JSDoc 类型检查（tsconfig.scripts.json，无需构建产物）
       - run: npm run check:scripts
 
