@@ -33,8 +33,19 @@ export default {
 
     const origin = await fetch(request);
     const cc = origin.headers.get('cache-control') || '';
-    /* 源站给了正的 max-age 才存边缘缓存（no-cache / max-age=0 / 无头一律不存） */
-    if (/max-age=[1-9]/.test(cc)) {
+    /* 只有「源站明确允许缓存」的响应才进 caches.default：
+       - 必须带正的 max-age（no-cache / max-age=0 / 无头一律不存）；
+       - private / no-store / no-cache 一律不缓存——private 的响应只属于单个
+         用户，写进共享边缘缓存会把 A 的响应发给 B；
+       - 带 Set-Cookie 的响应同理不缓存（登录态、会话粘滞）；
+       - 只在 200 时缓存，避免把重定向/错误页固化在边缘。 */
+    const lower = cc.toLowerCase();
+    const cacheable =
+      origin.status === 200 &&
+      /max-age=[1-9]/.test(lower) &&
+      !/private|no-store|no-cache/.test(lower) &&
+      !origin.headers.has('set-cookie');
+    if (cacheable) {
       ctx.waitUntil(cache.put(request, origin.clone()));
     }
     const res = new Response(origin.body, origin);

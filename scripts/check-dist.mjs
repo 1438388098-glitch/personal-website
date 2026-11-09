@@ -8,10 +8,11 @@ import { parseFaces, visibleText } from './subset-fonts.mjs';
 const dist = resolve('dist');
 
 /* 字体总量预算（KB）：subset-fonts 把每个分片压到「站内真的用到的字」后约 690KB。
-   留一倍余量：内容增长会推高它，但绝不该回到子集化之前的 4.4MB。
-   上限的意义是「subset-fonts 没跑」这类静默失效——宽 range 一样能覆盖全站字符，
-   覆盖断言看不出来，只有字节数会立刻爆表。 */
-const FONT_BUDGET_KB = 1400;
+   预算按「实测 + 约 15% 增长余量」定在 800KB：内容增长会推高它，但绝不该回到
+   子集化之前的 4.4MB。上限的意义是「subset-fonts 没跑」这类静默失效——宽 range
+   一样能覆盖全站字符，覆盖断言看不出来，只有字节数会立刻爆表。
+   定 1400 时上限是实测值的两倍，等于拦不住任何东西。 */
+const FONT_BUDGET_KB = 800;
 
   /* 必需资产：运营与分发依赖它们，构建成功不等于它们在 */
   const required = [
@@ -249,6 +250,14 @@ function main() {
       console.error(`缺产物: ${f}`);
       errors++;
     }
+  }
+  /* 单色 180×180 PNG 压完只有几百字节。历史上 apple-touch-icon.png 就是一张
+     387 字节的纯色图——"文件在"但 iOS 主屏上是一块空白蓝块。用字节数做低成本
+     哨兵（真正的字形仍靠人看一眼），防止再退回纯色图。 */
+  const touchIcon = join(dist, 'apple-touch-icon.png');
+  if (existsSync(touchIcon) && statSync(touchIcon).size < 1500) {
+    console.error('apple-touch-icon.png 过小，疑似纯色空图（见 scripts 里的图标回归说明）');
+    errors++;
   }
   const docs = searchIndexCount();
   if (docs < 0) errors++;
